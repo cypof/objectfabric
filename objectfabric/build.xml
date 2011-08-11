@@ -1,0 +1,58 @@
+<project name="objectfabric" default="jar" basedir=".">
+	<property name="version" value="0.8" />
+
+	<target name="jar" description="Create jar">
+		<mkdir dir="bin" />
+		<delete file="bin/objectfabric-${version}.jar" failonerror="false" />
+		<jar destfile="bin/objectfabric-${version}.jar" manifest="MANIFEST.MF" level="9">
+			<fileset dir="classes" includes="**/*.class" excludes="" />
+		</jar>
+		<delete file="bin/objectfabric-${version}-src.jar" failonerror="false" />
+		<jar destfile="bin/objectfabric-${version}-src.jar" manifest="MANIFEST.MF">
+			<fileset dir="stm" />
+			<fileset dir="generated" />
+			<fileset dir="extensibility" />
+			<fileset dir="serialization" />
+			<fileset dir="distributed" />
+			<fileset dir="persistence" />
+		</jar>
+	</target>
+
+	<target name="all">
+		<ant target="jars" />
+		<ant target="package" />
+	</target>
+
+	<target name="jars">
+		<ant target="jar" />
+		<ant dir="../objectfabric.indexes.sqlite" target="jar" />
+		<ant dir="../objectfabric.stores.jdbm" target="jar" />
+		<ant dir="../of4gwt" target="jar" />
+	</target>
+
+	<target name="package" depends="jar">
+		<java classname="org.objectfabric.misc.Debug" classpath="classes" failonerror="true" />
+
+		<ant dir="../objectfabric.stores.jdbm" />
+		<ant dir="../objectfabric.indexes.sqlite" />
+
+		<delete file="../../objectfabric-${version}.zip" failonerror="false" />
+
+		<zip destfile="../../objectfabric-${version}.zip">
+			<zipfileset dir="." prefix="objectfabric-${version}/objectfabric" excludes="classes/**" />
+
+			<zipfileset dir="../objectfabric.examples" prefix="objectfabric-${version}/objectfabric.examples" excludes="classes/** temp/**" />
+			<zipfileset dir="../objectfabric.examples.amazon" prefix="objectfabric-${version}/objectfabric.examples.amazon" excludes="classes/** temp/**" />
+			<zipfileset dir="../objectfabric.examples.android" prefix="objectfabric-${version}/objectfabric.examples.android" excludes="classes/** temp/**" />
+			<zipfileset dir="../objectfabric.examples.indexes" prefix="objectfabric-${version}/objectfabric.examples.indexes" excludes="classes/** temp/**" />
+
+			<zipfileset dir="bin" includes="objectfabric-${version}.jar" prefix="objectfabric-${version}/objectfabric.examples.amazon/deployed" />
+
+			<zipfileset dir="../objectfabric.indexes.sqlite" prefix="objectfabric-${version}/objectfabric.indexes.sqlite" excludes="classes/** temp/**" />
+			<zipfileset dir="../objectfabric.stores.jdbm" prefix="objectfabric-${version}/objectfabric.stores.jdbm" excludes="classes/** temp/**" />
+
+			<zipfileset dir="../LICENSES" prefix="objectfabric-${version}/LICENSES" />
+			<zipfileset dir=".." includes="readme.txt" prefix="objectfabric-${version}" />
+		</zip>
+	</target>
+</project>

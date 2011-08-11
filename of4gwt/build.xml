@@ -1,0 +1,159 @@
+<project name="of4gwt" default="convert" basedir=".">
+	<import file="../objectfabric/build.xml" />
+
+	<target name="convert">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="src-converted/of4gwt" />
+		</delete>
+
+		<copy todir="src-converted">
+			<fileset dir="../objectfabric/stm" includes="**/*.java" excludes="
+				**/AsyncCallback.java
+				**/generator/**
+				**/Platform*.java
+				**/ImmutableClassesForCSharp.java
+				**/SeparateClassLoader.java
+				**/SeparateVM.java
+				**/GCQueue.java
+				**/SwingConfig.java
+				**/Log.java
+				**/OverloadHandler.java
+				**/FileLog.java
+				**/ThreadAssert.java
+				**/FutureWithCallback.java" />
+			<fileset dir="../objectfabric/generated" includes="**/*.java" excludes="" />
+			<fileset dir="../objectfabric/extensibility" includes="**/*.java" excludes="" />
+			<fileset dir="../objectfabric/serialization" includes="**/*.java" excludes="" />
+			<fileset dir="../objectfabric/distributed" includes="**/*.java" excludes="
+				**/NIO*.java
+				**/Server.java
+				**/socket/**
+				**/polling/**
+				**/filters/**
+				**/HTTPClient.java
+				**/HTTP.java
+				**/HTTPSession.java" />
+			<fileset dir="../objectfabric/persistence" includes="**/*.java" excludes="" />
+
+			<filterchain>
+				<replacestring from="import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;" to="" />
+				<replacestring from="import java.util.concurrent.atomic.AtomicReferenceFieldUpdater;" to="" />
+
+				<replacestring from="com.objectfabric" to="of4gwt" />
+				<replacestring from="of4gwt.misc.AsyncCallback" to="com.google.gwt.user.client.rpc.AsyncCallback" />
+
+				<!-- VersionMap -->
+
+				<replacestring from="private static final AtomicIntegerFieldUpdater&lt;VersionMap&gt; _watchersUpdater;" to="" />
+				<replacestring from="_watchersUpdater = AtomicIntegerFieldUpdater.newUpdater(VersionMap.class, &quot;_watchers&quot;);" to="" />
+				<replacestring from="_watchersUpdater.compareAndSet(this, watchers, newWatchers)" to="(_watchers == watchers ? ((_watchers = newWatchers) == newWatchers) : false)" />
+
+				<replacestring from="private static final AtomicIntegerFieldUpdater&lt;VersionMap&gt; _mergeInfoUpdater;" to="" />
+				<replacestring from="_mergeInfoUpdater = AtomicIntegerFieldUpdater.newUpdater(VersionMap.class, &quot;_mergeInfo&quot;);" to="" />
+				<replacestring from="_mergeInfoUpdater.compareAndSet(this, MERGE_DEFAULT, MERGE_A)" to="(_mergeInfo == MERGE_DEFAULT? ((_mergeInfo = MERGE_A) == MERGE_A) : false)" />
+				<replacestring from="_mergeInfoUpdater.compareAndSet(b, MERGE_DEFAULT, MERGE_B)" to="(b._mergeInfo == MERGE_DEFAULT ? ((b._mergeInfo = MERGE_B) == MERGE_B) : false)" />
+				<replacestring from="_mergeInfoUpdater.compareAndSet(this, MERGE_DEFAULT, MERGE_DONE)" to="(_mergeInfo == MERGE_DEFAULT ? ((_mergeInfo = MERGE_DONE) == MERGE_DONE) : false)" />
+
+				<!-- Transaction -->
+
+				<replacestring from="private static final AtomicReferenceFieldUpdater&lt;TransactionPublic, Snapshot&gt; _sharedSnapshotUpdater;" to="" />
+				<replacestring from="_sharedSnapshotUpdater = AtomicReferenceFieldUpdater.newUpdater(TransactionPublic.class, Snapshot.class, &quot;_sharedSnapshot&quot;);" to="" />
+				<replacestring from="_sharedSnapshotUpdater.compareAndSet(this, expected, update)" to="(_sharedSnapshot == expected ? ((_sharedSnapshot = update) == update) : false)" />
+
+				<replacestring from="private static final AtomicIntegerFieldUpdater&lt;Transaction&gt; _statusUpdater;" to="" />
+				<replacestring from="_statusUpdater = AtomicIntegerFieldUpdater.newUpdater(Transaction.class, &quot;_status&quot;);" to="" />
+				<replacestring from="_statusUpdater.compareAndSet(transaction, STATUS_SUSPENDED, STATUS_DEFAULT)" to="(transaction._status == STATUS_SUSPENDED ? ((transaction._status = STATUS_DEFAULT) == STATUS_DEFAULT) : false)" />
+
+				<replacestring from="private static final AtomicReferenceFieldUpdater&lt;Transaction, Session&gt; _currentSessionUpdater;" to="" />
+				<replacestring from="_currentSessionUpdater = AtomicReferenceFieldUpdater.newUpdater(Transaction.class, Session.class, &quot;_currentSession&quot;);" to="" />
+				<replacestring from="_currentSessionUpdater.compareAndSet(this, session, created);" to="if(_currentSession == session) _currentSession = created;" />
+
+				<!-- Session -->
+
+				<replacestring from="private static final AtomicIntegerFieldUpdater&lt;Session&gt; _currentIdUpdater;" to="" />
+				<replacestring from="_currentIdUpdater = AtomicIntegerFieldUpdater.newUpdater(Session.class, &quot;_currentId&quot;);" to="" />
+				<replacestring from="_currentIdUpdater.compareAndSet(this, id, id + 1)" to="(_currentId == id ? ((_currentId = id + 1) == id + 1) : false)" />
+
+				<!-- MethodCall -->
+
+				<replacestring from="private static final AtomicReferenceFieldUpdater&lt;MethodCall, Future&gt; _userFutureUpdater;" to="" />
+				<replacestring from="_userFutureUpdater = AtomicReferenceFieldUpdater.newUpdater(MethodCall.class, Future.class, &quot;_userFuture&quot;);" to="" />
+				<replacestring from="_userFutureUpdater.compareAndSet(this, null, future)" to="(_userFuture == null ? ((_userFuture = future) == future) : false)" />
+				<replacestring from="_userFutureUpdater.compareAndSet(this, null, mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)" to="(_userFuture == null ? ((_userFuture = (mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)) == (mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)) : false)" />
+
+				<!-- Extension -->
+
+				<replacestring from="private static final AtomicIntegerFieldUpdater&lt;Extension&gt; _statusUpdater;" to="" />
+				<replacestring from="_statusUpdater = AtomicIntegerFieldUpdater.newUpdater(Extension.class, &quot;_status&quot;);" to="" />
+				<replacestring from="_statusUpdater.compareAndSet(this, value, STATUS_NOTIFIED)" to="(_status == value ? ((_status = STATUS_NOTIFIED) == STATUS_NOTIFIED) : false)" />
+				<replacestring from="_statusUpdater.compareAndSet(this, STATUS_RUNNING, STATUS_IDLE)" to="(_status == STATUS_RUNNING ? ((_status = STATUS_IDLE) == STATUS_IDLE) : false)" />
+				<replacestring from="_statusUpdater.compareAndSet(this, value, STATUS_NOTIFIED)" to="(_status == value ? ((_status = STATUS_NOTIFIED) == STATUS_NOTIFIED) : false)" />
+
+				<!-- All -->
+
+				<replacestring from="java.lang.Runnable" to="of4gwt.misc.Runnable" />
+				<replacestring from="java.io.Closeable" to="of4gwt.misc.Closeable" />
+				<replacestring from="java.lang.SecurityException" to="of4gwt.misc.SecurityException" />
+				<replacestring from="java.nio.channels.CancelledKeyException" to="of4gwt.misc.CancelledKeyException" />
+				<replacestring from="java.util.concurrent.atomic.AtomicBoolean" to="of4gwt.misc.AtomicBoolean" />
+				<replacestring from="java.util.concurrent.atomic.AtomicInteger" to="of4gwt.misc.AtomicInteger" />
+				<replacestring from="java.util.concurrent.atomic.AtomicReference" to="of4gwt.misc.AtomicReference" />
+				<replacestring from="java.util.concurrent.atomic.AtomicLong" to="of4gwt.misc.AtomicLong" />
+				<replacestring from="java.util.concurrent.Executor" to="of4gwt.misc.Executor" />
+				<replacestring from="java.util.concurrent.Future" to="of4gwt.misc.Future" />
+				<replacestring from="java.util.concurrent.TimeUnit" to="of4gwt.misc.TimeUnit" />
+				<replacestring from="java.util.concurrent.ExecutionException" to="of4gwt.misc.ExecutionException" />
+				<replacestring from="java.lang.InterruptedException" to="of4gwt.misc.InterruptedException" />
+				<replacestring from="GCQueue.getInstance().dispose();" to="// GCQueue.getInstance().dispose();" />
+				<replacestring from="java.lang.ref.SoftReference" to="of4gwt.misc.SoftReference" />
+				<replacestring from="super(t, queue);" to="super(t, _);" />
+				<replacestring from="super(object, enqueue ? GCQueue.getInstance() : null);" to="super(object, null);" />
+				<replacestring from="import java.lang.ref.ReferenceQueue;" to="" />
+				<replacestring from="public WeakReferenceAccessor(T t, ReferenceQueue&lt;T&gt; queue) {" to="public WeakReferenceAccessor(T t, Object _) {" />
+			</filterchain>
+		</copy>
+
+		<move todir="src-converted/of4gwt">
+			<fileset dir="src-converted/com/objectfabric" />
+		</move>
+		<delete dir="src-converted/com" />
+	</target>
+
+	<target name="convert-tests">
+		<delete includeemptydirs="true" failonerror="false">
+			<fileset dir="../of4gwt.tests/src-converted/of4gwt" />
+		</delete>
+
+		<copy todir="../of4gwt.tests/src-converted">
+			<fileset dir="../objectfabric.tests/distributed" includes="
+				**/DataGen.java
+				**/RandomSplitter.java" excludes="" />
+			<fileset dir="../objectfabric.tests/serialization" includes="**/*.java" excludes="
+				**/SerializationTestJava.java
+				**/generator/**" />
+			<filterchain>
+				<replacestring from="com.objectfabric" to="of4gwt" />
+				<replacestring from="java.util.concurrent.atomic.AtomicInteger" to="of4gwt.misc.AtomicInteger" />
+				<replacestring from="java.lang.InterruptedException" to="of4gwt.misc.InterruptedException" />
+			</filterchain>
+		</copy>
+
+		<move todir="../of4gwt.tests/src-converted/of4gwt">
+			<fileset dir="../of4gwt.tests/src-converted/com/objectfabric" />
+		</move>
+		<delete dir="../of4gwt.tests/src-converted/com" />
+	</target>
+
+	<target name="jar">
+		<mkdir dir="bin" />
+		<delete file="bin/of4gwt-${version}.jar" failonerror="true" />
+		<jar destfile="bin/of4gwt-${version}.jar">
+			<fileset dir="src-converted" />
+			<fileset dir="src-client" />
+			<!-- Also put server side for debug -->
+			<fileset dir="src-server" />
+			<fileset dir="src-generator" />
+			<fileset dir="classes" includes="**/*.class" />
+		</jar>
+	</target>
+</project>

@@ -1,0 +1,4 @@
+Bundle-SymbolicName: ObjectFabric
+Bundle-Vendor: ObjectFabric Inc.
+Bundle-Name: ObjectFabric
+Main-Class: com.objectfabric.generator.Generator

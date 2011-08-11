@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ObjectModel xsi:noNamespaceSchemaLocation="http://objectfabric.com/schemas/objectfabric-0.8.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	name="MyObjectModel">
+	<Package name="part02.objectmodel.generated">
+		<Class name="Car">
+			<!-- Primitive types can be either boxed or true primitives -->
+			<Field name="text" type="String" />
+
+			<!-- Primitive types can be either boxed or true primitives -->
+			<Field name="value1" type="Integer" />
+			<Field name="value2" type="int" />
+
+			<!-- Referencing a generated class -->
+			<Field name="driver" type="Driver" />
+
+			<!-- Read-only fields must be passed to the constructor and then cannot be changed -->
+			<Field name="brand" type="String" readonly="true" />
+
+			<!-- Generic types can be specified using parenthesis instead of <> signs to be compatible with XML -->
+			<Field name="doors" type="TSet(Door)" />
+
+			<!-- Read-only collection fields are set by one of the constructors to empty collection -->
+			<Field name="settings" type="TMap(Driver, Settings)" readonly="true" />
+			<Field name="log" type="TMap(Driver, TList(String))" readonly="true" />
+
+			<Field name="tag" type="Object" comment="Value can only be immutable class or TObject." />
+
+			<!-- Methods can be implemented by overriding the generated class, C.f. part06.methods -->
+			<Method name="start" />
+			<Method name="lend">
+				<Argument name="friend" type="Driver" />
+				<Argument name="key" type="Key" />
+				<ReturnValue type="Key" />
+			</Method>
+		</Class>
+		<Class name="Key" />
+		<Class name="ElectricCar" parent="Car">
+			<Field name="battery" type="Battery" />
+		</Class>
+		<Class name="Driver">
+			<Field name="name" type="String" />
+		</Class>
+		<Class name="Door">
+			<Method name="openWindow">
+				<Argument name="height" type="int" />
+			</Method>
+		</Class>
+		<Class name="Settings">
+			<Field name="seatHeight" type="int" />
+		</Class>
+		<Class name="Battery">
+			<Field name="capacity" type="int" readonly="true" />
+			<Field name="remaining" type="int" />
+			<Method name="eject" comment="Watch your feet." />
+		</Class>
+	</Package>
+	<Package name="part02.objectmodel.generated.subPackage">
+		<Class name="OtherCar">
+			<Method name="openOtherWindow">
+				<Argument name="height" type="int" />
+			</Method>
+		</Class>
+	</Package>
+</ObjectModel>

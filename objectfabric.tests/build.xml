@@ -1,0 +1,51 @@
+<project name="objectfabric.tests" basedir=".">
+	<target name="ibm.contest.instrument" description="Instrument classes for concurrency testing">
+		<delete dir="temp">
+		</delete>
+		<copy todir="temp" failonerror="true">
+			<fileset dir="../objectfabric/classes/" includes="**/*.class" />
+		</copy>
+		<java classpath="lib/ibm.contest/ConTest.jar" classname="com.ibm.contest.instrumentation.Instrument">
+			<arg value="temp" />
+		</java>
+	</target>
+
+	<target name="ibm.contest.run" description="Run test for concurrency">
+		<java classname="com.objectfabric.Concurrent">
+			<classpath path="temp" />
+			<classpath path="lib/ibm.contest/ConTest.jar" />
+			<classpath path="lib/junit/junit.jar" />
+		</java>
+	</target>
+
+	<target name="ibm.contest.runTests" description="Run test for concurrency">
+		<junit showoutput="true">
+			<classpath path="temp" />
+			<classpath path="lib/ibm.contest/ConTest.jar" />
+			<classpath path="lib/junit/junit.jar" />
+
+			<!--formatter type="plain" /-->
+
+			<!--test name="com.objectfabric.Concurrent" /-->
+			<!--test name="com.objectfabric.VisitorTest" /-->
+			<!--test name="com.objectfabric.InterceptionTest" /-->
+
+			<!--batchtest>
+				<fileset dir="copy/com.objectfabric/tests">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest-->
+		</junit>
+	</target>
+
+	<target name="odb.instrument" description="Instrument classes for ODB">
+		<delete dir="temp">
+		</delete>
+		<copy todir="temp" failonerror="true">
+			<fileset dir="../objectfabric/classes/" includes="**/*.class" />
+		</copy>
+		<java classpath="lib/odb/ODB1.5.jar" classname="com.lambda.Debugger.Debugify" fork="true" dir="lib/odb">
+			<arg value="../../temp" />
+		</java>
+	</target>
+</project>

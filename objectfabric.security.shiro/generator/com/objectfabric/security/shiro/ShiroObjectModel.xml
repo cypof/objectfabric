@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ObjectModel name="ShiroObjectModel" xsi:noNamespaceSchemaLocation="http://objectfabric.com/schemas/objectfabric-0.8.xsd"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Package name="com.objectfabric.security.shiro">
+		<Class name="AccountService">
+			<Field name="store" type="AccountStore" readonly="true" />
+			<Method name="createAccount">
+				<Argument name="username" type="String" />
+				<Argument name="password" type="String" />
+				<ReturnValue type="Account" />
+			</Method>
+		</Class>
+		<Class name="AccountStore">
+			<Field name="accounts" type="Map(String, Account)" readonly="true" />
+			<Field name="roles" type="Map(String, Role)" readonly="true" />
+		</Class>
+		<Class name="Account" abstract="true">
+			<Field name="username" type="String" readonly="true" />
+			<Field name="passwordHash" type="byte[]" />
+			<Field name="salt" type="byte[]" />
+			<Field name="roles" type="Set(Role)" readonly="true" />
+		</Class>
+		<Class name="Role">
+			<Field name="name" type="String" readonly="true" />
+			<Field name="permissions" type="Set(String)" readonly="true" />
+		</Class>
+	</Package>
+</ObjectModel>

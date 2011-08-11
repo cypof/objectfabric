@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="generated"/>
+	<classpathentry kind="src" path="generator"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric"/>
+	<classpathentry kind="lib" path="libs/shiro-core-1.1.0.jar" sourcepath="libs/shiro-root-1.1.0-source-release.zip"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

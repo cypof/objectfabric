@@ -1,0 +1,70 @@
+    /*
+     * %name%.
+     */
+
+    protected final %name%Version get%name%Version_objectfabric(Transaction current, int index) {
+        if (Debug.ENABLED)
+            Debug.assertion(!current.isPublic());
+
+        %name%Version version = (%name%Version) current.getVersionFromTObject(this);
+
+        /*
+         * If we have already written to this field, use this.
+         */
+        if (version != null && version.getBit(index))
+            return version;
+
+        version = find%name%PrivateVersion(current.getPrivateSnapshotVersions(), index);
+
+        /*
+         * Same if it was in a private snapshot.
+         */
+        if (version != null)
+            return version;
+
+        /*
+         * Otherwise keep track of read and find previous value.
+         */
+        if (!current.noReads()) {
+            %name%Read read = (%name%Read) current.getRead(this);
+
+            if (read == null) {
+                read = (%name%Read) getSharedVersion_objectfabric().createRead();
+
+                if (read != null)
+                    current.putRead(this, read);
+                else if (Debug.ENABLED)
+                    Debug.assertion(this instanceof UserTObject.Method);
+            }
+
+            if (read != null)
+                read.setBit(index);
+        }
+
+        return find%name%PublicVersion(current, index);
+    }
+
+    private final %name%Version find%name%PrivateVersion(Version[][] versions, int index) {
+        if (versions != null) {
+            for (int i = versions.length - 1; i >= 0; i--) {
+                %name%Version version = (%name%Version) TransactionSets.getVersionFromTObject(versions[i], this);
+
+                if (version != null && version.getBit(index))
+                    return version;
+            }
+        }
+
+        return null;
+    }
+
+    final %name%Version find%name%PublicVersion(Transaction transaction, int index) {
+        for (int i = transaction.getPublicSnapshotVersions().length - 1; i > TransactionManager.OBJECTS_VERSIONS_INDEX; i--) {
+            TObject.Version[] delta = transaction.getPublicSnapshotVersions()[i];
+            %name%Version version = (%name%Version) TransactionSets.getVersionFromTObject(delta, this);
+
+            if (version != null && version.getBit(index))
+                return version;
+        }
+
+        return (%name%Version) getSharedVersion_objectfabric();
+    }

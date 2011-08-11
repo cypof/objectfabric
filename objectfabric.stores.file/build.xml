@@ -1,0 +1,16 @@
+<project name="objectfabric.stores.jdbm" default="jar" basedir=".">
+	<import file="../objectfabric/build.xml" />
+
+	<target name="jar" description="Create jar">
+		<mkdir dir="bin" />
+		<delete file="bin/objectfabric.stores.jdbm-${version}.jar" failonerror="false" />
+		<jar destfile="bin/objectfabric.stores.jdbm-${version}.jar" level="9">
+			<fileset dir="classes" includes="**/*.class" excludes="" />
+		</jar>
+		<delete file="bin/objectfabric.stores.jdbm-${version}-src.jar" failonerror="false" />
+		<jar destfile="bin/objectfabric.stores.jdbm-${version}-src.jar">
+			<fileset dir="src" />
+			<fileset dir="jdbm" />
+		</jar>
+	</target>
+</project>

@@ -1,0 +1,82 @@
+<!--
+    Amazon provides a default Linux configuration with java pre-installed:
+
+    http://aws.amazon.com/amazon-linux-ami
+
+    Once you got an instance of this AMI started (e.g. on an EBS), use the following ant tasks to
+    deploy your server on the AMI. Tasks are either for Windows or for Mac/Linux/Unix machines.
+
+    You need to update properties at the beginning of the file with the public DNS Name and path
+    to the private key which are given to you by Amazon when starting the EC2 instance.
+
+    Task "open command line and debug port" opens a ssh connection to the Amazon EC2 instance,
+    and forwards a port to enable remote debugging. The first time you connect, ssh will add the
+    EC2 instance to known_hosts.
+
+    Task "deploy and launch" synchronizes the local folder "deployed" to the instance's home folder,
+    and launches your server by invoking "deployed/start.sh". WARNING: synchronization of the deployed
+    folder is full: it deletes all files on the AMI that are not present on your developer machine.
+    Make sure you do not store data files and logs in the "deployed" folder. By default, stdout and
+    stderr go to deployed.log in the home folder.
+
+    Once deployed and started, you can launch the "debug.launch" configuration in Eclipse to debug
+    your server through the ssh forwarded port.
+
+    From the command line, you can run "deployed/install_daemon.sh" to add your server to the AMI init
+    file "rc.local" to let your server start when the machine boots.
+-->
+<project name="amazon" default="deploy and start (Windows)" basedir=".">
+	<!-- Please read the comment on Main.java to setup those two properties -->
+	<property name="instance public dns" value="ec2-50-17-15-215.compute-1.amazonaws.com" />
+	<property name="private key" value="${basedir}/../../.ec2/amazon.pem" />
+
+	<!-- Verbose ssh connection -->
+	<!-- property name="verbose" value="-v" /-->
+	<property name="verbose" value="" />
+
+	<property name="ssh args" value="${verbose} -l ec2-user -i ${private key} -o UserKnownHostsFile=${basedir}/known_hosts" />
+	<property name="console" value="ssh ${ssh args} ${instance public dns} -L 8000:${instance public dns}:8000" />
+
+	<target name="open command line and debug port (Windows)">
+		<exec executable="cmd" spawn="true">
+			<arg line="/c start cmd /k cwRsync\${console}" />
+		</exec>
+	</target>
+	<target name="open command line and debug port (Mac)">
+		<exec executable="/usr/X11R6/bin/xterm" spawn="true">
+			<arg line="-x bash -c &quot;${console}; cat&quot;" />
+		</exec>
+	</target>
+	<target name="open command line and debug port (Linux)">
+		<exec executable="gnome-terminal" spawn="true">
+			<arg line="-x bash -c &quot;${console}; cat&quot;" />
+		</exec>
+	</target>
+
+	<target name="deploy and start (Windows)" depends="deploy (Windows), start (Windows)" />
+	<target name="deploy and start (Mac/Linux)" depends="deploy (Mac/Linux), start (Mac/Linux)" />
+
+	<target name="deploy (Windows)">
+		<exec executable="cwRsync\rsync">
+			<arg line="-vvrzute 'cwRsync\ssh ${ssh args}' --delete deployed ${instance public dns}:/home/ec2-user" />
+		</exec>
+	</target>
+	<target name="deploy (Mac/Linux)">
+		<exec executable="rsync">
+			<arg line="-vvrzute 'ssh ${ssh args}' --delete deployed ${instance public dns}:/home/ec2-user" />
+		</exec>
+	</target>
+
+	<property name="start" value="${ssh args} ${instance public dns} &quot;sh -c 'cd deployed; ./start.sh'&quot;" />
+
+	<target name="start (Windows)">
+		<exec executable="cwRsync\ssh">
+			<arg line="${start}" />
+		</exec>
+	</target>
+	<target name="start (Mac/Linux)">
+		<exec executable="ssh">
+			<arg line="${start}" />
+		</exec>
+	</target>
+</project>

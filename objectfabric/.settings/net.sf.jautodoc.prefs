@@ -1,0 +1,7 @@
+#Wed May 18 02:20:54 PDT 2011
+add_header=true
+eclipse.preferences.version=1
+header_text=/**\r\n * Copyright (c) ObjectFabric Inc. All rights reserved.\r\n *\r\n * This file is part of ObjectFabric (objectfabric.com).\r\n *\r\n * ObjectFabric is licensed under the Apache License, Version 2.0, the terms\r\n * of which may be found at http\://www.apache.org/licenses/LICENSE-2.0.html.\r\n *\r\n * This file is provided AS IS with NO WARRANTY OF ANY KIND, INCLUDING THE\r\n * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.\r\n */
+project_specific_settings=true
+replace_header=true
+replacements=<?xml version\="1.0" standalone\="yes"?>\n\n<replacements>\n<replacement key\="get" scope\="1" mode\="0">Gets the</replacement>\n<replacement key\="set" scope\="1" mode\="0">Sets the</replacement>\n<replacement key\="add" scope\="1" mode\="0">Adds the</replacement>\n<replacement key\="edit" scope\="1" mode\="0">Edits the</replacement>\n<replacement key\="remove" scope\="1" mode\="0">Removes the</replacement>\n<replacement key\="init" scope\="1" mode\="0">Inits the</replacement>\n<replacement key\="parse" scope\="1" mode\="0">Parses the</replacement>\n<replacement key\="create" scope\="1" mode\="0">Creates the</replacement>\n<replacement key\="build" scope\="1" mode\="0">Builds the</replacement>\n<replacement key\="is" scope\="1" mode\="0">Checks if is</replacement>\n<replacement key\="print" scope\="1" mode\="0">Prints the</replacement>\n<replacement key\="has" scope\="1" mode\="0">Checks for</replacement>\n</replacements>\n\n

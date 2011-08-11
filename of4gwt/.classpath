@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src-converted"/>
+	<classpathentry kind="src" path="src-client"/>
+	<classpathentry kind="src" path="src-server"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="com.google.gwt.eclipse.core.GWT_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>
