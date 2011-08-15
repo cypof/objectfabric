@@ -12,10 +12,7 @@
 
 package of4gwt.misc;
 
-import of4gwt.misc.Executor;
-
 import of4gwt.Privileged;
-import of4gwt.Transaction;
 
 /**
  * Specify this executor to execute a method on a transactional object on the current
@@ -47,15 +44,7 @@ public class TransparentExecutor extends Privileged implements Executor {
             setNoTransaction(false);
         }
 
-        Transaction current = Transaction.getCurrent();
-
-        if (current != null)
-            setCurrentUnsafe(null);
-
         runnable.run();
-
-        if (current != null)
-            setCurrentUnsafe(current);
 
         if (Debug.ENABLED) {
             ThreadAssert.resume(key);

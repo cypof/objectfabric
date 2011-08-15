@@ -104,6 +104,9 @@ public class OF {
         public void delayCommit(Runnable runnable) {
             throw new IllegalStateException();
         }
+
+        void onCommit() {
+        }
     }
 
     private static Config _config;

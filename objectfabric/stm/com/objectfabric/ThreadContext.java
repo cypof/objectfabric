@@ -98,10 +98,10 @@ final class ThreadContext { // TODO merge with transactions' sets
         int flags = Transaction.FLAG_AUTO | Transaction.FLAG_NO_READS;
 
         if (!_autoCommitPending) {
-            if (_autoCommitPolicy == AutoCommitPolicy.DELAYED) {
+            if (_autoCommitPolicy == AutoCommitPolicy.DELAYED)
                 _config.delayCommit(_run);
-                _autoCommitPending = true;
-            }
+
+            _autoCommitPending = true;
         }
 
         if (read && (_autoCommitPolicy == AutoCommitPolicy.IMMEDIATE || _autoCommitPolicy == AutoCommitPolicy.IMMEDIATE_ASYNC))
@@ -189,43 +189,48 @@ final class ThreadContext { // TODO merge with transactions' sets
     }
 
     public final void updateAsync(UpdateFuture update) {
-        _autoCommitPending = false;
-        int count = _branches.size() + 1;
+        checkAutoCommitPolicy();
+        _config.onCommit();
 
-        Transaction current = Transaction.getCurrent();
+        if (_autoCommitPending) { // Avoids reentrancy
+            _autoCommitPending = false;
+            int count = _branches.size() + 1;
 
-        if (current != null && current.isAuto()) {
-            TObjectMapEntry<Transaction> entry = TObjectMapEntry.getEntry(_transactions, current.getTrunk());
+            Transaction current = Transaction.getCurrent();
 
-            if (entry != null && entry.getValue() != null) {
-                if (Debug.ENABLED)
-                    Debug.assertion(entry.getValue() == current);
+            if (current != null && current.isAuto()) {
+                TObjectMapEntry<Transaction> entry = TObjectMapEntry.getEntry(_transactions, current.getTrunk());
 
-                entry.setValue(null);
+                if (entry != null && entry.getValue() != null) {
+                    if (Debug.ENABLED)
+                        Debug.assertion(entry.getValue() == current);
+
+                    entry.setValue(null);
+                    count--;
+                }
+            } else
                 count--;
+
+            if (update != null) {
+                if (count == 0)
+                    update.setDirectly(CommitStatus.SUCCESS);
+                else
+                    update.Count.set(count);
             }
-        } else
-            count--;
 
-        if (update != null) {
-            if (count == 0)
-                update.setDirectly(CommitStatus.SUCCESS);
-            else
-                update.Count.set(count);
-        }
+            if (current != null && current.isAuto()) {
+                TransactionManager.commit(current, update);
+                Transaction.setCurrentUnsafe(null);
+            }
 
-        if (current != null && current.isAuto()) {
-            TransactionManager.commit(current, update);
-            Transaction.setCurrentUnsafe(null);
-        }
+            for (int i = _branches.size() - 1; i >= 0; i--) {
+                Transaction branch = _branches.remove(i);
+                TObjectMapEntry<Transaction> entry = TObjectMapEntry.getEntry(_transactions, branch);
 
-        for (int i = _branches.size() - 1; i >= 0; i--) {
-            Transaction branch = _branches.remove(i);
-            TObjectMapEntry<Transaction> entry = TObjectMapEntry.getEntry(_transactions, branch);
-
-            if (entry.getValue() != null) {
-                TransactionManager.commit(entry.getValue(), update);
-                entry.setValue(null);
+                if (entry.getValue() != null) {
+                    TransactionManager.commit(entry.getValue(), update);
+                    entry.setValue(null);
+                }
             }
         }
     }

@@ -189,6 +189,9 @@ final class ThreadContext { // TODO merge with transactions' sets
     }
 
     public final void updateAsync(UpdateFuture update) {
+         checkAutoCommitPolicy();
+        _config.onCommit();
+
         _autoCommitPending = false;
         int count = _branches.size() + 1;
 

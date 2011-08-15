@@ -43,12 +43,16 @@ public class GWTConfig extends Config {
 
             @Override
             public void run() {
-                _timer = null;
                 runnable.run();
             }
         };
 
         _timer.schedule(1);
+    }
+
+    @Override
+    void onCommit() {
+        _timer = null;
     }
 
     @Override

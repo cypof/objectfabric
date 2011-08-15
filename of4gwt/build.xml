@@ -20,6 +20,7 @@
 				**/OverloadHandler.java
 				**/FileLog.java
 				**/ThreadAssert.java
+				**/TransparentExecutor.java
 				**/FutureWithCallback.java" />
 			<fileset dir="../objectfabric/generated" includes="**/*.java" excludes="" />
 			<fileset dir="../objectfabric/extensibility" includes="**/*.java" excludes="" />

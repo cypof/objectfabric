@@ -12,7 +12,6 @@
 
 package of4gwt;
 
-import of4gwt.misc.Log;
 import of4gwt.misc.PlatformAdapter;
 
 /**
@@ -101,11 +100,7 @@ public class OverloadHandler {
      * thread blocking, e.g. pumping an event loop.
      */
     protected void onMapQueueSizeMaximumReached(Transaction branch, boolean firstNotification) {
-        if (CompileTimeSettings.DISALLOW_THREAD_BLOCKING)
-            throw new RuntimeException(Strings.THREAD_BLOCKING_DISALLOWED);
-
-        if (firstNotification)
-            Log.write("Warning (OverloadHandler): trunk " + branch + " has too many memory snapshots.");
+        throw new RuntimeException("trunk " + branch + " has too many memory snapshots.");
     }
 
     /*

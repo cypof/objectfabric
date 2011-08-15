@@ -124,6 +124,9 @@ class Notifier extends Walker {
             if (Debug.THREADS)
                 ThreadAssert.exchangeTake(this);
 
+            // So that notifications are not made in-transaction
+            OF.updateAsync();
+
             for (;;) {
                 boolean resumed = false;
 
