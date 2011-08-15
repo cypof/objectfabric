@@ -1,0 +1,5 @@
+ObjectFabric dramatically simplifies the development of connected applications, either Web, mobile or desktop. Check http://objectfabric.com for more information. Most of the code is packaged as a set of Eclipse projects.
+
+To get started, start by looking at samples in objectfabric.examples. Each sample shows a basic use case, and is self documented though comments.
+
+ObjectFabric is licensed under the Apache License, Version 2.0, the terms of which may be found at http://www.apache.org/licenses/LICENSE-2.0.html.
