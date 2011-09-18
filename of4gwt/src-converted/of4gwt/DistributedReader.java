@@ -63,13 +63,13 @@ abstract class DistributedReader extends MultiplexerReader {
         Validator validator = _endpoint.getValidator();
 
         if (validator != null) {
-            if (Debug.ENABLED)
-                Helper.getInstance().setNoTransaction(false);
-
             ThreadContext context = ThreadContext.getCurrent();
             Transaction transaction = null;
 
             // Create snapshot
+
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(false);
 
             for (int i = 0; i < _publicImportsBranches.size(); i++) {
                 Transaction branch = _publicImportsBranches.get(i);
@@ -81,6 +81,9 @@ abstract class DistributedReader extends MultiplexerReader {
             if (transaction == null || transaction.getTrunk() != mainBranch)
                 transaction = context.saveCurrentAndStartTransaction(Transaction.getCurrent(), mainBranch, Transaction.FLAG_AUTO);
 
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(true);
+
             if (_publicVersions != null)
                 transaction.addPrivateSnapshotVersions(_publicVersions);
 
@@ -91,26 +94,24 @@ abstract class DistributedReader extends MultiplexerReader {
                 transaction.addPrivateSnapshotVersions(custom);
 
             // Iterate and validate each write
+            Connection connection = getEndpoint().getConnection();
 
             for (int i = 0; i < _publicImportsBranches.size(); i++) {
                 Transaction branch = _publicImportsBranches.get(i);
                 Version[] branchImports = TObjectMapEntry.get(_publicImports, branch);
-                ExpectedExceptionThrower.validateWrite(validator, branchImports);
+                ExpectedExceptionThrower.validateWrite(connection, validator, branchImports);
             }
 
             if (_publicVersions != null)
-                ExpectedExceptionThrower.validateWrite(validator, _publicVersions);
+                ExpectedExceptionThrower.validateWrite(connection, validator, _publicVersions);
 
             if (_writes != null)
-                ExpectedExceptionThrower.validateWrite(validator, _writes);
+                ExpectedExceptionThrower.validateWrite(connection, validator, _writes);
 
             if (custom != null)
-                ExpectedExceptionThrower.validateWrite(validator, custom);
+                ExpectedExceptionThrower.validateWrite(connection, validator, custom);
 
-            ExpectedExceptionThrower.validateWrite(validator, _immutables);
-
-            if (Debug.ENABLED)
-                Helper.getInstance().setNoTransaction(true);
+            ExpectedExceptionThrower.validateWrite(connection, validator, _immutables);
         }
     }
 

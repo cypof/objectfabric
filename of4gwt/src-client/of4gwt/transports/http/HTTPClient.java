@@ -13,6 +13,7 @@
 package of4gwt.transports.http;
 
 import of4gwt.Privileged;
+import of4gwt.Reader;
 import of4gwt.Validator;
 import of4gwt.misc.Bits;
 import of4gwt.misc.Debug;
@@ -40,7 +41,7 @@ public final class HTTPClient extends HTTPConnection {
 
     private static final String DEFAULT_PATH = "objectfabric";
 
-    private static final int BUFFER_SIZE = CometTransport.MAX_CHUNK_SIZE;
+    private static final int BUFFER_SIZE = Reader.LARGEST_UNSPLITABLE + CometTransport.MAX_CHUNK_SIZE;
 
     private static final int HEART_BEAT = 55000;
 
@@ -173,12 +174,12 @@ public final class HTTPClient extends HTTPConnection {
                     if (request.getStatus() == Response.SC_OK) {
                         String data = request.getResponseText();
                         byte[] buffer = getBuffer();
-                        int position = 0;
+                        int position = Reader.LARGEST_UNSPLITABLE;
 
                         for (; _offset < data.length(); _offset++)
                             buffer[position++] = (byte) data.charAt(_offset);
 
-                        _callback.onRead(buffer, position);
+                        _callback.onRead(buffer, Reader.LARGEST_UNSPLITABLE, position);
                     } else {
                         String error = request.getStatusText();
                         _callback.onError(new RuntimeIOException(error));

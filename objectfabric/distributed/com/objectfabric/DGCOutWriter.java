@@ -12,7 +12,6 @@
 
 package com.objectfabric;
 
-
 import com.objectfabric.Connection.Endpoint;
 import com.objectfabric.TObject.Version;
 import com.objectfabric.misc.Debug;
@@ -32,7 +31,7 @@ final class DGCOutWriter extends DistributedWriter {
     public void onGarbageCollected(final Version shared) {
         getEndpoint().enqueueOnWriterThread(new Command() {
 
-            public DistributedWriter getWriter() {
+            public MultiplexerWriter getWriter() {
                 return DGCOutWriter.this;
             }
 

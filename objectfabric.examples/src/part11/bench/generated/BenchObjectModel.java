@@ -10,7 +10,7 @@ package part11.bench.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class BenchObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -75, -10, -106, 53, -106, -66, 106, -7, -3, -2, 69, -80, -36, -77, -3, 73 };
+    private static final byte[] UID = { -29, -80, 60, 0, 26, -111, -96, 4, -59, -43, 15, 117, 80, 57, -85, 18 };
 
     private static volatile BenchObjectModel _instance;
 

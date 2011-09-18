@@ -66,7 +66,7 @@ abstract class TObjectWriter extends ImmutableWriter {
     static final byte FLAG_EOF = 1 << 6;
 
     /*
-     * If not exit, data is an ImmutableClass.
+     * If not EOF, data is an ImmutableClass.
      */
     static final byte FLAG_IMMUTABLE = 1 << 5;
 

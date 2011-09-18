@@ -15,9 +15,6 @@ package of4gwt.misc;
 import java.util.ArrayList;
 import java.util.Date;
 
-import of4gwt.misc.Debug;
-import of4gwt.misc.Utils;
-
 public abstract class Log {
 
     private static final ArrayList<Log> _logs = new ArrayList<Log>();
@@ -35,10 +32,7 @@ public abstract class Log {
     }
 
     public static String format(String message) {
-        String header = new Date() + ", ";
-        String process = Debug.ProcessName.length() > 0 ? Debug.ProcessName + " " : "";
-        header += Utils.padRight(process + ", ", 25);
-        return header + message;
+        return new Date() + ", " + message;
     }
 
     public static void write(Throwable t) {
@@ -50,6 +44,10 @@ public abstract class Log {
 
         for (Log log : _logs)
             log.onWrite(result);
+    }
+
+    public static void trace(String message) {
+        write(message);
     }
 
     protected abstract void onWrite(String message);

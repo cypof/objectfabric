@@ -10,7 +10,7 @@ package part10.trading.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class TradingObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -22, 102, 64, -2, 119, 82, 54, -88, -83, 101, 107, 29, -71, 71, -27, 27 };
+    private static final byte[] UID = { -99, -108, -49, -117, -121, -59, 46, 92, -122, -52, 123, 77, 79, -113, 72, -45 };
 
     private static volatile TradingObjectModel _instance;
 
@@ -114,7 +114,7 @@ public class TradingObjectModel extends com.objectfabric.ObjectModel {
             case PART10_TRADING_GENERATED_USER_CLASS_ID:
                 return new part10.trading.generated.User(trunk, null);
             case PART10_TRADING_GENERATED_TRADINGOBJECTMODEL_METHOD_0_ID:
-                return Method0.INSTANCE;
+                return new Method0(trunk);
         }
 
         return super.createInstance(trunk, classId, genericParameters);
@@ -136,7 +136,7 @@ public class TradingObjectModel extends com.objectfabric.ObjectModel {
 
         public static final Method0 INSTANCE = new Method0(com.objectfabric.Site.getLocal().getTrunk());
 
-        private Method0(com.objectfabric.Transaction trunk) {
+        public Method0(com.objectfabric.Transaction trunk) {
             super(new Version(null, FIELD_COUNT), trunk);
         }
 

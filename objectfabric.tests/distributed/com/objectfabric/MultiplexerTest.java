@@ -102,7 +102,7 @@ public class MultiplexerTest extends TestsHelper {
             ab = -ab - 1;
 
         byte[] t1 = _ab.read(_buffer, 0, ab, 0);
-        _b.read(t1, 0, t1.length);
+        _b.read(t1, Reader.LARGEST_UNSPLITABLE, t1.length);
 
         length = com.objectfabric.misc.PlatformAdapter.getRandomInt(10000);
 
@@ -115,7 +115,7 @@ public class MultiplexerTest extends TestsHelper {
             ba = -ba - 1;
 
         byte[] t2 = _ba.read(_buffer, 0, ba, 0);
-        _a.read(t2, 0, t2.length);
+        _a.read(t2, Reader.LARGEST_UNSPLITABLE, t2.length);
     }
 
     @Test

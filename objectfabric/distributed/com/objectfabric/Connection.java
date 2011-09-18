@@ -324,6 +324,14 @@ public class Connection extends ConnectionBase {
                 threadExchange();
         }
 
+        final InterceptorWriter getInterceptor() {
+            return _interceptor;
+        }
+
+        final PropagatorWriter getPropagator() {
+            return _propagator;
+        }
+
         final int getPendingSendCount() {
             return _controllerOutWriter.getPendingSendCount();
         }
@@ -457,10 +465,18 @@ public class Connection extends ConnectionBase {
             }
 
             if (queue.size() == 0) {
+                Queue<Transaction> branches;
+
                 if (!intercepts(trunk))
-                    _propagator.getNewPendingSnapshotsBranches().add(trunk);
+                    branches = _propagator.getNewPendingSnapshotsBranches();
                 else
-                    _interceptor.getNewPendingSnapshotsBranches().add(trunk);
+                    branches = _interceptor.getNewPendingSnapshotsBranches();
+
+                if (Debug.ENABLED)
+                    for (int i = 0; i < branches.size(); i++)
+                        Debug.assertion(branches.get(i) != trunk);
+
+                branches.add(trunk);
             }
 
             if (Debug.ENABLED)
@@ -484,51 +500,26 @@ public class Connection extends ConnectionBase {
 
         //
 
-        final void register(Extension extension, Transaction branch) {
-            extension.register(branch);
-
-            _controllerOutWriter.onBranchRegistration();
-            _controllerInWriter.onBranchRegistration();
-            _callOutWriter.onBranchRegistration();
-            _callInWriter.onBranchRegistration();
-            _interceptor.onBranchRegistration();
-            _propagator.onBranchRegistration();
-
-            // Should not be needed for DGC
-            // Otherwise, change also onBranchUpToDate(Transaction branch)
-            // _dgcOutWriter.onBranchUpToDate(branch);
-            // _dgcInWriter.onBranchUpToDate(branch);
+        final void onBranchIntercepted(Transaction branch) {
+            _controllerOutWriter.onBranchIntercepted();
+            _controllerInWriter.onBranchIntercepted();
+            _callOutWriter.onBranchIntercepted();
+            _callInWriter.onBranchIntercepted();
+            _interceptor.onBranchIntercepted();
+            _propagator.onBranchIntercepted();
         }
 
-        final int getRegisteredBranchCount() {
-            return _interceptor.getAcknowledger().getBranchCount() + _propagator.getWalker().getBranchCount();
-        }
-
-        final boolean isRegistered(Transaction branch) {
-            return _interceptor.getAcknowledger().registered(branch) || _propagator.getWalker().registered(branch);
+        final void onBranchPropagated(Transaction branch) {
+            _controllerOutWriter.onBranchPropagated();
+            _controllerInWriter.onBranchPropagated();
+            _callOutWriter.onBranchPropagated();
+            _callInWriter.onBranchPropagated();
+            _interceptor.onBranchPropagated();
+            _propagator.onBranchPropagated();
         }
 
         final boolean hasPendingSnapshots() {
             return _interceptor.getNewPendingSnapshotsBranches().size() > 0 || _propagator.getNewPendingSnapshotsBranches().size() > 0;
-        }
-
-        final List<Transaction> getRegisteredBranchForDebug() {
-            if (!Debug.ENABLED)
-                throw new RuntimeException();
-
-            List<Transaction> list = new List<Transaction>();
-
-            for (Transaction transaction : _interceptor.getAcknowledger().copyBranches())
-                list.add(transaction);
-
-            for (Transaction transaction : _propagator.getWalker().copyBranches())
-                list.add(transaction);
-
-            for (int i = 0; i < list.size(); i++)
-                for (int j = 0; j < i; j++)
-                    Debug.assertion(list.get(i) != list.get(j));
-
-            return list;
         }
 
         final void onBranchUpToDate(Transaction branch) {
@@ -538,11 +529,6 @@ public class Connection extends ConnectionBase {
             _callInWriter.onBranchUpToDate(branch);
             _interceptor.onBranchUpToDate(branch);
             _propagator.onBranchUpToDate(branch);
-
-            // Should not be needed for DGC
-            // Otherwise, change also register(Extension extension, Transaction branch)
-            // _dgcOutWriter.onBranchUpToDate(branch);
-            // _dgcInWriter.onBranchUpToDate(branch);
         }
 
         // Received objects

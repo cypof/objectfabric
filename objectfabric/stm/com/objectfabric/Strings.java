@@ -48,6 +48,8 @@ public final class Strings {
 
     public static final String MISSING_METHOD_CALL_IMPLEMENTATION;
 
+    public static final String MISSING_CUSTOM_SERIALIZER = "Missing custom serializer. OF cannot deserialize data that has been serialized using a custom serialializer (OF.getCustomSerializer()).";
+
     public static final String CLASS_VISITOR_ID_ALREADY_REGISTERED = "This class visitor ID is already registered.";
 
     public static final String USER_CODE_CHANGED_CURRENT_TRANSACTION;
@@ -94,7 +96,7 @@ public final class Strings {
 
     public static final String SESSION_RETRY = "Session retry.";
 
-    public static final String INVALID_MAGIC_NUMBER = "Invalid magic number on connection.";
+    public static final String INVALID_MAGIC_NUMBER = "Invalid magic number on connection. If you are accepting HTTP connections, make sure you added the HTTP filter.";
 
     public static final String SSLENGINE_CLOSED = "SSLEngine closed";
 

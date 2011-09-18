@@ -12,12 +12,8 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.Interceptor;
-import com.objectfabric.TObjectWriter;
-import com.objectfabric.Transaction;
 import com.objectfabric.Connection.Endpoint;
-import com.objectfabric.DistributedWriter.Command;
+import com.objectfabric.MultiplexerWriter.Command;
 import com.objectfabric.Transaction.CommitStatus;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.ThreadAssert.SingleThreaded;
@@ -101,7 +97,7 @@ final class InterceptorReader extends DistributedReader {
 
                             getEndpoint().enqueueOnWriterThread(new Command() {
 
-                                public DistributedWriter getWriter() {
+                                public MultiplexerWriter getWriter() {
                                     return writer;
                                 }
 

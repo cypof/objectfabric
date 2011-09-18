@@ -31,6 +31,8 @@ public abstract class SerializationTest {
             ImmutableWriter.setCheckCommunications(check);
 
         RandomSplitter randomLengthReader = new RandomSplitter();
+        byte[] leftover = new byte[Reader.LARGEST_UNSPLITABLE];
+        int leftoverLength = 0;
 
         for (int serializationVersion = CompileTimeSettings.SERIALIZATION_VERSION_04; serializationVersion <= CompileTimeSettings.SERIALIZATION_VERSION; serializationVersion++) {
             for (int serializationFlags = 0; serializationFlags < 1 << (Byte.SIZE - CompileTimeSettings.SERIALIZATION_FLAGS_OFFSET); serializationFlags++) {
@@ -61,11 +63,16 @@ public abstract class SerializationTest {
 
                         temp = exchange(temp);
 
+                        int offset = Reader.LARGEST_UNSPLITABLE - leftoverLength;
+                        PlatformAdapter.arraycopy(leftover, 0, temp, offset, leftoverLength);
+
                         reader.setBuffer(temp);
-                        reader.setOffset(0);
+                        reader.setOffset(offset);
                         reader.setLimit(temp.length);
                         reader.run();
-                        reader.saveRemaining();
+
+                        leftoverLength = reader.getLimit() - reader.getOffset();
+                        PlatformAdapter.arraycopy(temp, reader.getOffset(), leftover, 0, leftoverLength);
                     }
 
                     ThreadAssert.getOrCreateCurrent().resetReaderDebugCounter(reader);

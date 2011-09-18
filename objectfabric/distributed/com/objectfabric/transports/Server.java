@@ -39,9 +39,9 @@ public interface Server<C extends Connection> {
         void onReceived(C session, Object object);
     }
 
-    Callback<C> getCallback();
+    Callback getCallback();
 
-    void setCallback(Callback<C> value);
+    void setCallback(Callback value);
 
     void start() throws IOException;
 

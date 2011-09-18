@@ -18,9 +18,28 @@ import of4gwt.misc.Debug;
 import of4gwt.misc.List;
 import of4gwt.misc.PlatformAdapter;
 import of4gwt.misc.ThreadAssert.SingleThreaded;
+import of4gwt.misc.Utils;
 
 @SingleThreaded
 public class Reader extends TObjectReader {
+
+    public static final int LARGEST_UNSPLITABLE;
+
+    static {
+        int value = Long.SIZE / 8;
+
+        if (Debug.COMMUNICATIONS) {
+            if (ImmutableWriter.getCheckCommunications()) {
+                value += ImmutableWriter.DEBUG_OVERHEAD;
+                value = Utils.nextPowerOf2(value);
+            }
+        }
+
+        if (Debug.ENABLED)
+            Debug.assertion(value == Utils.nextPowerOf2(value));
+
+        LARGEST_UNSPLITABLE = value;
+    }
 
     protected Reader(List<UserTObject> newTObjects) {
         super(newTObjects);
@@ -206,30 +225,49 @@ public class Reader extends TObjectReader {
 
     @Override
     protected void visit(TKeyedVersion version) {
+        boolean cleared = visitTKeyed(version);
+
+        if (!interrupted()) {
+            version.setCleared(cleared);
+
+            if (!version.getCleared()) {
+                // Usually set by adding elements, so force
+                version.setVerifySizeDeltaOnCommit();
+            }
+        }
+    }
+
+    @Override
+    protected void visit(LazyMapVersion version) {
+        boolean cleared = visitTKeyed(version);
+
+        if (Debug.ENABLED)
+            Debug.assertion(!cleared);
+    }
+
+    private final boolean visitTKeyed(TKeyedBase2 version) {
         boolean clearHasBeenRead = false;
         boolean keyHasBeenRead = false;
+        boolean cleared = false;
         Object key = null;
 
         if (interrupted()) {
             clearHasBeenRead = resumeBoolean();
             keyHasBeenRead = resumeBoolean();
+            cleared = resumeBoolean();
             key = resume();
         }
 
         if (!clearHasBeenRead) {
             if (!canReadBoolean()) {
                 interrupt(null);
+                interruptBoolean(cleared);
                 interruptBoolean(false);
                 interruptBoolean(false);
-                return;
+                return false;
             }
 
-            version.setCleared(readBoolean());
-
-            if (!version.getCleared()) {
-                // Usually set by adding elements, so force
-                version.setVerifySizeDeltaOnCommit();
-            }
+            cleared = readBoolean();
         }
 
         for (;;) {
@@ -238,9 +276,10 @@ public class Reader extends TObjectReader {
 
                 if (interrupted()) {
                     interrupt(key);
+                    interruptBoolean(cleared);
                     interruptBoolean(false);
                     interruptBoolean(true);
-                    return;
+                    return false;
                 }
 
                 if (key == null)
@@ -254,9 +293,10 @@ public class Reader extends TObjectReader {
 
                 if (interrupted()) {
                     interrupt(key);
+                    interruptBoolean(cleared);
                     interruptBoolean(true);
                     interruptBoolean(true);
-                    return;
+                    return false;
                 }
             } else
                 value = TKeyedEntry.READ;
@@ -269,6 +309,8 @@ public class Reader extends TObjectReader {
 
             keyHasBeenRead = false;
         }
+
+        return cleared;
     }
 
     @Override

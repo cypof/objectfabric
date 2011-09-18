@@ -111,7 +111,7 @@ class FileGeneratorClass extends FileGenerator {
                 args.append(type + " " + value.Name);
                 argsNames.append(value.Name);
 
-                if (!value.getType().isCollection()) {
+                if (!PlatformClass.isCollection(value.getType().getOtherClass())) {
                     if (argsNoCollections.length() > 0)
                         argsNoCollections.append(", ");
 

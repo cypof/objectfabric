@@ -25,21 +25,36 @@
     From the command line, you can run "deployed/install_daemon.sh" to add your server to the AMI init
     file "rc.local" to let your server start when the machine boots.
 -->
-<project name="amazon" default="deploy and start (Windows)" basedir=".">
+<project name="amazon" default="deploy and start (Windows)">
+	<import file="../objectfabric/build.xml" />
+	
 	<!-- Please read the comment on Main.java to setup those two properties -->
 	<property name="instance public dns" value="ec2-50-17-15-215.compute-1.amazonaws.com" />
 	<property name="private key" value="${basedir}/../../.ec2/amazon.pem" />
+
+	<!-- Equivalent to basedir, necessary when importing in other build file -->
+	<dirname property="imported" file="${ant.file.amazon}" />
+
+	<!-- This task copies your application's classes to the deployed folder -->
+	<target name="classes">
+		<sync todir="deployed/lib">
+			<fileset dir="${imported}/../objectfabric/bin" includes="objectfabric.jar" />
+		</sync>
+		<sync todir="deployed/classes">
+			<fileset dir="${imported}/../objectfabric.examples/classes" includes="part01/**/Server*" />
+		</sync>
+	</target>
 
 	<!-- Verbose ssh connection -->
 	<!-- property name="verbose" value="-v" /-->
 	<property name="verbose" value="" />
 
-	<property name="ssh args" value="${verbose} -l ec2-user -i ${private key} -o UserKnownHostsFile=${basedir}/known_hosts" />
+	<property name="ssh args" value="${verbose} -l ec2-user -i ${private key} -o UserKnownHostsFile=${imported}/known_hosts" />
 	<property name="console" value="ssh ${ssh args} ${instance public dns} -L 8000:${instance public dns}:8000" />
 
 	<target name="open command line and debug port (Windows)">
 		<exec executable="cmd" spawn="true">
-			<arg line="/c start cmd /k cwRsync\${console}" />
+			<arg line="/c start cmd /k ${imported}\cwRsync\${console}" />
 		</exec>
 	</target>
 	<target name="open command line and debug port (Mac)">
@@ -56,13 +71,14 @@
 	<target name="deploy and start (Windows)" depends="deploy (Windows), start (Windows)" />
 	<target name="deploy and start (Mac/Linux)" depends="deploy (Mac/Linux), start (Mac/Linux)" />
 
-	<target name="deploy (Windows)">
-		<exec executable="cwRsync\rsync">
-			<arg line="-vvrzute 'cwRsync\ssh ${ssh args}' --delete deployed ${instance public dns}:/home/ec2-user" />
+	<target name="deploy (Windows)" depends="classes">
+		<echo>${imported}/deployed</echo>
+		<exec executable="${imported}\cwRsync\rsync" dir="${imported}" failonerror="true">
+			<arg line="-vvrzute '${imported}\cwRsync\ssh ${ssh args}' --delete deployed ${instance public dns}:/home/ec2-user" />
 		</exec>
 	</target>
-	<target name="deploy (Mac/Linux)">
-		<exec executable="rsync">
+	<target name="deploy (Mac/Linux)" depends="classes">
+		<exec executable="rsync" dir="${imported}" failonerror="true">
 			<arg line="-vvrzute 'ssh ${ssh args}' --delete deployed ${instance public dns}:/home/ec2-user" />
 		</exec>
 	</target>
@@ -70,7 +86,7 @@
 	<property name="start" value="${ssh args} ${instance public dns} &quot;sh -c 'cd deployed; ./start.sh'&quot;" />
 
 	<target name="start (Windows)">
-		<exec executable="cwRsync\ssh">
+		<exec executable="${imported}\cwRsync\ssh">
 			<arg line="${start}" />
 		</exec>
 	</target>

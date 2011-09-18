@@ -12,6 +12,8 @@
 
 package com.objectfabric.vm;
 
+import com.objectfabric.TestsHelper;
+import com.objectfabric.misc.Debug;
 import com.objectfabric.vm.generated.SimpleMethod;
 
 public class SimpleMethodImpl extends SimpleMethod {
@@ -22,8 +24,10 @@ public class SimpleMethodImpl extends SimpleMethod {
 
     @Override
     protected String methodImplementation(String sql, SimpleMethod eg) {
-        if (ERROR.equals(sql))
-            throw new RuntimeException(ERROR_MESSAGE);
+        if (ERROR.equals(sql)) {
+            Debug.expectException();
+            TestsHelper.throwRuntimeException(ERROR_MESSAGE);
+        }
 
         if (sql != null)
             return sql;

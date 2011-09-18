@@ -24,6 +24,7 @@ import com.objectfabric.TArrayTObject;
 import com.objectfabric.Transaction;
 import com.objectfabric.misc.AsyncCallback;
 import com.objectfabric.misc.Debug;
+import com.objectfabric.misc.Log;
 import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.ReplicatedException;
 import com.objectfabric.misc.TransparentExecutor;
@@ -115,7 +116,6 @@ public class VMMethodsClient extends Privileged {
         for (final SimpleMethod object : _array) {
             for (int i = 0; i < _calls; i++) {
                 final Transaction transaction = Transaction.start();
-
                 final int expected = i;
                 object.setInt(i);
                 final SimpleMethod arg = new SimpleMethod();
@@ -147,7 +147,7 @@ public class VMMethodsClient extends Privileged {
     private static void run2() {
         for (final SimpleMethod object : _array) {
             for (int i = 0; i < _calls; i++) {
-                //final boolean error = PlatformAdapter.getRandomBoolean();
+                // final boolean error = PlatformAdapter.getRandomBoolean();
                 final boolean error = true;
 
                 object.methodAsync(error ? SimpleMethodImpl.ERROR : "", null, new AsyncCallback<String>() {
@@ -158,8 +158,8 @@ public class VMMethodsClient extends Privileged {
 
                     public void onFailure(Throwable t) {
                         Assert.assertTrue(error);
-                        Assert.assertTrue(t instanceof ReplicatedException);
-                        Assert.assertEquals(SimpleMethodImpl.ERROR_MESSAGE, t.getMessage());
+                        Assert.assertTrue(t.getCause() instanceof ReplicatedException);
+                        Assert.assertTrue(t.getMessage().contains(SimpleMethodImpl.ERROR_MESSAGE));
                     }
                 });
 
@@ -171,7 +171,7 @@ public class VMMethodsClient extends Privileged {
     public static int transfer(byte[] buffer, int length) {
         if (!_exit) {
             int written = _client.transfer(buffer, length);
-
+Log.write("_receivedCount: " + _receivedCount);
             if (_array != null && _receivedCount == _array.length() * _calls) {
                 _exit = true;
 

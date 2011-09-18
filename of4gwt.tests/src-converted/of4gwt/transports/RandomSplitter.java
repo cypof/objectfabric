@@ -12,6 +12,7 @@
 
 package of4gwt.transports;
 
+import of4gwt.Reader;
 import of4gwt.misc.Debug;
 import of4gwt.misc.PlatformAdapter;
 import of4gwt.misc.Queue;
@@ -24,20 +25,14 @@ public final class RandomSplitter {
 
     private int _totalLength;
 
-    private int _minLength;
-
-    public void setMinLength(int value) {
-        _minLength = value;
-    }
-
     public int getRemaining() {
         return _totalLength;
     }
 
     public byte[] read(byte[] buffer, int offset, int limit, int maxResultLength) {
         if (!Debug.RANDOMIZE_TRANSFER_LENGTHS) {
-            byte[] temp = new byte[limit - offset];
-            System.arraycopy(buffer, offset, temp, 0, temp.length);
+            byte[] temp = new byte[Reader.LARGEST_UNSPLITABLE + limit - offset];
+            System.arraycopy(buffer, offset, temp, Reader.LARGEST_UNSPLITABLE, limit - offset);
             return temp;
         }
 
@@ -48,29 +43,27 @@ public final class RandomSplitter {
             _totalLength += limit - offset;
         }
 
-        byte[] temp;
+        int length = Math.min(Debug.RANDOMIZED_TRANSFER_LIMIT, _totalLength + 1);
+        length = PlatformAdapter.getRandomInt(length);
 
-        if (_totalLength + 1 <= _minLength)
-            temp = new byte[_totalLength];
-        else {
-            int length = Math.min(Debug.RANDOMIZED_TRANSFER_LIMIT, _totalLength + 1);
-            int rand = PlatformAdapter.getRandomInt(length - _minLength) + _minLength;
+        if (maxResultLength != 0)
+            length = Math.min(length, maxResultLength);
 
-            if (maxResultLength != 0)
-                rand = Math.min(rand, maxResultLength);
+        return get(length);
+    }
 
-            temp = new byte[rand];
-        }
+    private byte[] get(int length) {
+        byte[] temp = new byte[Reader.LARGEST_UNSPLITABLE + length];
 
-        if (temp.length > 0) {
-            _totalLength -= temp.length;
-            int written = 0;
+        if (length > 0) {
+            _totalLength -= length;
+            int offset = Reader.LARGEST_UNSPLITABLE;
 
             for (;;) {
                 byte[] current = _received.peek();
-                int min = Math.min(current.length - _firstReceivedOffset, temp.length - written);
-                System.arraycopy(current, _firstReceivedOffset, temp, written, min);
-                written += min;
+                int min = Math.min(current.length - _firstReceivedOffset, temp.length - offset);
+                System.arraycopy(current, _firstReceivedOffset, temp, offset, min);
+                offset += min;
 
                 if (_firstReceivedOffset + min == current.length) {
                     _received.poll();
@@ -78,7 +71,7 @@ public final class RandomSplitter {
                 } else
                     _firstReceivedOffset += min;
 
-                if (written == temp.length)
+                if (offset == temp.length)
                     break;
             }
         }

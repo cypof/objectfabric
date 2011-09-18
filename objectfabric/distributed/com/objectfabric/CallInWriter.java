@@ -12,10 +12,6 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.TObject;
-import com.objectfabric.TransactionManager;
-import com.objectfabric.Writer;
 import com.objectfabric.CallInReader.Call;
 import com.objectfabric.Connection.Endpoint;
 import com.objectfabric.misc.Debug;

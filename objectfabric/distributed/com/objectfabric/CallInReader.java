@@ -15,7 +15,7 @@ package com.objectfabric;
 import java.util.concurrent.Executor;
 
 import com.objectfabric.Connection.Endpoint;
-import com.objectfabric.DistributedWriter.Command;
+import com.objectfabric.MultiplexerWriter.Command;
 import com.objectfabric.TObject.UserTObject;
 import com.objectfabric.TObject.UserTObject.LocalMethodCall;
 import com.objectfabric.TObject.Version;
@@ -103,7 +103,6 @@ final class CallInReader extends DistributedReader {
         UserTObject target = ((TObject.Version) poll()).getReference().get();
         int index = (Integer) poll();
         boolean inTransaction = index >= 0;
-        Object context = OF.getContext();
 
         if (index < 0)
             index = -index - 1;
@@ -118,17 +117,10 @@ final class CallInReader extends DistributedReader {
 
         Validator validator = getEndpoint().getValidator();
 
-        if (validator != null) {
-            if (Debug.ENABLED)
-                Helper.getInstance().setNoTransaction(false);
+        if (validator != null)
+            ExpectedExceptionThrower.validateCall(getEndpoint().getConnection(), validator, target, method);
 
-            ExpectedExceptionThrower.validateCall(validator, target, method);
-
-            if (Debug.ENABLED)
-                Helper.getInstance().setNoTransaction(true);
-        }
-
-        Call call = new Call(getEndpoint(), _writer, target, method, index, inTransaction ? transaction : null, takeWrites(), context);
+        Call call = new Call(getEndpoint(), _writer, target, method, index, inTransaction ? transaction : null, takeWrites());
 
         if (!inTransaction)
             call.setFakeTransaction(transaction);
@@ -187,15 +179,12 @@ final class CallInReader extends DistributedReader {
 
         private final Version[] _writes;
 
-        private final Object _context;
-
-        public Call(Endpoint endpoint, CallInWriter writer, UserTObject target, UserTObject method, int index, Transaction transaction, Version[] writes, Object context) {
+        public Call(Endpoint endpoint, CallInWriter writer, UserTObject target, UserTObject method, int index, Transaction transaction, Version[] writes) {
             super(target, method, index, transaction);
 
             _endpoint = endpoint;
             _writer = writer;
             _writes = writes;
-            _context = context;
         }
 
         public Version[] getWrites() {
@@ -213,14 +202,10 @@ final class CallInReader extends DistributedReader {
             if (getTransaction() != null)
                 Transaction.setCurrentUnsafe(getTransaction());
 
-            OF.setContext(_context);
-
             getTarget().invoke_objectfabric(this);
 
             if (getTransaction() != null)
                 Transaction.setCurrentUnsafe(null);
-
-            OF.setContext(null);
 
             if (Debug.THREADS)
                 ThreadAssert.exchangeGive(this, getTransaction());
@@ -260,7 +245,7 @@ final class CallInReader extends DistributedReader {
         protected void done() {
             _endpoint.enqueueOnWriterThread(new Command() {
 
-                public DistributedWriter getWriter() {
+                public MultiplexerWriter getWriter() {
                     return _writer;
                 }
 

@@ -52,5 +52,9 @@ public abstract class Log {
             log.onWrite(result);
     }
 
+    public static void trace(String message) {
+        write(message);
+    }
+
     protected abstract void onWrite(String message);
 }

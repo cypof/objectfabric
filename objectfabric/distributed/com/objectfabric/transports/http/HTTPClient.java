@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 
 import sun.net.www.http.HttpClient;
 
+import com.objectfabric.Reader;
 import com.objectfabric.Validator;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.Log;
@@ -138,7 +139,7 @@ public final class HTTPClient extends HTTPConnection implements Client {
                                         Log.write(headers.toString());
 
                                 while (_running) {
-                                    int read = input.read(_buffer, 0, _buffer.length);
+                                    int read = input.read(_buffer, Reader.LARGEST_UNSPLITABLE, _buffer.length - Reader.LARGEST_UNSPLITABLE);
 
                                     if (_serverToClient) {
                                         if (Debug.ENABLED) {
@@ -161,7 +162,7 @@ public final class HTTPClient extends HTTPConnection implements Client {
                                         break;
                                     }
 
-                                    _callback.onRead(_buffer, read);
+                                    _callback.onRead(_buffer, Reader.LARGEST_UNSPLITABLE, Reader.LARGEST_UNSPLITABLE + read);
                                 }
                             } catch (IOException ex) {
                                 if (_running) {

@@ -115,6 +115,8 @@ public class OF {
 
     private static final PlatformConcurrentMap<AsyncOptions, Notifier> _map = new PlatformConcurrentMap<AsyncOptions, Notifier>();
 
+    private static Serializer _customSerializer;
+
     static {
         PlatformAdapter.init();
     }
@@ -221,17 +223,26 @@ public class OF {
 
     //
 
-    /**
-     * Context can store attributes, like authentication information related to a
-     * connection. This class is similar to a servlet HttpSession, but works for any
-     * transport.
-     */
-    public static Object getContext() {
-        return ThreadContext.getCurrent().getUserContext();
+    public static interface Serializer {
+
+        boolean canSerialize(Object object);
+
+        byte[] serialize(Object object);
+
+        Object deserialize(byte[] bytes);
     }
 
-    public static void setContext(Object value) {
-        ThreadContext.getCurrent().setUserContext(value);
+    /**
+     * This serializer will be called if an object to replicate or persist is not an
+     * immutable class, nor a TObject. It allows an application to use e.g. Java or JSON
+     * serialization instead of OF format.
+     */
+    public static Serializer getCustomSerializer() {
+        return _customSerializer;
+    }
+
+    public static void setCustomSerializer(Serializer value) {
+        _customSerializer = value;
     }
 
     // Debug

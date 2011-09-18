@@ -24,6 +24,7 @@ import com.objectfabric.misc.List;
 import com.objectfabric.misc.Log;
 import com.objectfabric.misc.NIOConnection;
 import com.objectfabric.misc.NIOListener;
+import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.PlatformThread;
 import com.objectfabric.misc.Queue;
 import com.objectfabric.misc.SeparateVM;
@@ -88,6 +89,7 @@ public class NIOTestHTTP extends TestsHelper {
                 client.waitFor();
 
         server.stop();
+        PlatformAdapter.reset();
     }
 
     public static final class HTTPSession extends NIOConnection {
@@ -252,6 +254,6 @@ public class NIOTestHTTP extends TestsHelper {
         // test.socket8();
 
         for (int i = 0; i < 100; i++)
-            test.run(1, false, false);
+            test.run(1, false, true);
     }
 }

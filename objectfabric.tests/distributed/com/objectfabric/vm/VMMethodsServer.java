@@ -92,7 +92,10 @@ public class VMMethodsServer extends TestsHelper {
                 VMConnection c = connections.get(i);
 
                 if (c.length() != VMConnection.EXIT) {
+                    Debug.ProcessName = "Session " + i;
                     c.setLength(c.transfer(c.getBuffer(), c.length()));
+                    Debug.ProcessName = "Server";
+
                     SeparateClassLoader client = c.getClassLoader();
                     c.setLength((Integer) client.invoke("transfer", new Class[] { byte[].class, int.class }, c.getBuffer(), c.length()));
 

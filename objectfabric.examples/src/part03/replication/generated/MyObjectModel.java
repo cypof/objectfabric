@@ -10,7 +10,7 @@ package part03.replication.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class MyObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { 56, -45, 92, -63, -76, -81, -35, 112, 59, -109, 68, 20, -112, 115, 14, -46 };
+    private static final byte[] UID = { 15, -99, -64, -98, -65, 125, 66, 60, 89, -21, 60, -119, 10, 103, 105, -36 };
 
     private static volatile MyObjectModel _instance;
 

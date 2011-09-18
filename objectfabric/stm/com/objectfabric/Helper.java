@@ -467,6 +467,7 @@ final class Helper {
         }
 
         Site.getLocal().assertIdle();
+        ThreadContext.getCurrent().assertEmpty();
 
         Debug.assertion(_validated.size() == 0);
         Debug.assertion(_callbacks.size() == 0);

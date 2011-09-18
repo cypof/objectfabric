@@ -21,6 +21,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 
+import com.objectfabric.Reader;
 import com.objectfabric.Strings;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
@@ -137,8 +138,11 @@ public class TLS implements FilterFactory {
                 context.ReadBuffer = ByteBuffer.allocate(capacity);
             }
 
+            final int startPosition = Reader.LARGEST_UNSPLITABLE;
+
             for (;;) {
-                context.ReadBuffer.clear();
+                context.ReadBuffer.position(startPosition);
+                context.ReadBuffer.limit(context.ReadBuffer.capacity());
                 SSLEngineResult result;
 
                 try {
@@ -176,8 +180,8 @@ public class TLS implements FilterFactory {
                         throw new AssertionError();
                     case BUFFER_UNDERFLOW:
                         if (_underflow != null) {
-                            _underflow.position(_underflow.limit());
                             _underflow.limit(_underflow.capacity());
+                            _underflow.position(_underflow.limit());
                         }
 
                         if (buffer.remaining() != 0) {
@@ -201,7 +205,7 @@ public class TLS implements FilterFactory {
 
                 switch (result.getHandshakeStatus()) {
                     case NOT_HANDSHAKING:
-                        if (context.ReadBuffer.position() == 0)
+                        if (context.ReadBuffer.position() == startPosition)
                             return;
 
                         break;
@@ -228,7 +232,9 @@ public class TLS implements FilterFactory {
                         break;
                 }
 
-                context.ReadBuffer.flip();
+                context.ReadBuffer.limit(context.ReadBuffer.position());
+                context.ReadBuffer.position(startPosition);
+
                 _next.read(context.ReadBuffer);
 
                 if (Debug.ENABLED)

@@ -78,7 +78,7 @@ abstract class CometTransport extends ConnectionState {
 
         int onWrite();
 
-        void onRead(byte[] buffer, int length);
+        void onRead(byte[] buffer, int offset, int limit);
 
         void onDone();
 
@@ -111,8 +111,8 @@ abstract class CometTransport extends ConnectionState {
                 return write(_reader.getBuffer(), true, encoded);
             }
 
-            public void onRead(byte[] buffer, int length) {
-                read(buffer, length);
+            public void onRead(byte[] buffer, int offset, int limit) {
+                readChunk(buffer, offset, limit);
             }
 
             public void onDone() {
@@ -144,7 +144,7 @@ abstract class CometTransport extends ConnectionState {
                 return write(_writer.getBuffer(), false, encoded);
             }
 
-            public void onRead(byte[] buffer, int length) {
+            public void onRead(byte[] buffer, int offset, int length) {
                 throw new UnsupportedOperationException();
             }
 
@@ -182,11 +182,10 @@ abstract class CometTransport extends ConnectionState {
 
     //
 
-    private final void read(byte[] buffer, int length) {
+    private final void readChunk(byte[] buffer, int offset, int limit) {
         if (Debug.ENABLED)
             ThreadAssert.resume(_reader);
 
-        int offset = 0;
         boolean started = false;
 
         for (;;) {
@@ -195,7 +194,7 @@ abstract class CometTransport extends ConnectionState {
                 _chunkLength = 0;
             }
 
-            if (offset == length)
+            if (offset == limit)
                 break;
 
             if (_chunkOffset == 0) {
@@ -203,7 +202,7 @@ abstract class CometTransport extends ConnectionState {
                 _chunkOffset++;
             }
 
-            if (offset == length)
+            if (offset == limit)
                 break;
 
             if (_chunkOffset == 1) {
@@ -222,14 +221,14 @@ abstract class CometTransport extends ConnectionState {
                     if (_id == null)
                         _id = new byte[PlatformAdapter.UID_BYTES_COUNT];
 
-                    int read = Math.min(ID_END - _chunkOffset, length - offset);
+                    int read = Math.min(ID_END - _chunkOffset, limit - offset);
                     PlatformAdapter.arraycopy(buffer, offset, _id, _chunkOffset - ID_START, read);
                     offset += read;
                     _chunkOffset += read;
                 }
 
                 if (_chunkOffset >= SEED_START && _chunkOffset < SEED_END) {
-                    int read = Math.min(SEED_END - _chunkOffset, length - offset);
+                    int read = Math.min(SEED_END - _chunkOffset, limit - offset);
                     PlatformAdapter.arraycopy(buffer, offset, _seed, _chunkOffset - SEED_START, read);
                     offset += read;
                     _chunkOffset += read;
@@ -244,14 +243,14 @@ abstract class CometTransport extends ConnectionState {
 
             if (_chunkOffset < _chunkLength) {
                 int needed = _chunkLength - _chunkOffset;
-                int available = length - offset;
+                int available = limit - offset;
 
                 if (needed < available) {
                     read(buffer, offset, offset + needed);
                     offset += needed;
                     _chunkOffset += needed;
                 } else {
-                    read(buffer, offset, length);
+                    read(buffer, offset, limit);
                     _chunkOffset += available;
                     break;
                 }
@@ -262,7 +261,7 @@ abstract class CometTransport extends ConnectionState {
                     Debug.assertion(_chunkLength < MIN_CHUNK_SIZE);
 
                 int needed = MIN_CHUNK_SIZE - _chunkOffset;
-                int available = length - offset;
+                int available = limit - offset;
 
                 if (needed < available) {
                     offset += needed;
@@ -320,7 +319,7 @@ abstract class CometTransport extends ConnectionState {
         if (command == SERVER_TO_CLIENT)
             return start;
 
-        int written = write(buffer, start + 2, buffer.length);
+        int written = write(buffer, start + 2, Math.min(buffer.length, MAX_CHUNK_SIZE));
 
         if (written < 0)
             written = -written - 1;
@@ -329,9 +328,6 @@ abstract class CometTransport extends ConnectionState {
 
         if (command == CLIENT_TO_SERVER && written == 0)
             return 0;
-
-        if (Debug.ENABLED)
-            Debug.assertion(buffer.length <= MAX_CHUNK_SIZE);
 
         buffer[start + 0] = (byte) (written >> 8);
         buffer[start + 1] = (byte) (written & 0xff);

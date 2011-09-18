@@ -19,7 +19,7 @@ public class Account extends AccountBase {
 
     /**
      * Declared abstract in the model just to have protected constructor. Accounts can be
-     * created only using the service method so that the password is hashed.
+     * created only using the service method to make sure passwords is hashed.
      */
     protected Account(String username) {
         super(username);

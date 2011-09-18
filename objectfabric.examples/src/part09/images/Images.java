@@ -166,7 +166,7 @@ public class Images {
                 /*
                  * This block is not required, testing purposes only.
                  */
-                if (Debug.ENABLED) {
+                if (Debug.TESTING) {
                     OF.reset();
 
                     if (server.isStarted())

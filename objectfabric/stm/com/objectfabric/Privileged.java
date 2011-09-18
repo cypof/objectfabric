@@ -97,6 +97,10 @@ public abstract class Privileged {
         Helper.getInstance().setNoTransaction(value);
     }
 
+    protected static void assertTransactionNull() {
+        Debug.assertion(Transaction.currentNull());
+    }
+
     protected static void abortThreadContext() {
         ThreadContext context = ThreadContext.getCurrent();
         context.abortAll();

@@ -10,7 +10,7 @@ package part06.methods.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class ObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -101, 21, 77, 5, 95, 29, -122, 104, 109, -106, 121, -29, -126, -107, 36, 98 };
+    private static final byte[] UID = { 119, 113, 22, -109, 45, 74, -76, 122, 32, -9, 100, -61, -90, -125, -75, 20 };
 
     private static volatile ObjectModel _instance;
 
@@ -100,9 +100,9 @@ public class ObjectModel extends com.objectfabric.ObjectModel {
             case PART06_METHODS_GENERATED_MYCLASS_CLASS_ID:
                 return new part06.methods.generated.MyClass(trunk);
             case PART06_METHODS_GENERATED_OBJECTMODEL_METHOD_0_ID:
-                return Method0.INSTANCE;
+                return new Method0(trunk);
             case PART06_METHODS_GENERATED_OBJECTMODEL_METHOD_1_ID:
-                return Method1.INSTANCE;
+                return new Method1(trunk);
         }
 
         return super.createInstance(trunk, classId, genericParameters);
@@ -124,7 +124,7 @@ public class ObjectModel extends com.objectfabric.ObjectModel {
 
         public static final Method0 INSTANCE = new Method0(com.objectfabric.Site.getLocal().getTrunk());
 
-        private Method0(com.objectfabric.Transaction trunk) {
+        public Method0(com.objectfabric.Transaction trunk) {
             super(new Version(null, FIELD_COUNT), trunk);
         }
 
@@ -345,7 +345,7 @@ public class ObjectModel extends com.objectfabric.ObjectModel {
 
         public static final Method1 INSTANCE = new Method1(com.objectfabric.Site.getLocal().getTrunk());
 
-        private Method1(com.objectfabric.Transaction trunk) {
+        public Method1(com.objectfabric.Transaction trunk) {
             super(new Version(null, FIELD_COUNT), trunk);
         }
 

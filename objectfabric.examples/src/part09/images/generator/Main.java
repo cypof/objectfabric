@@ -50,7 +50,7 @@ public class Main {
         byte[] uid = generator.getLastObjectModelUID();
 
         if (Arrays.asList(args).contains("/Android")) {
-            generator.getObjectModel().Packages.get(0).Name = "com.objectfabric.examples.android.generated";
+            generator.getObjectModel().Packages.get(0).Name = "examples.android.generated";
             generator.run("src/../../objectfabric.examples.android/src", uid);
         }
 

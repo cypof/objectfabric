@@ -33,8 +33,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 import com.objectfabric.AsyncOptions;
 import com.objectfabric.CompileTimeSettings;
-import com.objectfabric.OF.AutoCommitPolicy;
 import com.objectfabric.Privileged;
+import com.objectfabric.Reader;
 import com.objectfabric.Strings;
 import com.objectfabric.misc.NIOTask.Connect;
 import com.objectfabric.misc.NIOTask.Listen;
@@ -98,21 +98,19 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
 
                 @Override
                 public void run() {
-                    // NIO threads manage transactions
-                    forceAutoCommitPolicy(AutoCommitPolicy.DELAYED_MANUAL);
-
                     if (Debug.ENABLED)
                         setNoTransaction(true);
 
                     // TODO: direct buffers
-                    ByteBuffer readBuffer = ByteBuffer.allocate(SOCKET_BUFFER_SIZE);
-                    ByteBuffer writeBuffer = ByteBuffer.allocate(SOCKET_BUFFER_SIZE);
+                    ByteBuffer buffer = ByteBuffer.allocate(Reader.LARGEST_UNSPLITABLE + SOCKET_BUFFER_SIZE);
 
                     while (!_shutdown) {
-                        if (Debug.THREADS)
+                        if (Debug.THREADS) {
+                            assertTransactionNull();
                             ThreadAssert.assertCurrentIsEmpty();
+                        }
 
-                        NIOManager.this.run(readBuffer, writeBuffer);
+                        NIOManager.this.run(buffer);
 
                         if (Debug.THREADS)
                             ThreadAssert.assertCurrentIsEmpty();
@@ -123,7 +121,8 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
             String name = "ObjectFabric NIO " + i;
 
             if (Debug.ENABLED)
-                name = Debug.ProcessName + " " + name;
+                if (Debug.ProcessName != null && Debug.ProcessName.length() > 0)
+                    name = Debug.ProcessName + " " + name;
 
             thread.setName(name);
             thread.setDaemon(true);
@@ -252,7 +251,7 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
 
     //
 
-    private final void run(final ByteBuffer readBuffer, final ByteBuffer writeBuffer) {
+    private final void run(final ByteBuffer buffer) {
         _lock.lock();
 
         for (;;) {
@@ -360,7 +359,7 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
                     if (Debug.ENABLED)
                         Debug.assertion(connection.getRead().getKey() == key);
 
-                    connection.getRead().select(readBuffer, result);
+                    connection.getRead().select(buffer, result);
                     return;
                 }
             }
@@ -377,7 +376,7 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
                     if (Debug.ENABLED)
                         Debug.assertion(connection.getWrite().getKey() == key);
 
-                    connection.getWrite().select(writeBuffer);
+                    connection.getWrite().select(buffer);
                     return;
                 }
             }

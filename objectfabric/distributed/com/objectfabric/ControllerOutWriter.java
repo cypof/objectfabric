@@ -44,7 +44,7 @@ final class ControllerOutWriter extends DistributedWriter {
         if (getEndpoint().clientSide()) {
             enqueue(new Command() {
 
-                public DistributedWriter getWriter() {
+                public MultiplexerWriter getWriter() {
                     return ControllerOutWriter.this;
                 }
 
@@ -112,7 +112,7 @@ final class ControllerOutWriter extends DistributedWriter {
 
         getEndpoint().enqueueOnWriterThread(new Command() {
 
-            public DistributedWriter getWriter() {
+            public MultiplexerWriter getWriter() {
                 return ControllerOutWriter.this;
             }
 
@@ -168,7 +168,7 @@ final class ControllerOutWriter extends DistributedWriter {
     public void sendHeartbeat() {
         getEndpoint().enqueueOnWriterThread(new Command() {
 
-            public DistributedWriter getWriter() {
+            public MultiplexerWriter getWriter() {
                 return ControllerOutWriter.this;
             }
 

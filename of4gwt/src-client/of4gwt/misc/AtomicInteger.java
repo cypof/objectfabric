@@ -16,6 +16,13 @@ public class AtomicInteger {
 
     private int _value;
 
+    public AtomicInteger() {
+    }
+
+    public AtomicInteger(int value) {
+        _value = value;
+    }
+
     public int get() {
         return _value;
     }

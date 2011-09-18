@@ -156,43 +156,64 @@ final class ExpectedExceptionThrower {
         }
     }
 
-    public static final void validateRead(Validator validator, TObject object) {
+    @SuppressWarnings("unchecked")
+    public static final void validateRead(Connection connection, Validator validator, TObject object) {
         try {
-            validator.validateRead(object);
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(false);
+
+            validator.validateRead(connection, object);
         } finally {
             OF.updateAsync();
+
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(true);
         }
     }
 
-    public static final void validateWrite(Validator validator, Version[] versions) {
+    public static final void validateWrite(Connection connection, Validator validator, Version[] versions) {
         try {
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(false);
+
             for (int i = 0; i < versions.length; i++)
                 if (versions[i] != null)
-                    validateWrite(validator, versions[i]);
+                    validateWrite(connection, validator, versions[i]);
         } finally {
             OF.updateAsync();
+
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(true);
         }
     }
 
-    public static final void validateWrite(Validator validator, List<Version> versions) {
+    public static final void validateWrite(Connection connection, Validator validator, List<Version> versions) {
         try {
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(false);
+
             for (int i = 0; i < versions.size(); i++)
-                validateWrite(validator, versions.get(i));
+                validateWrite(connection, validator, versions.get(i));
         } finally {
             OF.updateAsync();
+
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(true);
         }
     }
 
-    private static final void validateWrite(Validator validator, Version version) {
+    @SuppressWarnings("unchecked")
+    private static final void validateWrite(Connection connection, Validator validator, Version version) {
         if (!(version.getShared().getReference().get() instanceof Method)) {
             UserTObject object = version.getShared().getOrRecreateTObject();
-            validator.validateWrite(object);
+            validator.validateWrite(connection, object);
         }
     }
 
-    public static final void validateCall(Validator validator, UserTObject target, UserTObject method) {
+    @SuppressWarnings("unchecked")
+    public static final void validateCall(Connection connection, Validator validator, UserTObject target, UserTObject method) {
         try {
-            validator.validateMethodCall(target, ((Method) method).getName());
+            validator.validateMethodCall(connection, target, ((Method) method).getName());
         } finally {
             OF.updateAsync();
         }

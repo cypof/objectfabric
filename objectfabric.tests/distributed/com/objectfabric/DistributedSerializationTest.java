@@ -46,8 +46,8 @@ public class DistributedSerializationTest extends SerializationTestJava {
         protected boolean write(ByteBuffer buffer, Queue<ByteBuffer> headers) {
             byte[] write = _writes.poll();
             System.arraycopy(write, 0, buffer.array(), 0, write.length);
-            buffer.position(0);
             buffer.limit(write.length);
+            buffer.position(0);
             return false;
         }
     }

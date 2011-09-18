@@ -12,14 +12,20 @@
 
 package of4gwt;
 
-import of4gwt.Helper;
-import of4gwt.Writer;
 import of4gwt.misc.Debug;
 import of4gwt.misc.OverrideAssert;
+import of4gwt.misc.Queue;
 import of4gwt.misc.ThreadAssert.SingleThreaded;
 
 @SingleThreaded
 abstract class MultiplexerWriter extends Writer {
+
+    public interface Command extends Runnable {
+
+        MultiplexerWriter getWriter();
+    }
+
+    private final Queue<Runnable> _runnables = new Queue<Runnable>();
 
     public MultiplexerWriter() {
         super(false);
@@ -44,7 +50,43 @@ abstract class MultiplexerWriter extends Writer {
         OverrideAssert.set(this);
     }
 
-    protected abstract void write();
+    public final void enqueue(Runnable runnable) {
+        if (Debug.THREADS)
+            if (this instanceof DistributedWriter)
+                ((DistributedWriter) this).getEndpoint().assertWriteThread();
+
+        _runnables.add(runnable);
+    }
+
+    public final boolean hasRunnables() {
+        return _runnables.size() > 0;
+    }
+
+    //
+
+    protected void write() {
+        Runnable runnable = null;
+
+        if (interrupted())
+            runnable = (Runnable) resume();
+
+        for (;;) {
+            if (runnable == null)
+                runnable = _runnables.poll();
+
+            if (runnable == null)
+                break;
+
+            runnable.run();
+
+            if (interrupted()) {
+                interrupt(runnable);
+                return;
+            }
+
+            runnable = null;
+        }
+    }
 
     public final void stop(Throwable t) {
         if (Debug.THREADS)

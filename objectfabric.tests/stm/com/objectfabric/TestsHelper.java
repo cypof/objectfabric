@@ -15,11 +15,6 @@ package com.objectfabric;
 import org.junit.After;
 import org.junit.Before;
 
-import com.objectfabric.ExpectedExceptionThrower;
-import com.objectfabric.Helper;
-import com.objectfabric.Privileged;
-import com.objectfabric.Stats;
-import com.objectfabric.Transaction;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.Log;
 
@@ -100,5 +95,9 @@ public class TestsHelper extends Privileged {
 
     public static void disableExpectedExceptionThrowerCounter() {
         ExpectedExceptionThrower.disableCounter();
+    }
+
+    public static final void throwRuntimeException(String message) {
+        ExpectedExceptionThrower.throwRuntimeException(message);
     }
 }

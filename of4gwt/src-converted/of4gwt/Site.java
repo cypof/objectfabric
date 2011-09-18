@@ -14,6 +14,7 @@ package of4gwt;
 
 import java.util.Map.Entry;
 import of4gwt.misc.Executor;
+import of4gwt.misc.AtomicInteger;
 
 import of4gwt.TObject.UserTObject.SystemClass;
 import of4gwt.Transaction.ConflictDetection;
@@ -141,35 +142,58 @@ public final class Site extends SiteBase implements SystemClass {
         }
 
         public final boolean isShortestDistance(Connection connection) {
-            int distance = Integer.MAX_VALUE;
-            int connectionDistance = Integer.MAX_VALUE;
-
-            for (Entry<Connection, Distance> entry : _distances.entrySet()) {
-                if (Debug.ENABLED) // getValue can do get(Object) on Android
+            for (;;) {
+                if (Debug.ENABLED)
                     Helper.getInstance().disableEqualsOrHashCheck();
 
-                Distance value = entry.getValue();
+                Distance distance = _distances.get(connection);
 
                 if (Debug.ENABLED)
                     Helper.getInstance().enableEqualsOrHashCheck();
 
-                if (distance > value.Value)
-                    distance = value.Value;
+                if (distance == null) {
+                    /*
+                     * Site has not been received from another site, it is either the
+                     * local site, or has been loaded from a store. Connections must not
+                     * intercept commits.
+                     */
+                    return false;
+                }
 
-                if (entry.getKey() == connection)
-                    connectionDistance = value.Value;
+                int shortest = distance.Shortest.get();
+
+                if (shortest >= 0) {
+                    // First check previous to make sure always return same
+                    return shortest > 0;
+                }
+
+                int min = Integer.MAX_VALUE;
+                int connectionDistance = Integer.MAX_VALUE;
+
+                for (Entry<Connection, Distance> entry : _distances.entrySet()) {
+                    if (Debug.ENABLED) // getValue can do get(Object) on Android
+                        Helper.getInstance().disableEqualsOrHashCheck();
+
+                    Distance value = entry.getValue();
+
+                    if (Debug.ENABLED)
+                        Helper.getInstance().enableEqualsOrHashCheck();
+
+                    if (min > value.Value)
+                        min = value.Value;
+
+                    if (entry.getKey() == connection)
+                        connectionDistance = value.Value;
+                }
+
+                if (Debug.ENABLED)
+                    Debug.assertion(min != Integer.MAX_VALUE);
+
+                boolean value = min == connectionDistance;
+
+                if (distance.Shortest.compareAndSet(-1, value ? 1 : 0))
+                    return value;
             }
-
-            if (distance == Integer.MAX_VALUE) {
-                /*
-                 * Site has not been received from another site, it is either the local
-                 * site, or has been loaded from a store. Connections must not intercept
-                 * commits.
-                 */
-                return false;
-            }
-
-            return distance == connectionDistance;
         }
 
         @Override
@@ -272,6 +296,8 @@ public final class Site extends SiteBase implements SystemClass {
     private static final class Distance {
 
         public final int Value;
+
+        public final AtomicInteger Shortest = new AtomicInteger(-1);
 
         public Distance(int value) {
             Value = value;

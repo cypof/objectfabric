@@ -191,14 +191,17 @@ public class LazyMap<K, V> extends LazyMapBase {
 
         if (entry != null)
             call.set(!entry.isRemoval() ? entry.getValue() : null);
-        else {
-            Store store = getTrunk().getStore();
+        else
+            load(key, call);
+    }
 
-            if (store != null)
-                store.getAsync(this, key, call);
-            else
-                call.set(null);
-        }
+    protected void load(Object key, MethodCall call) {
+        Store store = getTrunk().getStore();
+
+        if (store != null)
+            store.getAsync(this, key, call);
+        else
+            call.set(null);
     }
 
     @Override

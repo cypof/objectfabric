@@ -12,13 +12,27 @@
 
 package of4gwt.client;
 
+import of4gwt.misc.Log;
 import of4gwt.transports.http.HTTPTest;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.RootPanel;
 
 public class Main implements EntryPoint {
 
     public void onModuleLoad() {
+        /*
+         * Redirect log to web page.
+         */
+        Log.add(new Log() {
+
+            @Override
+            protected void onWrite(String message) {
+                RootPanel.get("log").add(new HTML(message));
+            }
+        });
+
         HTTPTest.run();
     }
 }

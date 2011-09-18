@@ -67,7 +67,8 @@ final class InterceptorWriter extends DistributedWriter {
             if (Debug.COMMUNICATIONS_LOG)
                 Log.write("InterceptorWriter: registering branch " + branch);
 
-            getEndpoint().register(_acknowledger, branch);
+            _acknowledger.register(branch);
+            getEndpoint().onBranchIntercepted(branch);
         }
     }
 

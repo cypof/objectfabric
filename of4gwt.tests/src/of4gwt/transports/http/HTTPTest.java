@@ -17,11 +17,11 @@ import of4gwt.transports.DataGen;
 
 public class HTTPTest {
 
-    public static final int WRITES = (int) 1e7;
+    public static final int WRITES = (int) 1e6;
 
     public static void run() {
         final DataGen algo = new DataGen(WRITES, WRITES);
-        // algo.start();
+        algo.start();
 
         CometTransport transport = new CometTransport(true) {
 
@@ -36,6 +36,7 @@ public class HTTPTest {
 
             @Override
             protected void read(byte[] buffer, int offset, int limit) {
+                Log.write("Read " + (limit - offset));
                 algo.read(buffer, offset, limit);
 
                 if (algo.isDone())
@@ -45,6 +46,7 @@ public class HTTPTest {
             @Override
             protected int write(byte[] buffer, int offset, int limit) {
                 int written = algo.write(buffer, offset, limit);
+                Log.write("Write " + written);
 
                 if (algo.isDone())
                     Log.write("Success!");

@@ -22,10 +22,6 @@ import com.objectfabric.misc.ThreadAssert.SingleThreaded;
 @SingleThreaded
 class ImmutableWriter extends BufferWriter {
 
-    public static final int LARGEST_UNSPLITABLE = Long.SIZE / 8;
-
-    // Debug
-
     static final int DEBUG_OVERHEAD;
 
     private static boolean _checkCommunications = true;

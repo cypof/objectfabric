@@ -339,24 +339,26 @@ final class HTTPSession extends Privileged implements Filter {
      * The connection on which initial data is sent becomes the writer. It first sends the
      * session id, which allows a secondary connection which becomes the reader.
      */
-    public void readInitialConnection(HTTPFilter filter, ByteBuffer buffer) {
+    public void readInitialConnection(HTTPFilter filter, ByteBuffer buffer, boolean first) {
         if (Debug.ENABLED) {
             Debug.assertion(_reader.get() == IDLE_DISCONNECTED);
             Debug.assertion(_writer.get() == NEW);
 
-            if (Debug.THREADS) {
-                ThreadAssert.assertCurrentIsEmpty();
-                ThreadAssert.addPrivate(_reader);
+            if (first) {
+                if (Debug.THREADS) {
+                    ThreadAssert.assertCurrentIsEmpty();
+                    ThreadAssert.addPrivate(_reader);
+                }
+
+                ThreadAssert.suspend(_reader);
+
+                if (Debug.THREADS) {
+                    ThreadAssert.assertCurrentIsEmpty();
+                    ThreadAssert.addPrivate(_writer);
+                }
+
+                ThreadAssert.suspend(_writer);
             }
-
-            ThreadAssert.suspend(_reader);
-
-            if (Debug.THREADS) {
-                ThreadAssert.assertCurrentIsEmpty();
-                ThreadAssert.addPrivate(_writer);
-            }
-
-            ThreadAssert.suspend(_writer);
         }
 
         boolean done = readAndReturnIfDone(buffer);

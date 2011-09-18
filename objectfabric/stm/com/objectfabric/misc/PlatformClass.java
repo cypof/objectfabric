@@ -13,6 +13,8 @@
 package com.objectfabric.misc;
 
 import com.objectfabric.TGeneratedFields;
+import com.objectfabric.TKeyed;
+import com.objectfabric.TList;
 import com.objectfabric.TMap;
 import com.objectfabric.TObject;
 
@@ -49,6 +51,16 @@ public final class PlatformClass {
     @SuppressWarnings("unchecked")
     public static boolean isAssignableFrom(Class c, Class o) {
         return c.isAssignableFrom(o);
+    }
+
+    @SuppressWarnings("unchecked")
+    public static boolean isCollection(Class c) {
+        if (c != null)
+            for (Class coll : new Class[] { TList.class, TKeyed.class })
+                if (coll.isAssignableFrom(c))
+                    return true;
+
+        return false;
     }
 
     public static Class getClass(Object o) {

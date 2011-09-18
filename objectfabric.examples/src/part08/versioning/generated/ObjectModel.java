@@ -10,7 +10,7 @@ package part08.versioning.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class ObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -102, -99, -90, -70, 34, 21, 121, 20, 99, -80, -48, 66, -21, -35, 37, 23 };
+    private static final byte[] UID = { 88, 70, -32, 20, 108, -119, -73, 38, 7, 37, 85, -47, -56, -91, 26, 127 };
 
     private static volatile ObjectModel _instance;
 

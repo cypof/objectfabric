@@ -12,10 +12,8 @@
 
 package of4gwt;
 
-
-import of4gwt.TObjectWriter;
 import of4gwt.Connection.Endpoint;
-import of4gwt.DistributedWriter.Command;
+import of4gwt.MultiplexerWriter.Command;
 import of4gwt.TObject.Version;
 import of4gwt.misc.Debug;
 import of4gwt.misc.ThreadAssert.SingleThreaded;
@@ -81,7 +79,7 @@ final class DGCOutReader extends DistributedReader {
 
                             getEndpoint().enqueueOnWriterThread(new Command() {
 
-                                public DistributedWriter getWriter() {
+                                public MultiplexerWriter getWriter() {
                                     return writer;
                                 }
 

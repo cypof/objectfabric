@@ -12,10 +12,7 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.ImmutableClass;
-import com.objectfabric.TKeyedEntry;
-import com.objectfabric.TObject;
+import com.objectfabric.OF.Serializer;
 import com.objectfabric.Visitor.ByteBox;
 import com.objectfabric.misc.Debug;
 
@@ -30,13 +27,19 @@ final class UnknownObjectSerializer {
 
     private static final byte REMOVAL = ImmutableClass.COUNT + 2;
 
+    private static final byte CUSTOM = ImmutableClass.COUNT + 3;
+
+    private static final byte MAX = CUSTOM;
+
     protected static final byte FLAGS_NULL = (byte) (TObjectWriter.FLAG_IMMUTABLE | NULL);
 
     protected static final byte FLAGS_REMOVAL = (byte) (TObjectWriter.FLAG_IMMUTABLE | REMOVAL);
 
+    protected static final byte FLAGS_CUSTOM = (byte) (TObjectWriter.FLAG_IMMUTABLE | CUSTOM);
+
     static {
         if (Debug.ENABLED)
-            Debug.assertion(NULL < TObjectWriter.FLAG_IMMUTABLE - 1);
+            Debug.assertion(MAX < TObjectWriter.FLAG_IMMUTABLE - 1);
     }
 
     private UnknownObjectSerializer() {
@@ -52,12 +55,18 @@ final class UnknownObjectSerializer {
     public static void write(TObjectWriter writer, Object object, int debugCounter) {
         // TODO: avoid passing debug pointer, get it from writer
         WriteStep step = WriteStep.CODE;
+        byte[] bytes = null;
+        boolean resumed = false;
 
-        if (writer.interrupted())
+        if (writer.interrupted()) {
             step = (WriteStep) writer.resume();
+            bytes = (byte[]) writer.resume();
+            resumed = true;
+        }
 
         if (step == WriteStep.CODE) {
             if (!writer.canWriteByte()) {
+                writer.interrupt(bytes);
                 writer.interrupt(WriteStep.CODE);
                 return;
             }
@@ -71,6 +80,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -93,6 +103,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -116,6 +127,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -126,8 +138,10 @@ final class UnknownObjectSerializer {
                 case VALUE: {
                     writer.writeTObject((TObject) object);
 
-                    if (writer.interrupted())
+                    if (writer.interrupted()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
+                    }
                 }
             }
 
@@ -143,6 +157,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -153,8 +168,10 @@ final class UnknownObjectSerializer {
                 case VALUE: {
                     writer.writeString((String) object);
 
-                    if (writer.interrupted())
+                    if (writer.interrupted()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
+                    }
                 }
             }
 
@@ -170,6 +187,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -179,6 +197,7 @@ final class UnknownObjectSerializer {
                 }
                 case VALUE: {
                     if (!writer.canWriteInteger()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
                         return;
                     }
@@ -199,6 +218,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -208,6 +228,7 @@ final class UnknownObjectSerializer {
                 }
                 case VALUE: {
                     if (!writer.canWriteLong()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
                         return;
                     }
@@ -228,6 +249,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -237,6 +259,7 @@ final class UnknownObjectSerializer {
                 }
                 case VALUE: {
                     if (!writer.canWriteBoolean()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
                         return;
                     }
@@ -257,6 +280,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -266,6 +290,7 @@ final class UnknownObjectSerializer {
                 }
                 case VALUE: {
                     if (!writer.canWriteByte()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
                         return;
                     }
@@ -286,6 +311,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -295,6 +321,7 @@ final class UnknownObjectSerializer {
                 }
                 case VALUE: {
                     if (!writer.canWriteShort()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
                         return;
                     }
@@ -315,6 +342,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -324,6 +352,7 @@ final class UnknownObjectSerializer {
                 }
                 case VALUE: {
                     if (!writer.canWriteCharacter()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
                         return;
                     }
@@ -344,6 +373,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -354,8 +384,10 @@ final class UnknownObjectSerializer {
                 case VALUE: {
                     writer.writeFloat(((Float) object).floatValue());
 
-                    if (writer.interrupted())
+                    if (writer.interrupted()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
+                    }
                 }
             }
 
@@ -371,6 +403,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -381,8 +414,10 @@ final class UnknownObjectSerializer {
                 case VALUE: {
                     writer.writeDouble(((Double) object).doubleValue());
 
-                    if (writer.interrupted())
+                    if (writer.interrupted()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
+                    }
                 }
             }
 
@@ -398,6 +433,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -407,6 +443,7 @@ final class UnknownObjectSerializer {
                 }
                 case VALUE: {
                     if (!writer.canWriteDate()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
                         return;
                     }
@@ -427,6 +464,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -437,8 +475,10 @@ final class UnknownObjectSerializer {
                 case VALUE: {
                     writer.writeBigInteger((java.math.BigInteger) object);
 
-                    if (writer.interrupted())
+                    if (writer.interrupted()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
+                    }
                 }
             }
 
@@ -454,6 +494,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -464,8 +505,10 @@ final class UnknownObjectSerializer {
                 case VALUE: {
                     writer.writeDecimal((java.math.BigDecimal) object);
 
-                    if (writer.interrupted())
+                    if (writer.interrupted()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
+                    }
                 }
             }
 
@@ -481,6 +524,7 @@ final class UnknownObjectSerializer {
                 case DEBUG_COUNTER: {
                     if (Debug.ENABLED && debugCounter != -1) {
                         if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
                             writer.interrupt(WriteStep.DEBUG_COUNTER);
                             return;
                         }
@@ -491,8 +535,44 @@ final class UnknownObjectSerializer {
                 case VALUE: {
                     writer.writeBinary((byte[]) object);
 
-                    if (writer.interrupted())
+                    if (writer.interrupted()) {
+                        writer.interrupt(bytes);
                         writer.interrupt(WriteStep.VALUE);
+                    }
+                }
+            }
+
+            return;
+        }
+
+        Serializer serializer = OF.getCustomSerializer();
+
+        if (serializer != null && serializer.canSerialize(object)) {
+            switch (step) {
+                case CODE: {
+                    writer.writeByte(FLAGS_CUSTOM, TObjectWriter.DEBUG_TAG_CODE);
+                }
+                case DEBUG_COUNTER: {
+                    if (Debug.ENABLED && debugCounter != -1) {
+                        if (!writer.canWriteInteger()) {
+                            writer.interrupt(bytes);
+                            writer.interrupt(WriteStep.DEBUG_COUNTER);
+                            return;
+                        }
+
+                        writer.writeInteger(debugCounter);
+                    }
+                }
+                case VALUE: {
+                    if (!resumed)
+                        bytes = serializer.serialize(object);
+
+                    writer.writeBinary(bytes);
+
+                    if (writer.interrupted()) {
+                        writer.interrupt(bytes);
+                        writer.interrupt(WriteStep.VALUE);
+                    }
                 }
             }
 
@@ -668,6 +748,19 @@ final class UnknownObjectSerializer {
                 return null;
             case REMOVAL:
                 return TKeyedEntry.REMOVAL;
+            case CUSTOM: {
+                byte[] value = reader.readBinary();
+
+                if (reader.interrupted())
+                    reader.interrupt(null);
+
+                Serializer serializer = OF.getCustomSerializer();
+
+                if (serializer == null)
+                    throw new RuntimeException(Strings.MISSING_CUSTOM_SERIALIZER);
+
+                return serializer.deserialize(value);
+            }
             default:
                 throw new IllegalStateException();
         }

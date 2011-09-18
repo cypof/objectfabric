@@ -15,6 +15,7 @@ package com.objectfabric.transports;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.objectfabric.Connection;
+import com.objectfabric.Reader;
 import com.objectfabric.Site;
 import com.objectfabric.Transaction;
 import com.objectfabric.Validator;
@@ -88,7 +89,7 @@ public abstract class VMConnection extends Connection {
         }
 
         byte[] temp = _reader.read(buffer, 0, length, 0);
-        read(temp, 0, temp.length);
+        read(temp, Reader.LARGEST_UNSPLITABLE, temp.length);
         int written = 0;
         Status status = _status.get();
 

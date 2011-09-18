@@ -1,14 +1,18 @@
 <project name="objectfabric" default="jar" basedir=".">
 	<property name="version" value="0.8" />
 
-	<target name="jar" description="Create jar">
+	<target name="test-not-debug">
+		<java classname="com.objectfabric.misc.Debug" classpath="classes" failonerror="true" />
+	</target>
+
+	<target name="jar" depends="test-not-debug" description="Create jar">
 		<mkdir dir="bin" />
-		<delete file="bin/objectfabric-${version}.jar" failonerror="false" />
-		<jar destfile="bin/objectfabric-${version}.jar" manifest="MANIFEST.MF" level="9">
+		<delete file="bin/objectfabric.jar" failonerror="false" />
+		<jar destfile="bin/objectfabric.jar" manifest="MANIFEST.MF" level="9">
 			<fileset dir="classes" includes="**/*.class" excludes="" />
 		</jar>
-		<delete file="bin/objectfabric-${version}-src.jar" failonerror="false" />
-		<jar destfile="bin/objectfabric-${version}-src.jar" manifest="MANIFEST.MF">
+		<delete file="bin/objectfabric-src.jar" failonerror="false" />
+		<jar destfile="bin/objectfabric-src.jar" manifest="MANIFEST.MF">
 			<fileset dir="stm" />
 			<fileset dir="generated" />
 			<fileset dir="extensibility" />
@@ -31,8 +35,6 @@
 	</target>
 
 	<target name="package" depends="jar">
-		<java classname="org.objectfabric.misc.Debug" classpath="classes" failonerror="true" />
-
 		<ant dir="../objectfabric.stores.jdbm" />
 		<ant dir="../objectfabric.indexes.sqlite" />
 
@@ -45,8 +47,6 @@
 			<zipfileset dir="../objectfabric.examples.amazon" prefix="objectfabric-${version}/objectfabric.examples.amazon" excludes="classes/** temp/**" />
 			<zipfileset dir="../objectfabric.examples.android" prefix="objectfabric-${version}/objectfabric.examples.android" excludes="classes/** temp/**" />
 			<zipfileset dir="../objectfabric.examples.indexes" prefix="objectfabric-${version}/objectfabric.examples.indexes" excludes="classes/** temp/**" />
-
-			<zipfileset dir="bin" includes="objectfabric-${version}.jar" prefix="objectfabric-${version}/objectfabric.examples.amazon/deployed" />
 
 			<zipfileset dir="../objectfabric.indexes.sqlite" prefix="objectfabric-${version}/objectfabric.indexes.sqlite" excludes="classes/** temp/**" />
 			<zipfileset dir="../objectfabric.stores.jdbm" prefix="objectfabric-${version}/objectfabric.stores.jdbm" excludes="classes/** temp/**" />

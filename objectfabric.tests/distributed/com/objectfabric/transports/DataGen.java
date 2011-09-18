@@ -13,6 +13,7 @@
 package com.objectfabric.transports;
 
 import com.objectfabric.misc.Debug;
+import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.Utils;
 
 public final class DataGen {
@@ -55,8 +56,9 @@ public final class DataGen {
 
         int written = 0;
         boolean done = false;
+        int length = PlatformAdapter.getRandomInt(limit);
 
-        while (offset + written < limit) {
+        while (offset + written < length) {
             if (_writtenTotal == _writeLimit) {
                 done = true;
                 break;

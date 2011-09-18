@@ -7,7 +7,7 @@ package com.objectfabric.security.shiro;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public abstract class AccountBase extends com.objectfabric.TGeneratedFields32 {
 
     protected AccountBase(java.lang.String username) {
@@ -83,7 +83,6 @@ public abstract class AccountBase extends com.objectfabric.TGeneratedFields32 {
         endWrite_objectfabric(outer, inner);
     }
 
-    @SuppressWarnings("unchecked")
     public final com.objectfabric.TSet<com.objectfabric.security.shiro.Role> getRoles() {
         Version v = (Version) getSharedVersion_objectfabric();
         return (com.objectfabric.TSet<com.objectfabric.security.shiro.Role>) getUserTObject_objectfabric(v._roles);
@@ -202,7 +201,6 @@ public abstract class AccountBase extends com.objectfabric.TGeneratedFields32 {
         }
 
         @Override
-        @SuppressWarnings("unchecked")
         public void setAsObject(int index, java.lang.Object value) {
             switch (index) {
                 case USERNAME_INDEX:
@@ -305,7 +303,6 @@ public abstract class AccountBase extends com.objectfabric.TGeneratedFields32 {
         }
 
         @Override
-        @SuppressWarnings({ "unchecked", "static-access" })
         public void readWrite(com.objectfabric.Reader reader, int index) {
             if (reader.interrupted())
                 reader.resume();

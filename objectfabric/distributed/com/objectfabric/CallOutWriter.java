@@ -73,7 +73,7 @@ final class CallOutWriter extends DistributedWriter implements Executor {
 
         getEndpoint().enqueueOnWriterThread(new Command() {
 
-            public DistributedWriter getWriter() {
+            public MultiplexerWriter getWriter() {
                 return CallOutWriter.this;
             }
 
@@ -101,7 +101,7 @@ final class CallOutWriter extends DistributedWriter implements Executor {
                 ThreadAssert.exchangeTake(call);
 
             if (call.getTransaction() != null) {
-                int count = 0;
+                int count = 1;
 
                 TObject.Version[][] privateSnapshot = call.getTransaction().getPrivateSnapshotVersions();
 
@@ -116,12 +116,13 @@ final class CallOutWriter extends DistributedWriter implements Executor {
                     count++;
 
                 TObject.Version[][] writes = new TObject.Version[count][];
+                writes[0] = TransactionManager.OBJECTS_VERSIONS;
 
                 if (privateSnapshot != null) {
                     if (privateSnapshot[TransactionSets.IMPORTS_INDEX] == null)
-                        PlatformAdapter.arraycopy(privateSnapshot, 1, writes, 0, privateSnapshot.length - 1);
+                        PlatformAdapter.arraycopy(privateSnapshot, 1, writes, 1, privateSnapshot.length - 1);
                     else
-                        PlatformAdapter.arraycopy(privateSnapshot, 0, writes, 0, privateSnapshot.length);
+                        PlatformAdapter.arraycopy(privateSnapshot, 0, writes, 1, privateSnapshot.length);
                 }
 
                 if (call.getTransaction().getWrites() != null)
@@ -132,7 +133,7 @@ final class CallOutWriter extends DistributedWriter implements Executor {
 
                 setBranch(call.getTransaction().getBranch());
                 setSnapshot(snapshot);
-                setMapIndex1(0);
+                setMapIndex1(1);
                 setMapIndex2(snapshot.getWrites().length);
                 visitBranch();
             }

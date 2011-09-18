@@ -10,7 +10,7 @@ package part09.images.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class ImagesObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -72, -14, -117, 91, -101, 127, 115, -6, -109, 124, 81, -94, -123, 127, -88, -83 };
+    private static final byte[] UID = { -68, -86, -119, 98, -56, 13, 8, -42, 87, -30, -54, 4, 57, -62, 75, -9 };
 
     private static volatile ImagesObjectModel _instance;
 

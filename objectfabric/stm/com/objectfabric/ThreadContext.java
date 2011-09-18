@@ -52,8 +52,6 @@ final class ThreadContext { // TODO merge with transactions' sets
 
     private byte[] _buffer = new byte[256];
 
-    private Object _userContext;
-
     public static final ThreadContext getCurrent() {
         ThreadContext current = _current.get();
 
@@ -97,13 +95,6 @@ final class ThreadContext { // TODO merge with transactions' sets
         checkAutoCommitPolicy();
         int flags = Transaction.FLAG_AUTO | Transaction.FLAG_NO_READS;
 
-        if (!_autoCommitPending) {
-            if (_autoCommitPolicy == AutoCommitPolicy.DELAYED)
-                _config.delayCommit(_run);
-
-            _autoCommitPending = true;
-        }
-
         if (read && (_autoCommitPolicy == AutoCommitPolicy.IMMEDIATE || _autoCommitPolicy == AutoCommitPolicy.IMMEDIATE_ASYNC))
             flags |= Transaction.FLAG_NO_WRITES;
 
@@ -143,6 +134,13 @@ final class ThreadContext { // TODO merge with transactions' sets
     }
 
     public Transaction saveCurrentAndStartTransaction(Transaction current, Transaction trunk, int flags) {
+        if (!_autoCommitPending) {
+            if (_autoCommitPolicy == AutoCommitPolicy.DELAYED)
+                _config.delayCommit(_run);
+
+            _autoCommitPending = true;
+        }
+
         if (current != null) {
             if (!current.isAuto())
                 ExpectedExceptionThrower.throwRuntimeException(Strings.WRONG_TRUNK);
@@ -235,17 +233,6 @@ final class ThreadContext { // TODO merge with transactions' sets
         }
     }
 
-    public final void assertEmpty() {
-        if (Debug.ENABLED)
-            Transaction.assertCurrentNull();
-
-        for (int i = 0; i < _branches.size(); i++) {
-            Transaction branch = _branches.get(i);
-            TObjectMapEntry<Transaction> entry = TObjectMapEntry.getEntry(_transactions, branch);
-            Debug.assertion(entry == null || entry.getValue() == null);
-        }
-    }
-
     public final void abortAll() {
         Transaction current = Transaction.getCurrent();
 
@@ -300,14 +287,6 @@ final class ThreadContext { // TODO merge with transactions' sets
             _buffer = new byte[length];
     }
 
-    public Object getUserContext() {
-        return _userContext;
-    }
-
-    public void setUserContext(Object value) {
-        _userContext = value;
-    }
-
     private static final class UpdateFuture extends FutureWithCallback<CommitStatus> {
 
         public final AtomicInteger Count = new AtomicInteger();
@@ -338,6 +317,21 @@ final class ThreadContext { // TODO merge with transactions' sets
                 super.setException(t);
             else
                 _throwable = t;
+        }
+    }
+
+    // Debug
+
+    public final void assertEmpty() {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
+        Transaction.assertCurrentNull();
+
+        for (int i = 0; i < _branches.size(); i++) {
+            Transaction branch = _branches.get(i);
+            TObjectMapEntry<Transaction> entry = TObjectMapEntry.getEntry(_transactions, branch);
+            Debug.assertion(entry == null || entry.getValue() == null);
         }
     }
 }

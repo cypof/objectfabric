@@ -1,0 +1,18 @@
+<project name="of4gwt.tests" default="deploy">
+	<property name="instance public dns" value="ec2-107-20-96-210.compute-1.amazonaws.com" />
+	<property name="private key" value="${basedir}/../../.ec2/disrupt.pem" />
+
+	<target name="classes">
+		<sync todir="../objectfabric.examples.amazon/deployed/lib">
+			<fileset dir="../objectfabric/bin" includes="objectfabric.jar" />
+		</sync>
+		<sync todir="../objectfabric.examples.amazon/deployed/classes">
+			<fileset dir="../objectfabric.tests/classes" />
+		</sync>
+	</target>
+
+	<import file="../objectfabric.examples.amazon/build.xml" />
+
+	<target name="deploy" depends="amazon.deploy and start (Windows)">
+	</target>
+</project>

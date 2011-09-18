@@ -14,7 +14,6 @@ package of4gwt;
 
 import of4gwt.misc.Debug;
 import of4gwt.misc.ThreadAssert.SingleThreaded;
-import of4gwt.misc.Utils;
 
 /**
  * Reads arrays of bytes and keeps the data that remains when switching from an array to
@@ -22,9 +21,7 @@ import of4gwt.misc.Utils;
  * caller between two reads.
  */
 @SingleThreaded
-abstract class BufferReader extends Visitor {
-
-    // Current buffer
+abstract class BufferReader extends Visitor { // TODO try with ByteBuffer
 
     private byte[] _buffer;
 
@@ -32,41 +29,11 @@ abstract class BufferReader extends Visitor {
 
     private byte _flags;
 
-    // Data kept from last read
-
-    private static final int CAPACITY = ImmutableWriter.LARGEST_UNSPLITABLE;
-
-    private final byte[] _queue;
-
-    private int _queueFirst = 0;
-
-    private int _queueLast = 0;
-
-    private int _queueSize = 0;
-
     protected BufferReader() {
-        int size = CAPACITY;
-
-        if (Debug.COMMUNICATIONS) {
-            if (ImmutableWriter.getCheckCommunications()) {
-                size += ImmutableWriter.DEBUG_OVERHEAD;
-                size = Utils.nextPowerOf2(size);
-            }
-        }
-
-        if (Debug.ENABLED)
-            Debug.assertion(size == Utils.nextPowerOf2(size));
-
-        _queue = new byte[size];
     }
 
     final byte[] getBuffer() {
         return _buffer;
-    }
-
-    final void saveRemaining() {
-        for (; _offset < _limit; _offset++)
-            push(_buffer[_offset]);
     }
 
     final void setBuffer(byte[] buffer) {
@@ -106,29 +73,23 @@ abstract class BufferReader extends Visitor {
     //
 
     final int remaining() {
-        return _queueSize + _limit - _offset;
+        return _limit - _offset;
     }
 
     final byte readByteFromBuffer() {
         if (Debug.ENABLED) {
-            Debug.assertion(_queueSize > 0 || _offset < _limit);
+            Debug.assertion(_offset < _limit);
             Debug.assertion(_flags != 0);
         }
-
-        if (_queueSize > 0)
-            return pop();
 
         return _buffer[_offset++];
     }
 
     final byte peekByteFromBuffer() {
         if (Debug.ENABLED) {
-            Debug.assertion(_queueSize > 0 || _offset < _limit);
+            Debug.assertion(_offset < _limit);
             Debug.assertion(_flags != 0);
         }
-
-        if (_queueSize > 0)
-            return peek();
 
         return _buffer[_offset];
     }
@@ -159,32 +120,5 @@ abstract class BufferReader extends Visitor {
         long i0 = readIntegerFromBuffer() & 0xffffffffL;
         long i1 = readIntegerFromBuffer() & 0xffffffffL;
         return i0 | (i1 << 32);
-    }
-
-    //
-
-    private final byte peek() {
-        return _queue[_queueFirst];
-    }
-
-    private final byte pop() {
-        byte value = _queue[_queueFirst];
-        _queueFirst = (_queueFirst + 1) & (_queue.length - 1);
-        _queueSize--;
-        return value;
-    }
-
-    private final void push(byte item) {
-        _queue[_queueLast] = item;
-        _queueLast = (_queueLast + 1) & (_queue.length - 1);
-        _queueSize++;
-
-        if (Debug.ENABLED)
-            Debug.assertion(_queueSize <= _queue.length);
-    }
-
-    final void transferSavedFrom(BufferReader reader) {
-        while (reader._queueSize > 0)
-            push(reader.pop());
     }
 }

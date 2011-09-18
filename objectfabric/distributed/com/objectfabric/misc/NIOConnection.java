@@ -106,10 +106,10 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
         onWriteStarted();
         OverrideAssert.end(_write);
 
-        onStarted();
-
         if (Debug.ENABLED)
             ThreadAssert.suspend(write);
+
+        onStarted();
 
         NIOManager.getInstance().execute(_read);
     }

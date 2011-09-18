@@ -151,10 +151,7 @@ public class HTTP extends Privileged implements FilterFactory {
     }
 
     final void remove(HTTPSession session) {
-        HTTPSession previous = _sessions.remove(new UID(session.getId()));
-
-        if (Debug.ENABLED)
-            Debug.assertion(previous == session);
+        _sessions.remove(new UID(session.getId()));
     }
 
     final class HTTPFilter implements Filter {
@@ -351,7 +348,9 @@ public class HTTP extends Privileged implements FilterFactory {
                 return;
 
             if (_type == CometTransport.CONNECTION) {
-                if (_offset == CometTransport.FIELD_ID) {
+                boolean first = _offset == CometTransport.FIELD_ID;
+                
+                if (first) {
                     byte[] id = PlatformAdapter.createUID();
                     _session = new HTTPSession(HTTP.this, id, _enableCrossOriginResourceSharing);
                     _sessions.put(new UID(id), _session);
@@ -359,7 +358,7 @@ public class HTTP extends Privileged implements FilterFactory {
                     _offset++;
                 }
 
-                _session.readInitialConnection(this, buffer);
+                _session.readInitialConnection(this, buffer, first);
             } else {
                 int idRemaining = CometTransport.FIELD_ID + PlatformAdapter.UID_BYTES_COUNT - _offset;
 

@@ -31,11 +31,6 @@ import of4gwt.misc.ThreadAssert.SingleThreaded;
 @SingleThreaded
 abstract class DistributedWriter extends MultiplexerWriter {
 
-    public interface Command extends Runnable {
-
-        DistributedWriter getWriter();
-    }
-
     public static final byte COMMAND_PUBLIC_IMPORT = 0;
 
     public static final byte COMMAND_PUBLIC_VERSION = 1;
@@ -55,13 +50,13 @@ abstract class DistributedWriter extends MultiplexerWriter {
     @AllowSharedRead
     private final Endpoint _endpoint;
 
-    private final Queue<Runnable> _runnables = new Queue<Runnable>();
-
     private Transaction _remoteBranch;
 
     //
 
-    private final QueueOfInt _waitedBranchCounts = new QueueOfInt();
+    private final QueueOfInt _waitedBranchCountsInterceptor = new QueueOfInt();
+
+    private final QueueOfInt _waitedBranchCountsPropagator = new QueueOfInt();
 
     private final Queue<Runnable> _waiting = new Queue<Runnable>();
 
@@ -71,7 +66,9 @@ abstract class DistributedWriter extends MultiplexerWriter {
 
     // Debug
 
-    private final Queue<List<Transaction>> _waitedBranchesForDebug = new Queue<List<Transaction>>();
+    private final Queue<List<Transaction>> _waitedBranchesInterceptorForDebug = new Queue<List<Transaction>>();
+
+    private final Queue<List<Transaction>> _waitedBranchesPropagatorForDebug = new Queue<List<Transaction>>();
 
     private int _expectedReaderStackSize;
 
@@ -103,42 +100,6 @@ abstract class DistributedWriter extends MultiplexerWriter {
 
     public final void resetWroteCommand() {
         _wroteCommand = false;
-    }
-
-    //
-
-    public final void enqueue(Runnable runnable) {
-        if (Debug.THREADS)
-            _endpoint.assertWriteThread();
-
-        _runnables.add(runnable);
-    }
-
-    //
-
-    @Override
-    protected void write() {
-        Runnable runnable = null;
-
-        if (interrupted())
-            runnable = (Runnable) resume();
-
-        for (;;) {
-            if (runnable == null)
-                runnable = _runnables.poll();
-
-            if (runnable == null)
-                break;
-
-            runnable.run();
-
-            if (interrupted()) {
-                interrupt(runnable);
-                return;
-            }
-
-            runnable = null;
-        }
     }
 
     //
@@ -192,15 +153,8 @@ abstract class DistributedWriter extends MultiplexerWriter {
             if (validator != null) {
                 UserTObject object = shared.getOrRecreateTObject();
 
-                if (!(object instanceof Session) && !(object instanceof Method)) {
-                    if (Debug.ENABLED)
-                        Helper.getInstance().setNoTransaction(false);
-
-                    ExpectedExceptionThrower.validateRead(validator, object);
-
-                    if (Debug.ENABLED)
-                        Helper.getInstance().setNoTransaction(true);
-                }
+                if (!(object instanceof Session) && !(object instanceof Method))
+                    ExpectedExceptionThrower.validateRead(getEndpoint().getConnection(), validator, object);
             }
         }
 
@@ -318,87 +272,132 @@ abstract class DistributedWriter extends MultiplexerWriter {
     //
 
     protected final void runWhenBranchesAreUpToDate(Runnable runnable) {
-        int count = getEndpoint().getRegisteredBranchCount();
+        int interceptor = getEndpoint().getInterceptor().getAcknowledger().getBranchCount();
+        int propagator = getEndpoint().getPropagator().getWalker().getBranchCount();
 
-        if (count != 0 || getEndpoint().hasPendingSnapshots()) {
-            _waitedBranchCounts.add(count);
+        if (interceptor != 0 || propagator != 0 || getEndpoint().hasPendingSnapshots()) {
+            _waitedBranchCountsInterceptor.add(interceptor);
+            _waitedBranchCountsPropagator.add(propagator);
+
             _waiting.add(runnable);
 
             if (Debug.ENABLED) {
-                _waitedBranchesForDebug.add(getEndpoint().getRegisteredBranchForDebug());
-                Debug.assertion(count == getEndpoint().getRegisteredBranchForDebug().size());
-                Debug.assertion(_waitedBranchCounts.size() == _waiting.size());
-                Debug.assertion(_waitedBranchCounts.size() == _waitedBranchesForDebug.size());
+                List<Transaction> list1 = new List<Transaction>();
+                list1.addAll(getEndpoint().getInterceptor().getAcknowledger().copyBranches());
+                Debug.assertion(list1.size() == interceptor);
+                _waitedBranchesInterceptorForDebug.add(list1);
+
+                List<Transaction> list2 = new List<Transaction>();
+                list2.addAll(getEndpoint().getPropagator().getWalker().copyBranches());
+                Debug.assertion(list2.size() == propagator);
+                _waitedBranchesPropagatorForDebug.add(list2);
+
+                checkInvariants();
             }
         } else
             enqueue(runnable);
     }
 
-    /**
-     * If a new branch is registered, we don't know where the extension index are in
+    /*
+     * If new branches are registered, we don't know where the extension index are in
      * interceptor and propagator, so restart all snapshots.
      */
-    protected final void onBranchRegistration() {
-        int count = getEndpoint().getRegisteredBranchCount();
+
+    protected final void onBranchIntercepted() {
+        int count = getEndpoint().getInterceptor().getAcknowledger().getBranchCount();
+
         List<Transaction> debug;
 
         if (Debug.ENABLED) {
-            debug = getEndpoint().getRegisteredBranchForDebug();
+            debug = new List<Transaction>();
+            debug.addAll(getEndpoint().getInterceptor().getAcknowledger().copyBranches());
             Debug.assertion(count > 0 && count == debug.size());
         }
 
-        for (int i = 0; i < _waitedBranchCounts.size(); i++) {
-            _waitedBranchCounts.set(i, count);
+        for (int i = 0; i < _waitedBranchCountsInterceptor.size(); i++) {
+            _waitedBranchCountsInterceptor.set(i, count);
 
             if (Debug.ENABLED)
-                _waitedBranchesForDebug.set(i, debug);
+                _waitedBranchesInterceptorForDebug.set(i, debug);
+        }
+    }
+
+    protected final void onBranchPropagated() {
+        int count = getEndpoint().getPropagator().getWalker().getBranchCount();
+
+        List<Transaction> debug;
+
+        if (Debug.ENABLED) {
+            debug = new List<Transaction>();
+            debug.addAll(getEndpoint().getPropagator().getWalker().copyBranches());
+            Debug.assertion(count > 0 && count == debug.size());
+        }
+
+        for (int i = 0; i < _waitedBranchCountsPropagator.size(); i++) {
+            _waitedBranchCountsPropagator.set(i, count);
+
+            if (Debug.ENABLED)
+                _waitedBranchesPropagatorForDebug.set(i, debug);
         }
     }
 
     public final void onBranchUpToDate(Transaction branch) {
-        if (Debug.ENABLED) {
-            Debug.assertion(_waitedBranchCounts.size() == _waiting.size());
-            Debug.assertion(_waitedBranchCounts.size() == _waitedBranchesForDebug.size());
-        }
+        if (_waiting.size() > 0) {
+            if (getEndpoint().getInterceptor().getAcknowledger().registered(branch)) {
+                if (Debug.ENABLED)
+                    Debug.assertion(!getEndpoint().getPropagator().getWalker().registered(branch));
 
-        if (_waitedBranchCounts.size() > 0) {
-            boolean registered = getEndpoint().isRegistered(branch);
+                for (int i = 0; i < _waitedBranchCountsInterceptor.size(); i++) {
+                    int count = _waitedBranchCountsInterceptor.get(i);
 
-            for (int i = 0; i < _waitedBranchCounts.size(); i++) {
-                int count = _waitedBranchCounts.get(i);
-
-                if (count > 0) {
-                    if (registered) {
+                    if (count > 0) {
                         count--;
 
-                        if (Debug.ENABLED) {
-                            for (int j = _waitedBranchesForDebug.get(i).size() - 1; j >= 0; j--)
-                                if (_waitedBranchesForDebug.get(i).get(j) == branch)
-                                    _waitedBranchesForDebug.get(i).remove(j);
+                        if (Debug.ENABLED)
+                            for (int j = _waitedBranchesInterceptorForDebug.get(i).size() - 1; j >= 0; j--)
+                                if (_waitedBranchesInterceptorForDebug.get(i).get(j) == branch)
+                                    _waitedBranchesInterceptorForDebug.get(i).remove(j);
 
-                            Debug.assertion(count == _waitedBranchesForDebug.get(i).size());
-                        }
+                        _waitedBranchCountsInterceptor.set(i, count);
+                    }
+                }
+            } else if (getEndpoint().getPropagator().getWalker().registered(branch)) {
+                for (int i = 0; i < _waitedBranchCountsPropagator.size(); i++) {
+                    int count = _waitedBranchCountsPropagator.get(i);
 
-                        _waitedBranchCounts.set(i, count);
+                    if (count > 0) {
+                        count--;
+
+                        if (Debug.ENABLED)
+                            for (int j = _waitedBranchesPropagatorForDebug.get(i).size() - 1; j >= 0; j--)
+                                if (_waitedBranchesPropagatorForDebug.get(i).get(j) == branch)
+                                    _waitedBranchesPropagatorForDebug.get(i).remove(j);
+
+                        _waitedBranchCountsPropagator.set(i, count);
                     }
                 }
             }
 
             for (;;) {
-                if (_waitedBranchCounts.size() == 0 || getEndpoint().hasPendingSnapshots())
+                if (_waiting.size() == 0 || getEndpoint().hasPendingSnapshots())
                     break;
 
-                _waitedBranchCounts.poll();
+                if (_waitedBranchCountsInterceptor.peek() != 0 || _waitedBranchCountsPropagator.peek() != 0)
+                    break;
+
+                _waitedBranchCountsInterceptor.poll();
+                _waitedBranchCountsPropagator.poll();
+
                 enqueue(_waiting.poll());
 
-                if (Debug.ENABLED)
-                    _waitedBranchesForDebug.poll();
+                if (Debug.ENABLED) {
+                    _waitedBranchesInterceptorForDebug.poll();
+                    _waitedBranchesPropagatorForDebug.poll();
+                }
             }
 
-            if (Debug.ENABLED) {
-                Debug.assertion(_waitedBranchCounts.size() == _waiting.size());
-                Debug.assertion(_waitedBranchCounts.size() == _waitedBranchesForDebug.size());
-            }
+            if (Debug.ENABLED)
+                checkInvariants();
         }
     }
 
@@ -443,6 +442,24 @@ abstract class DistributedWriter extends MultiplexerWriter {
     }
 
     // Debug
+
+    private final void checkInvariants() {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
+        Debug.assertion(_waitedBranchCountsInterceptor.size() == _waiting.size());
+        Debug.assertion(_waitedBranchCountsPropagator.size() == _waiting.size());
+        Debug.assertion(_waitedBranchesInterceptorForDebug.size() == _waiting.size());
+        Debug.assertion(_waitedBranchesPropagatorForDebug.size() == _waiting.size());
+
+        for (int i = 0; i < _waiting.size(); i++) {
+            int intercepted = _waitedBranchCountsInterceptor.get(i);
+            Debug.assertion(intercepted == _waitedBranchesInterceptorForDebug.get(i).size());
+
+            int propagated = _waitedBranchCountsPropagator.get(i);
+            Debug.assertion(propagated == _waitedBranchesPropagatorForDebug.get(i).size());
+        }
+    }
 
     protected final int popStack(int count) {
         if (!Debug.COMMUNICATIONS)

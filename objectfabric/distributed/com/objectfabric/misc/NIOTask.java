@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 
 import com.objectfabric.AsyncOptions;
 import com.objectfabric.Privileged;
+import com.objectfabric.Reader;
 import com.objectfabric.Stats;
 import com.objectfabric.misc.NIOManager.NIOAttachement;
 
@@ -400,7 +401,8 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                     ThreadAssert.assertPrivate(this);
 
                 for (;;) {
-                    buffer.clear();
+                    buffer.limit(buffer.capacity());
+                    buffer.position(Reader.LARGEST_UNSPLITABLE);
 
                     int length;
                     ClosedConnectionException ex = null;
@@ -447,11 +449,12 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
 
         private final boolean read(ByteBuffer buffer, int length) {
             try {
+                buffer.limit(Reader.LARGEST_UNSPLITABLE + length);
+                buffer.position(Reader.LARGEST_UNSPLITABLE);
+
                 /*
                  * Should only raise security exceptions (E.g. Validator or SSLEngine)
                  */
-                buffer.position(0);
-                buffer.limit(length);
                 _connection.read(buffer);
 
                 if (Debug.ENABLED)
@@ -609,8 +612,8 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
             for (int i = 0; i < _headers.size(); i++)
                 headers += _headers.get(i).remaining();
 
-            buffer.position(0);
             buffer.limit(buffer.capacity() - headers);
+            buffer.position(0);
             boolean done;
 
             try {

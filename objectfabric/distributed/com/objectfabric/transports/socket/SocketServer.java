@@ -41,7 +41,7 @@ import com.objectfabric.transports.socket.SocketConnection.PhysicalConnection;
 /**
  * NIO based socket server. Add filters for TLS or HTTP support.
  */
-public class SocketServer extends Privileged implements Server<SocketConnection> {
+public class SocketServer<C extends SocketConnection> extends Privileged implements Server<C> {
 
     private final InetAddress _host;
 
@@ -51,11 +51,11 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
 
     private final List<FilterFactory> _filters = new List<FilterFactory>();
 
-    private final PlatformConcurrentMap<SocketConnection, SocketConnection> _sessions = new PlatformConcurrentMap<SocketConnection, SocketConnection>();
+    private final PlatformConcurrentMap<C, C> _sessions = new PlatformConcurrentMap<C, C>();
 
     private Validator _validator;
 
-    private Callback<SocketConnection> _callback;
+    private Callback _callback;
 
     private Executor _callbackExecutor;
 
@@ -109,11 +109,11 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
 
     //
 
-    public final Callback<SocketConnection> getCallback() {
+    public final Callback getCallback() {
         return _callback;
     }
 
-    public final void setCallback(Callback<SocketConnection> value) {
+    public final void setCallback(Callback value) {
         if (isStarted())
             throw new RuntimeException(Strings.ALREADY_STARTED);
 
@@ -150,7 +150,14 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
         _filters.add(new FilterFactory() {
 
             public Filter createFilter(boolean clientSide) {
-                Session session = new Session();
+                if (Debug.ENABLED)
+                    setNoTransaction(false);
+
+                Session session = createSession();
+
+                if (Debug.ENABLED)
+                    setNoTransaction(true);
+
                 return session.getLastFilter();
             }
         });
@@ -203,7 +210,7 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
                     assertIdle((Privileged) filter);
     }
 
-    public Set<SocketConnection> getSessions() {
+    public Set<C> getSessions() {
         return Collections.unmodifiableSet(_sessions.keySet());
     }
 
@@ -217,20 +224,32 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
     protected void onConnection(SocketChannel channel) {
     }
 
-    private final class Session extends SocketConnection {
+    /**
+     * Override this method to create your own sessions.
+     */
+    protected Session createSession() {
+        return new Session(this);
+    }
 
-        public Session() {
+    public static class Session extends SocketConnection {
+
+        private final SocketServer _server;
+
+        public Session(SocketServer server) {
             // Trunk will be replaced by client's once connected
-            super(Site.getLocal().getTrunk(), Site.getLocal(), _validator);
+            super(Site.getLocal().getTrunk(), Site.getLocal(), server.getValidator());
+
+            _server = server;
         }
 
         @Override
         protected void onWriteStarted() {
             super.onWriteStarted();
 
-            onConnection(getSocketChannel());
+            _server.onConnection(getSocketChannel());
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         protected void onDialogEstablished() {
             super.onDialogEstablished();
@@ -238,17 +257,17 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
             if (Debug.ENABLED)
                 disableEqualsOrHashCheck();
 
-            _sessions.put(this, this);
+            _server._sessions.put(this, this);
 
             if (Debug.ENABLED)
                 enableEqualsOrHashCheck();
 
-            getCallbackExecutor().execute(new Runnable() {
+            _server.getCallbackExecutor().execute(new Runnable() {
 
                 public void run() {
-                    if (_callback != null) {
+                    if (_server.getCallback() != null) {
                         try {
-                            _callback.onConnection(Session.this);
+                            _server.getCallback().onConnection(Session.this);
                         } catch (Throwable t) {
                             PlatformAdapter.logListenerException(t);
                         }
@@ -257,16 +276,17 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
             });
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         protected void onObject(final Object object) {
             super.onObject(object);
 
-            getCallbackExecutor().execute(new Runnable() {
+            _server.getCallbackExecutor().execute(new Runnable() {
 
                 public void run() {
-                    if (_callback != null) {
+                    if (_server.getCallback() != null) {
                         try {
-                            _callback.onReceived(Session.this, object);
+                            _server.getCallback().onReceived(Session.this, object);
                         } catch (Throwable t) {
                             PlatformAdapter.logListenerException(t);
                         }
@@ -275,6 +295,7 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
             });
         }
 
+        @SuppressWarnings("unchecked")
         @Override
         protected void onWriteStopped(final Throwable t) {
             super.onWriteStopped(t);
@@ -282,17 +303,17 @@ public class SocketServer extends Privileged implements Server<SocketConnection>
             if (Debug.ENABLED)
                 disableEqualsOrHashCheck();
 
-            _sessions.remove(this);
+            _server._sessions.remove(this);
 
             if (Debug.ENABLED)
                 enableEqualsOrHashCheck();
 
-            getCallbackExecutor().execute(new Runnable() {
+            _server.getCallbackExecutor().execute(new Runnable() {
 
                 public void run() {
-                    if (_callback != null) {
+                    if (_server.getCallback() != null) {
                         try {
-                            _callback.onDisconnection(Session.this, t);
+                            _server.getCallback().onDisconnection(Session.this, t);
                         } catch (Throwable t_) {
                             PlatformAdapter.logListenerException(t_);
                         }

@@ -83,7 +83,8 @@ final class PropagatorWriter extends DistributedWriter {
             if (Debug.COMMUNICATIONS_LOG)
                 Log.write("PropagatorWriter: registering branch " + branch);
 
-            getEndpoint().register(_walker, branch);
+            _walker.register(branch);
+            getEndpoint().onBranchPropagated(branch);
 
             /*
              * Sometimes registration happens after commit made by reader, and request is
@@ -210,7 +211,6 @@ final class PropagatorWriter extends DistributedWriter {
 
     private final void writePendingSnapshots() {
         Transaction initialBranch = getBranch();
-
         boolean transactionDone = false;
 
         if (interrupted()) {
@@ -219,11 +219,18 @@ final class PropagatorWriter extends DistributedWriter {
         } else {
             setVisitingNewObject(true);
             setNextCommand(COMMAND_PUBLIC_IMPORT);
+            setBranch(null);
         }
+
+        if (Debug.ENABLED)
+            for (int i = 0; i < _newPendingSnapshotsBranches.size(); i++)
+                for (int j = 0; j < _newPendingSnapshotsBranches.size(); j++)
+                    Debug.assertion(i == j || _newPendingSnapshotsBranches.get(i) != _newPendingSnapshotsBranches.get(j));
 
         for (;;) {
             if (getBranch() == null)
-                setBranch(_newPendingSnapshotsBranches.poll());
+                setBranch(_newPendingSnapshotsBranches.peek());
+            // setBranch(_newPendingSnapshotsBranches.poll());
 
             if (getBranch() == null)
                 break;
@@ -257,6 +264,11 @@ final class PropagatorWriter extends DistributedWriter {
                 return;
             }
 
+            _newPendingSnapshotsBranches.poll();
+
+            if (Debug.ENABLED)
+                Debug.assertion(!_snapshottedBranches.contains(getBranch()));
+
             _snapshottedBranches.add(getBranch());
             setBranch(null);
             transactionDone = false;
@@ -274,11 +286,9 @@ final class PropagatorWriter extends DistributedWriter {
         int initialMapIndex1 = getMapIndex1();
         int initialMapIndex2 = getMapIndex2();
 
-        Version shared = null;
         boolean registered;
 
         if (interrupted()) {
-            shared = (Version) resume();
             registered = resumeBoolean();
             setSnapshot((Snapshot) resume());
             setMapIndex1(resumeInt());
@@ -296,15 +306,16 @@ final class PropagatorWriter extends DistributedWriter {
         Queue<TObject.Version> queue = getEndpoint().getPendingSnapshots(getBranch());
 
         for (;;) {
-            if (shared == null) {
-                if (queue == null || queue.size() == 0)
-                    break;
+            if (queue == null)
+                break;
 
-                shared = queue.poll();
+            Version shared = queue.peek();
 
-                if (Debug.ENABLED)
-                    Debug.assertion(shared.getTrunk() == getBranch());
-            }
+            if (shared == null)
+                break;
+
+            if (Debug.ENABLED)
+                Debug.assertion(shared.getTrunk() == getBranch());
 
             if (Debug.ENABLED)
                 Debug.assertion(getEndpoint().getStatus(shared) == Status.CREATED);
@@ -339,7 +350,6 @@ final class PropagatorWriter extends DistributedWriter {
                 interruptInt(getMapIndex1());
                 interrupt(getSnapshot());
                 interruptBoolean(registered);
-                interrupt(shared);
 
                 setSnapshot(initialSnapshot);
                 setMapIndex1(initialMapIndex1);
@@ -352,7 +362,7 @@ final class PropagatorWriter extends DistributedWriter {
             if (Debug.COMMUNICATIONS)
                 getEndpoint().getHelper().markAsSnapshoted(shared.getTrunk(), shared);
 
-            shared = null;
+            queue.poll();
         }
 
         setSnapshot(initialSnapshot);

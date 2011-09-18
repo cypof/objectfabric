@@ -14,6 +14,7 @@ package com.objectfabric.transports;
 
 import java.nio.ByteBuffer;
 
+import com.objectfabric.Reader;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.NIOManager;
 import com.objectfabric.misc.Queue;
@@ -94,7 +95,8 @@ public class RandomSplitterFilter implements FilterFactory {
                 buffer.position(buffer.limit());
 
                 _readBuffer.put(data);
-                _readBuffer.flip();
+                _readBuffer.limit(data.length);
+                _readBuffer.position(Reader.LARGEST_UNSPLITABLE);
                 _next.read(_readBuffer);
                 _readBuffer.clear();
 
@@ -114,7 +116,7 @@ public class RandomSplitterFilter implements FilterFactory {
                 _writeBuffer.clear();
             }
 
-            buffer.put(data);
+            buffer.put(data, Reader.LARGEST_UNSPLITABLE, data.length - Reader.LARGEST_UNSPLITABLE);
             return _writer.getRemaining() == 0;
         }
     }

@@ -22,7 +22,7 @@ public final class Debug extends Privileged {
 
     public static final boolean TESTING = false;
 
-    public static final boolean SLOW_CHECKS = ENABLED && true;
+    public static final boolean SLOW_CHECKS = ENABLED && false;
 
     public static final boolean THREADS = ENABLED && false;
 
@@ -36,9 +36,9 @@ public final class Debug extends Privileged {
 
     public static final boolean COMMUNICATIONS = ENABLED && true;
 
-    public static final boolean COMMUNICATIONS_LOG = ENABLED && false;
+    public static final boolean COMMUNICATIONS_LOG = ENABLED && true;
 
-    public static final boolean COMMUNICATIONS_LOG_ALL = ENABLED && false;
+    public static final boolean COMMUNICATIONS_LOG_ALL = ENABLED && true;
 
     public static final boolean COMMUNICATIONS_LOG_HTTP = ENABLED && false;
 
@@ -57,7 +57,7 @@ public final class Debug extends Privileged {
 
     public static final boolean RANDOMIZE_TRANSFER_LENGTHS = ENABLED && true;
 
-    public static final int RANDOMIZED_TRANSFER_LIMIT = 2000;
+    public static final int RANDOMIZED_TRANSFER_LIMIT = 5000;
 
     //
 
@@ -87,14 +87,15 @@ public final class Debug extends Privileged {
         assertAlways(value);
     }
 
-    public static void fail() {
-        assertion(false);
-    }
-
     public static void assertAlways(boolean value) {
-        if (!value)
+        if (!value) {
             // throw new AssertionError();
             new AssertionError().printStackTrace();
+        }
+    }
+
+    public static void fail() {
+        assertion(false);
     }
 
     public static void failAlways() {

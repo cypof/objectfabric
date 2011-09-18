@@ -85,7 +85,7 @@ public class VMMethods extends TestsHelper {
 
         for (int i = 0; i < 100; i++) {
             test.before();
-            test.run(Granularity.ALL, 2, 0, 1, 1, 1);
+            test.run(Granularity.COALESCE, 2, 10, 10, 10, 2);
             test.after();
         }
     }

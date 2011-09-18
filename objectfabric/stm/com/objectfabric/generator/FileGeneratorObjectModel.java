@@ -247,7 +247,7 @@ class FileGeneratorObjectModel extends FileGenerator {
 
         for (int i = 0; i < g().getObjectModel().getAllMethodIds().size(); i++) {
             wl("            case " + g().getObjectModel().getAllMethodIds().get(i) + ":");
-            wl("                return Method" + i + ".INSTANCE;");
+            wl("                return new Method" + i + "(trunk);");
         }
 
         wl("        }");
@@ -306,10 +306,10 @@ class FileGeneratorObjectModel extends FileGenerator {
             wl();
 
             if (g().isJava()) {
-                wl("        private " + name + "(com.objectfabric.Transaction trunk) {");
+                wl("        public " + name + "(com.objectfabric.Transaction trunk) {");
                 wl("            super(new Version(null, FIELD_COUNT), trunk);");
             } else {
-                wl("        private " + name + "(com.objectfabric.Transaction trunk)");
+                wl("        public " + name + "(com.objectfabric.Transaction trunk)");
                 wl("            : base(new Version(null, FIELD_COUNT), trunk) {");
             }
 

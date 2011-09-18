@@ -10,7 +10,7 @@ package part04.store.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class ObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -17, -36, 93, -116, -23, -52, 29, 117, 111, 47, 115, 34, 48, 124, -59, -93 };
+    private static final byte[] UID = { -119, 12, 33, -86, 77, -110, -54, 44, 102, 24, 20, 114, 7, 20, 23, -22 };
 
     private static volatile ObjectModel _instance;
 

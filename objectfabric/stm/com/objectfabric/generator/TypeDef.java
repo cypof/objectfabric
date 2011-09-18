@@ -16,8 +16,6 @@ import javax.xml.bind.annotation.XmlType;
 
 import com.objectfabric.ImmutableClass;
 import com.objectfabric.Privileged;
-import com.objectfabric.TKeyed;
-import com.objectfabric.TList;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.PlatformClass;
 
@@ -304,16 +302,6 @@ public class TypeDef extends Privileged {
 
     boolean isJavaEnum() {
         return _otherClass != null && PlatformClass.isJavaEnum(_otherClass);
-    }
-
-    @SuppressWarnings("unchecked")
-    boolean isCollection() {
-        if (_otherClass != null)
-            for (Class c : new Class[] { TList.class, TKeyed.class })
-                if (c.isAssignableFrom(_otherClass))
-                    return true;
-
-        return false;
     }
 
     public GeneratedClassDef getFirstGeneratedClassAmongstThisAndParents(ObjectModelDef model) {

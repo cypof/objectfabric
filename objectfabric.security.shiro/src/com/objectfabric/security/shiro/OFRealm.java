@@ -38,13 +38,13 @@ import com.objectfabric.Transaction;
  */
 final class OFRealm extends AuthorizingRealm {
 
-    private final AccountStore _store;
+    private final ShiroStore _store;
 
-    public OFRealm(AccountStore store) {
+    public OFRealm(ShiroStore store) {
         _store = store;
     }
 
-    public AccountStore getStore() {
+    public ShiroStore getStore() {
         return _store;
     }
     

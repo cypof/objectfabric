@@ -14,7 +14,7 @@ package of4gwt;
 
 import java.util.Arrays;
 
-import of4gwt.DistributedWriter.Command;
+import of4gwt.MultiplexerWriter.Command;
 import of4gwt.misc.Debug;
 import of4gwt.misc.List;
 import of4gwt.misc.Log;
@@ -32,7 +32,14 @@ abstract class Multiplexer {
      * How much data a writer can put in the buffer before the multiplexing switches to
      * the next one.
      */
-    private static final int SLICE = 4000; // TODO tune
+    private static final int SLICE;
+
+    static {
+        if (!Debug.RANDOMIZE_TRANSFER_LENGTHS)
+            SLICE = 4000; // TODO tune
+        else
+            SLICE = Debug.RANDOMIZED_TRANSFER_LIMIT / 2;
+    }
 
     private static final int ROOM_FOR_INDEX = Debug.COMMUNICATIONS ? 1 + ImmutableWriter.DEBUG_OVERHEAD : 1;
 
@@ -53,6 +60,12 @@ abstract class Multiplexer {
     private int _currentWriter = -3, _remainingToWrite = SLICE - ROOM_FOR_INDEX;
 
     private boolean _wroteIndex;
+
+    //
+
+    private final byte[] _leftover = new byte[Reader.LARGEST_UNSPLITABLE];
+
+    private int _leftoverLength;
 
     //
 
@@ -213,12 +226,14 @@ abstract class Multiplexer {
 
     //
 
-    protected final void read(byte[] buffer, int offset, int limit) {
+    protected final void read(byte[] buffer, int offset, final int limit) {
         if (Debug.THREADS)
             assertReadThread();
 
         if (offset >= limit)
             return;
+
+        offset = loadLeftover(buffer, offset);
 
         if (_currentReader < 0) {
             if (_currentReader == -2) {
@@ -264,7 +279,32 @@ abstract class Multiplexer {
             if (_readers.length == 0)
                 return;
 
-            _currentReader = 0;
+            int currentReader = 0;
+
+            if (Debug.COMMUNICATIONS) {
+                if (_currentReader == -3) {
+                    ImmutableReader switcher = getHelper().getChannelSwitchReader();
+                    switcher.setBuffer(buffer);
+                    switcher.setOffset(offset);
+                    switcher.setLimit(limit);
+
+                    if (!switcher.canReadByte()) {
+                        saveLeftover(buffer, offset, limit);
+                        return;
+                    }
+
+                    byte code = switcher.readByte(TObjectWriter.DEBUG_TAG_CODE);
+                    currentReader = code & ~TObjectWriter.FLAG_EOF;
+                    _remainingToRead = SLICE - ROOM_FOR_INDEX;
+
+                    if (Debug.COMMUNICATIONS_LOG)
+                        Log.write("Multiplexer.read, code: " + code);
+
+                    offset = switcher.getOffset();
+                }
+            }
+
+            _currentReader = currentReader;
         }
 
         for (;;) {
@@ -276,12 +316,6 @@ abstract class Multiplexer {
             reader.setOffset(offset);
             reader.setLimit(actualLimit);
 
-            if (Debug.COMMUNICATIONS) {
-                ImmutableReader switcher = getHelper().getChannelSwitchReader();
-                // In case too much has been transfered to read code
-                reader.transferSavedFrom(switcher);
-            }
-
             if (Debug.THREADS)
                 if (reader instanceof DistributedReader)
                     ((DistributedReader) reader).getEndpoint().assertReadThread();
@@ -291,32 +325,35 @@ abstract class Multiplexer {
 
             if (reader.interrupted()) {
                 if (limit == actualLimit) {
-                    reader.saveRemaining();
                     _remainingToRead -= reader.getOffset() - previousOffset;
+                    saveLeftover(buffer, offset, limit);
                     break;
                 }
 
+                ImmutableReader switcher;
+
                 if (Debug.COMMUNICATIONS) {
-                    ImmutableReader switcher = getHelper().getChannelSwitchReader();
-                    switcher.transferSavedFrom(reader);
+                    switcher = getHelper().getChannelSwitchReader();
                     switcher.setBuffer(buffer);
                     switcher.setOffset(offset);
                     switcher.setLimit(limit);
 
                     if (!switcher.canReadByte()) {
-                        switcher.saveRemaining();
-                        _remainingToRead = 0;
+                        _currentReader = -3;
+                        saveLeftover(buffer, offset, limit);
                         break;
                     }
+                } else {
+                    reader.setLimit(actualLimit + 1);
+                    switcher = reader;
+                }
 
-                    code = switcher.readByte(TObjectWriter.DEBUG_TAG_CODE);
+                code = switcher.readByte(TObjectWriter.DEBUG_TAG_CODE);
 
-                    if (Debug.COMMUNICATIONS_LOG)
-                        Log.write("Multiplexer.read, code: " + code);
+                if (Debug.COMMUNICATIONS_LOG)
+                    Log.write("Multiplexer.read, code: " + code);
 
-                    offset = switcher.getOffset();
-                } else
-                    code = buffer[offset++];
+                offset = switcher.getOffset();
             }
 
             if (Debug.ENABLED)
@@ -328,6 +365,21 @@ abstract class Multiplexer {
             _currentReader = code & ~TObjectWriter.FLAG_EOF;
             _remainingToRead = SLICE - ROOM_FOR_INDEX;
         }
+    }
+
+    private void saveLeftover(byte[] buffer, int offset, int limit) {
+        _leftoverLength = limit - offset;
+        PlatformAdapter.arraycopy(buffer, offset, _leftover, 0, _leftoverLength);
+    }
+
+    private int loadLeftover(byte[] buffer, int offset) {
+        if (Debug.ENABLED)
+            Debug.assertion(offset >= Reader.LARGEST_UNSPLITABLE);
+
+        int newOffset = offset - _leftoverLength;
+        PlatformAdapter.arraycopy(_leftover, 0, buffer, newOffset, _leftoverLength);
+        _leftoverLength = 0;
+        return newOffset;
     }
 
     protected final int write(byte[] buffer, int offset, int limit) {
@@ -344,7 +396,7 @@ abstract class Multiplexer {
                 ThreadAssert.exchangeTake(_writers);
 
             if (runnable instanceof Command) {
-                DistributedWriter writer = ((Command) runnable).getWriter();
+                MultiplexerWriter writer = ((Command) runnable).getWriter();
                 writer.enqueue(runnable);
             } else
                 runnable.run();
@@ -456,8 +508,16 @@ abstract class Multiplexer {
                      * would start with the same channel.
                      */
                     if (emptyChannelsInARow++ == _writers.length) {
-                        // All writers idle -> leave
-                        break;
+                        boolean empty = true;
+
+                        for (int i = _writers.length - 1; i >= 0; i--)
+                            if (_writers[i].hasRunnables())
+                                empty = false;
+
+                        if (empty) {
+                            // All writers idle -> leave
+                            break;
+                        }
                     }
                 }
 

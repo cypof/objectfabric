@@ -12,11 +12,9 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.TObjectWriter;
 import com.objectfabric.Connection.Endpoint;
 import com.objectfabric.Connection.Endpoint.Status;
-import com.objectfabric.DistributedWriter.Command;
+import com.objectfabric.MultiplexerWriter.Command;
 import com.objectfabric.TObject.Version;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.ThreadAssert.SingleThreaded;
@@ -83,7 +81,7 @@ final class DGCInReader extends DistributedReader {
 
                             endpoint.enqueueOnWriterThread(new Command() {
 
-                                public DistributedWriter getWriter() {
+                                public MultiplexerWriter getWriter() {
                                     return writer;
                                 }
 

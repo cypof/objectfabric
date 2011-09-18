@@ -12,7 +12,6 @@
 
 package of4gwt;
 
-
 import of4gwt.Connection.Endpoint;
 import of4gwt.TObject.Version;
 import of4gwt.misc.Debug;
@@ -32,7 +31,7 @@ final class DGCOutWriter extends DistributedWriter {
     public void onGarbageCollected(final Version shared) {
         getEndpoint().enqueueOnWriterThread(new Command() {
 
-            public DistributedWriter getWriter() {
+            public MultiplexerWriter getWriter() {
                 return DGCOutWriter.this;
             }
 

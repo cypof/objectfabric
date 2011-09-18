@@ -13,7 +13,7 @@
 package com.objectfabric;
 
 import com.objectfabric.Connection.Endpoint;
-import com.objectfabric.DistributedWriter.Command;
+import com.objectfabric.MultiplexerWriter.Command;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.Queue;
 import com.objectfabric.misc.ThreadAssert.SingleThreaded;
@@ -90,7 +90,7 @@ final class ControllerInReader extends DistributedReader {
 
                             getEndpoint().enqueueOnWriterThread(new Command() {
 
-                                public DistributedWriter getWriter() {
+                                public MultiplexerWriter getWriter() {
                                     return writer;
                                 }
 
