@@ -12,12 +12,6 @@
 
 package of4gwt;
 
-
-import of4gwt.Connection;
-import of4gwt.Helper;
-import of4gwt.Snapshot;
-import of4gwt.Transaction;
-import of4gwt.VersionMap;
 import of4gwt.VersionMap.Source;
 import of4gwt.misc.Debug;
 
@@ -95,8 +89,8 @@ final class SourceSplitter extends Extension<SourceSplitter.State> {
     }
 
     @Override
-    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Throwable throwable) {
-        if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, throwable)) {
+    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Exception exception) {
+        if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, exception)) {
             State state = get(branch);
 
             int index = Helper.getIndex(snapshot, state.Map);

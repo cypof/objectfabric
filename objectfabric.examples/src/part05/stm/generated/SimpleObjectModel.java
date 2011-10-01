@@ -10,7 +10,7 @@ package part05.stm.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class SimpleObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -41, 81, 87, -100, -41, -45, 82, 69, 5, 91, 12, 101, 112, -40, 51, -104 };
+    private static final byte[] UID = { 94, 106, 39, -113, 60, -13, 31, 47, -90, -44, 91, -81, -57, -121, -9, -65 };
 
     private static volatile SimpleObjectModel _instance;
 

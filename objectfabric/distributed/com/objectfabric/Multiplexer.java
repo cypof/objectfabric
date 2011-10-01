@@ -173,9 +173,9 @@ abstract class Multiplexer {
             reader.start();
     }
 
-    protected final void stopRead(Throwable t) {
+    protected final void stopRead(Exception e) {
         for (MultiplexerReader reader : _readers)
-            reader.stop(t);
+            reader.stop(e);
 
         if (Debug.THREADS) {
             for (MultiplexerReader reader : _readers) {
@@ -196,9 +196,9 @@ abstract class Multiplexer {
             writer.start();
     }
 
-    protected final void stopWrite(Throwable t) {
+    protected final void stopWrite(Exception e) {
         for (MultiplexerWriter writer : _writers)
-            writer.stop(t);
+            writer.stop(e);
 
         if (Debug.THREADS) {
             for (MultiplexerWriter writer : _writers) {

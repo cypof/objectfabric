@@ -73,7 +73,7 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
 
     private final Queue<SelectionKey> _cancelled = new Queue<SelectionKey>();
 
-    private boolean _shutdown;
+    private volatile boolean _shutdown;
 
     static int _debugPurposesMinBufferLength;
 
@@ -98,22 +98,26 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
 
                 @Override
                 public void run() {
-                    if (Debug.ENABLED)
-                        setNoTransaction(true);
+                    try {
+                        if (Debug.ENABLED)
+                            setNoTransaction(true);
 
-                    // TODO: direct buffers
-                    ByteBuffer buffer = ByteBuffer.allocate(Reader.LARGEST_UNSPLITABLE + SOCKET_BUFFER_SIZE);
+                        // TODO: direct buffers
+                        ByteBuffer buffer = ByteBuffer.allocate(Reader.LARGEST_UNSPLITABLE + SOCKET_BUFFER_SIZE);
 
-                    while (!_shutdown) {
-                        if (Debug.THREADS) {
-                            assertTransactionNull();
-                            ThreadAssert.assertCurrentIsEmpty();
+                        while (!_shutdown) {
+                            if (Debug.THREADS) {
+                                assertTransactionNull();
+                                ThreadAssert.assertCurrentIsEmpty();
+                            }
+
+                            NIOManager.this.run(buffer);
+
+                            if (Debug.THREADS)
+                                ThreadAssert.assertCurrentIsEmpty();
                         }
-
-                        NIOManager.this.run(buffer);
-
-                        if (Debug.THREADS)
-                            ThreadAssert.assertCurrentIsEmpty();
+                    } catch (Throwable t) {
+                        onThrowable(t);
                     }
                 }
             };
@@ -266,7 +270,7 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
 
                 if (task instanceof NIOTask) {
                     NIOTask nio = (NIOTask) task;
-                    Throwable throwable = null;
+                    Exception ex = null;
 
                     try {
                         Object result = nio.waitOnSelector();
@@ -277,20 +281,20 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
                             try {
                                 nio.waitOnSelectorSucceeded(result);
                                 return;
-                            } catch (Throwable t) {
-                                throwable = t;
+                            } catch (Exception e) {
+                                ex = e;
                             }
                         }
-                    } catch (Throwable t) {
+                    } catch (Exception e) {
                         _lock.unlock();
-                        throwable = t;
+                        ex = e;
                     }
 
-                    if (throwable != null) {
-                        if (throwable instanceof IOException || throwable instanceof CancelledKeyException)
-                            throwable = new ClosedConnectionException(throwable);
+                    if (ex != null) {
+                        if (ex instanceof IOException || ex instanceof CancelledKeyException)
+                            ex = new ClosedConnectionException(ex);
 
-                        nio.stop(throwable);
+                        nio.stop(ex);
                         return;
                     }
                 } else {
@@ -300,8 +304,8 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
 
                     try {
                         runnable.run();
-                    } catch (Throwable t) {
-                        Log.write(t.toString());
+                    } catch (Exception e) {
+                        Log.write(e.toString());
                     }
 
                     return;

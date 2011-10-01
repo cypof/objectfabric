@@ -141,15 +141,15 @@ public class MyClass extends com.objectfabric.TGeneratedFields32 {
     public final java.util.concurrent.Future<java.lang.Integer> startAsync(java.lang.String text, com.objectfabric.misc.AsyncCallback<java.lang.Integer> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             int result_ = 0;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 result_ = startImplementation(text);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             part06.methods.generated.ObjectModel.Method0.Version version_ = (part06.methods.generated.ObjectModel.Method0.Version) createVersion_objectfabric(part06.methods.generated.ObjectModel.Method0.INSTANCE);
 
@@ -177,8 +177,8 @@ public class MyClass extends com.objectfabric.TGeneratedFields32 {
     protected void startImplementationAsync(java.lang.String text, com.objectfabric.MethodCall call) {
         try {
             call.set(startImplementation(text));
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -233,15 +233,15 @@ public class MyClass extends com.objectfabric.TGeneratedFields32 {
     public final java.util.concurrent.Future<java.lang.Void> stopAsync(com.objectfabric.misc.AsyncCallback<java.lang.Void> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             java.lang.Void result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 stopImplementation();
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             part06.methods.generated.ObjectModel.Method1.Version version_ = (part06.methods.generated.ObjectModel.Method1.Version) createVersion_objectfabric(part06.methods.generated.ObjectModel.Method1.INSTANCE);
 
@@ -265,8 +265,8 @@ public class MyClass extends com.objectfabric.TGeneratedFields32 {
         try {
             stopImplementation();
             call.set(null);
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -280,8 +280,8 @@ public class MyClass extends com.objectfabric.TGeneratedFields32 {
 
                 try {
                     startImplementationAsync(text, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;
@@ -289,8 +289,8 @@ public class MyClass extends com.objectfabric.TGeneratedFields32 {
             case METHOD_1: {
                 try {
                     stopImplementationAsync(call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

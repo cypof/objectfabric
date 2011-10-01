@@ -36,9 +36,9 @@ public final class Debug extends Privileged {
 
     public static final boolean COMMUNICATIONS = ENABLED && true;
 
-    public static final boolean COMMUNICATIONS_LOG = ENABLED && true;
+    public static final boolean COMMUNICATIONS_LOG = ENABLED && false;
 
-    public static final boolean COMMUNICATIONS_LOG_ALL = ENABLED && true;
+    public static final boolean COMMUNICATIONS_LOG_ALL = ENABLED && false;
 
     public static final boolean COMMUNICATIONS_LOG_HTTP = ENABLED && false;
 

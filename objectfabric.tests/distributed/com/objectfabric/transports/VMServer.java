@@ -80,8 +80,8 @@ public final class VMServer extends Privileged {
         }
 
         @Override
-        protected void onWriteStopped(Throwable t) {
-            super.onWriteStopped(t);
+        protected void onWriteStopped(Exception e) {
+            super.onWriteStopped(e);
 
             if (Debug.ENABLED)
                 disableEqualsOrHashCheck();

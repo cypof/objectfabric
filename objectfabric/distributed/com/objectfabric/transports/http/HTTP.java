@@ -222,7 +222,7 @@ public class HTTP extends Privileged implements FilterFactory {
         public void onReadStarted() {
         }
 
-        public void onReadStopped(Throwable t) {
+        public void onReadStopped(Exception e) {
             if (_session != null)
                 _session.onFilterDisconnected(this);
         }
@@ -230,7 +230,7 @@ public class HTTP extends Privileged implements FilterFactory {
         public void onWriteStarted() {
         }
 
-        public void onWriteStopped(Throwable t) {
+        public void onWriteStopped(Exception e) {
             if (_session != null)
                 _session.onFilterDisconnected(this);
         }
@@ -349,7 +349,7 @@ public class HTTP extends Privileged implements FilterFactory {
 
             if (_type == CometTransport.CONNECTION) {
                 boolean first = _offset == CometTransport.FIELD_ID;
-                
+
                 if (first) {
                     byte[] id = PlatformAdapter.createUID();
                     _session = new HTTPSession(HTTP.this, id, _enableCrossOriginResourceSharing);

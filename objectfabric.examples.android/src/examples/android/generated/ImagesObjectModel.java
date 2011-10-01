@@ -10,7 +10,7 @@ package examples.android.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class ImagesObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -68, -86, -119, 98, -56, 13, 8, -42, 87, -30, -54, 4, 57, -62, 75, -9 };
+    private static final byte[] UID = { -111, 92, -37, 102, -53, -109, 106, -63, 73, 122, -27, 69, 92, 76, 54, 115 };
 
     private static volatile ImagesObjectModel _instance;
 

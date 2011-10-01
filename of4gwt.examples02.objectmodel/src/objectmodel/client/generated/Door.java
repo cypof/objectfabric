@@ -81,15 +81,15 @@ public class Door extends of4gwt.TGeneratedFields32 {
     public final of4gwt.misc.Future<java.lang.Void> openWindowAsync(int height, com.google.gwt.user.client.rpc.AsyncCallback<java.lang.Void> callback, of4gwt.AsyncOptions asyncOptions, of4gwt.misc.Executor executor) {
         if (executor == of4gwt.misc.TransparentExecutor.getInstance()) {
             java.lang.Void result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 openWindowImplementation(height);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             objectmodel.client.generated.MyObjectModel.Method2.Version version_ = (objectmodel.client.generated.MyObjectModel.Method2.Version) createVersion_objectfabric(objectmodel.client.generated.MyObjectModel.Method2.INSTANCE);
 
@@ -118,8 +118,8 @@ public class Door extends of4gwt.TGeneratedFields32 {
         try {
             openWindowImplementation(height);
             call.set(null);
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -133,8 +133,8 @@ public class Door extends of4gwt.TGeneratedFields32 {
 
                 try {
                     openWindowImplementationAsync(height, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

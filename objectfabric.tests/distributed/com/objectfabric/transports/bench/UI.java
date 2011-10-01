@@ -147,8 +147,8 @@ final class UI extends Data {
                         log("Connected to " + connection.getChannel().socket().getRemoteSocketAddress());
                     }
 
-                    public void onFailure(Throwable t) {
-                        log("Connection failed (" + t + ")");
+                    public void onFailure(Exception ex) {
+                        log("Connection failed (" + ex + ")");
                     }
                 }, null);
             }

@@ -102,7 +102,7 @@ public final class HTTPClient extends HTTPConnection implements Client {
                         Socket socket = (Socket) PlatformAdapter.getPrivateField(http, "serverSocket", c);
                         socket.close();
                     }
-                } catch (Throwable t) {
+                } catch (Exception e) {
                     break; // Ignore
                 }
             }
@@ -112,92 +112,99 @@ public final class HTTPClient extends HTTPConnection implements Client {
             PlatformThreadPool.getInstance().execute(new Runnable() {
 
                 public void run() {
-                    while (_running) {
-                        int length = _callback.onWrite();
+                    try {
+                        while (_running) {
+                            int length = _callback.onWrite();
 
-                        if (length == 0) {
-                            if (Debug.ENABLED)
-                                Debug.assertion(!_serverToClient);
-                        } else {
-                            OutputStream output = null;
-                            InputStream input = null;
+                            if (length == 0) {
+                                if (Debug.ENABLED)
+                                    Debug.assertion(!_serverToClient);
+                            } else
+                                call(length);
 
+                            if (_serverToClient) {
+                                // Comet connection never exits
+                            } else {
+                                _callback.onDone();
+                                break;
+                            }
+                        }
+                    } catch (Throwable t) {
+                        onThrowable(t);
+                    }
+                }
+
+                private final void call(int length) {
+                    OutputStream output = null;
+                    InputStream input = null;
+
+                    try {
+                        _request = _url.openConnection();
+                        _request.setDoInput(true);
+                        _request.setDoOutput(true);
+                        _request.setRequestProperty("Content-Type", "text/plain");
+                        _request.setRequestProperty("Accept", "text/plain");
+
+                        output = _request.getOutputStream();
+                        output.write(_buffer, 0, length);
+
+                        input = _request.getInputStream();
+
+                        if (Debug.COMMUNICATIONS_LOG_HTTP)
+                            for (Entry<String, List<String>> headers : _request.getHeaderFields().entrySet())
+                                Log.write(headers.toString());
+
+                        while (_running) {
+                            int read = input.read(_buffer, Reader.LARGEST_UNSPLITABLE, _buffer.length - Reader.LARGEST_UNSPLITABLE);
+
+                            if (_serverToClient) {
+                                if (Debug.ENABLED) {
+                                    // Comet chunks have no content length
+                                    Debug.assertion(_request.getContentLength() == -1);
+                                }
+
+                                /*
+                                 * End of request, will need to reconnect.
+                                 */
+                                if (read < 0)
+                                    break;
+                            } else {
+                                if (Debug.ENABLED) {
+                                    Debug.assertion(_request.getContentLength() == 0);
+                                    Debug.assertion(read == -1);
+                                }
+
+                                // Write side ACK, nothing to do
+                                break;
+                            }
+
+                            _callback.onRead(_buffer, Reader.LARGEST_UNSPLITABLE, Reader.LARGEST_UNSPLITABLE + read);
+                        }
+                    } catch (IOException ex) {
+                        if (_running) {
+                            _running = false;
+                            _callback.onError(ex);
+                        }
+
+                        return;
+                    } finally {
+                        if (output != null) {
                             try {
-                                _request = _url.openConnection();
-                                _request.setDoInput(true);
-                                _request.setDoOutput(true);
-                                _request.setRequestProperty("Content-Type", "text/plain");
-                                _request.setRequestProperty("Accept", "text/plain");
-
-                                output = _request.getOutputStream();
-                                output.write(_buffer, 0, length);
-
-                                input = _request.getInputStream();
-
-                                if (Debug.COMMUNICATIONS_LOG_HTTP)
-                                    for (Entry<String, List<String>> headers : _request.getHeaderFields().entrySet())
-                                        Log.write(headers.toString());
-
-                                while (_running) {
-                                    int read = input.read(_buffer, Reader.LARGEST_UNSPLITABLE, _buffer.length - Reader.LARGEST_UNSPLITABLE);
-
-                                    if (_serverToClient) {
-                                        if (Debug.ENABLED) {
-                                            // Comet chunks have no content length
-                                            Debug.assertion(_request.getContentLength() == -1);
-                                        }
-
-                                        /*
-                                         * End of request, will need to reconnect.
-                                         */
-                                        if (read < 0)
-                                            break;
-                                    } else {
-                                        if (Debug.ENABLED) {
-                                            Debug.assertion(_request.getContentLength() == 0);
-                                            Debug.assertion(read == -1);
-                                        }
-
-                                        // Write side ACK, nothing to do
-                                        break;
-                                    }
-
-                                    _callback.onRead(_buffer, Reader.LARGEST_UNSPLITABLE, Reader.LARGEST_UNSPLITABLE + read);
-                                }
-                            } catch (IOException ex) {
-                                if (_running) {
-                                    _running = false;
-                                    _callback.onError(ex);
-                                }
-
-                                return;
-                            } finally {
-                                if (output != null) {
-                                    try {
-                                        output.close();
-                                    } catch (IOException e) {
-                                        // Ignore
-                                    }
-                                }
-
-                                if (input != null) {
-                                    try {
-                                        input.close();
-                                    } catch (IOException e) {
-                                        // Ignore
-                                    }
-                                }
-
-                                _request = null;
+                                output.close();
+                            } catch (IOException _) {
+                                // Ignore
                             }
                         }
 
-                        if (_serverToClient) {
-                            // Comet connection never exits
-                        } else {
-                            _callback.onDone();
-                            break;
+                        if (input != null) {
+                            try {
+                                input.close();
+                            } catch (IOException _) {
+                                // Ignore
+                            }
                         }
+
+                        _request = null;
                     }
                 }
             });

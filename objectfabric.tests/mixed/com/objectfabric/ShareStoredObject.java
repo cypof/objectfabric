@@ -12,6 +12,8 @@
 
 package com.objectfabric;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -66,7 +68,7 @@ public class ShareStoredObject extends TestsHelper {
 
     public static final class TestWrite {
 
-        public static void main(int granularity) {
+        public static void main(int granularity) throws IOException {
             SimpleObjectModel.register();
             FileStore store = new FileStore(JdbmTest.FILE);
             Transaction trunk = Site.getLocal().createTrunk(Transaction.DEFAULT_CONFLICT_DETECTION, Transaction.DEFAULT_CONSISTENCY, Granularity.values()[granularity], store);
@@ -80,7 +82,7 @@ public class ShareStoredObject extends TestsHelper {
 
     public static final class TestShare {
 
-        public static void main(int granularity) {
+        public static void main(int granularity) throws IOException {
             Debug.ProcessName = "Server";
             SimpleObjectModel.register();
 

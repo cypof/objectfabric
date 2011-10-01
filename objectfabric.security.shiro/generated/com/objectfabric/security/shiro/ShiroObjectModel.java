@@ -74,13 +74,13 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
     public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_ACCOUNT_CLASS_ID = 0;
 
-    public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_ROLE_CLASS_ID = 1;
+    public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROSTORE_CLASS_ID = 1;
 
-    public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_SHIRO_CLASS_ID = 2;
+    public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_USERNAMEPASSWORDSESSION_CLASS_ID = 2;
 
-    public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROSTORE_CLASS_ID = 3;
+    public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_USERNAMEPASSWORDUSERMANAGER_CLASS_ID = 3;
 
-    public static final int METHOD_COUNT = 5;
+    public static final int METHOD_COUNT = 6;
 
     public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_0_ID = 4;
 
@@ -92,17 +92,19 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
     public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_4_ID = 8;
 
+    public static final int COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_5_ID = 9;
+
     @Override
     protected java.lang.Class getClass(int classId, com.objectfabric.TType[] genericParameters) {
         switch (classId) {
             case COM_OBJECTFABRIC_SECURITY_SHIRO_ACCOUNT_CLASS_ID:
                 return com.objectfabric.security.shiro.Account.class;
-            case COM_OBJECTFABRIC_SECURITY_SHIRO_ROLE_CLASS_ID:
-                return com.objectfabric.security.shiro.Role.class;
-            case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIRO_CLASS_ID:
-                return com.objectfabric.security.shiro.Shiro.class;
             case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROSTORE_CLASS_ID:
                 return com.objectfabric.security.shiro.ShiroStore.class;
+            case COM_OBJECTFABRIC_SECURITY_SHIRO_USERNAMEPASSWORDSESSION_CLASS_ID:
+                return com.objectfabric.security.shiro.UsernamePasswordSession.class;
+            case COM_OBJECTFABRIC_SECURITY_SHIRO_USERNAMEPASSWORDUSERMANAGER_CLASS_ID:
+                return com.objectfabric.security.shiro.UsernamePasswordUserManager.class;
             case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_0_ID:
                 return Method0.class;
             case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_1_ID:
@@ -113,6 +115,8 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
                 return Method3.class;
             case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_4_ID:
                 return Method4.class;
+            case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_5_ID:
+                return Method5.class;
         }
 
         return super.getClass(classId, genericParameters);
@@ -122,13 +126,13 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
     protected com.objectfabric.TObject.UserTObject createInstance(com.objectfabric.Transaction trunk, int classId, com.objectfabric.TType[] genericParameters) {
         switch (classId) {
             case COM_OBJECTFABRIC_SECURITY_SHIRO_ACCOUNT_CLASS_ID:
-                return new com.objectfabric.security.shiro.Account(trunk, null, null);
-            case COM_OBJECTFABRIC_SECURITY_SHIRO_ROLE_CLASS_ID:
-                return new com.objectfabric.security.shiro.Role(trunk, null, null);
-            case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIRO_CLASS_ID:
-                return new com.objectfabric.security.shiro.Shiro(trunk, null);
+                return new com.objectfabric.security.shiro.Account(trunk, null);
             case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROSTORE_CLASS_ID:
-                return new com.objectfabric.security.shiro.ShiroStore(trunk, null, null, null);
+                return new com.objectfabric.security.shiro.ShiroStore(trunk, null, null);
+            case COM_OBJECTFABRIC_SECURITY_SHIRO_USERNAMEPASSWORDSESSION_CLASS_ID:
+                return new com.objectfabric.security.shiro.UsernamePasswordSession(trunk, null);
+            case COM_OBJECTFABRIC_SECURITY_SHIRO_USERNAMEPASSWORDUSERMANAGER_CLASS_ID:
+                return new com.objectfabric.security.shiro.UsernamePasswordUserManager(trunk);
             case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_0_ID:
                 return new Method0(trunk);
             case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_1_ID:
@@ -139,6 +143,8 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
                 return new Method3(trunk);
             case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_4_ID:
                 return new Method4(trunk);
+            case COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_5_ID:
+                return new Method5(trunk);
         }
 
         return super.createInstance(trunk, classId, genericParameters);
@@ -165,10 +171,739 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
         }
 
         public String getName() {
-            return "login";
+            return "createAccount";
         }
 
         public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_0_ID);
+
+        public static final int USERNAME_INDEX = 0;
+
+        public static final java.lang.String USERNAME_NAME = "username";
+
+        public static final java.lang.Class USERNAME_CLASS = java.lang.String.class;
+
+        public static final int PASSWORD_INDEX = 1;
+
+        public static final java.lang.String PASSWORD_NAME = "password";
+
+        public static final java.lang.Class PASSWORD_CLASS = java.lang.String.class;
+
+        public static final int USER_DATA_INDEX = 2;
+
+        public static final java.lang.String USER_DATA_NAME = "userData";
+
+        public static final java.lang.Class USER_DATA_CLASS = java.lang.Object.class;
+
+        public static final int ERROR_OBJECTFABRIC_INDEX = 3;
+
+        public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
+
+        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
+
+        public static final int FIELD_COUNT = 4;
+
+        @Override
+        public int getFieldCount() {
+            return FIELD_COUNT;
+        }
+
+        @Override
+        public java.lang.String getFieldName(int index) {
+            return getFieldNameStatic(index);
+        }
+
+        @SuppressWarnings("static-access")
+        public static java.lang.String getFieldNameStatic(int index) {
+            switch (index) {
+                case USERNAME_INDEX:
+                    return USERNAME_NAME;
+                case PASSWORD_INDEX:
+                    return PASSWORD_NAME;
+                case USER_DATA_INDEX:
+                    return USER_DATA_NAME;
+                case ERROR_OBJECTFABRIC_INDEX:
+                    return ERROR_OBJECTFABRIC_NAME;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public java.lang.Class getFieldClass(int index) {
+            return getFieldClassStatic(index);
+        }
+
+        @SuppressWarnings("static-access")
+        public static java.lang.Class getFieldClassStatic(int index) {
+            switch (index) {
+                case USERNAME_INDEX:
+                    return USERNAME_CLASS;
+                case PASSWORD_INDEX:
+                    return PASSWORD_CLASS;
+                case USER_DATA_INDEX:
+                    return USER_DATA_CLASS;
+                case ERROR_OBJECTFABRIC_INDEX:
+                    return ERROR_OBJECTFABRIC_CLASS;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        public static class Version extends com.objectfabric.TGeneratedFields32.Version {
+
+            public java.lang.String _username;
+
+            public java.lang.String _password;
+
+            public java.lang.Object _userData;
+
+            public java.lang.String _error_objectfabric;
+
+            public Version(com.objectfabric.TGeneratedFields32.Version shared, int length) {
+                super(shared, length);
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
+                Method0.Version source = (Method0.Version) next;
+                Method0.Version merged = (Method0.Version) super.merge(target, next, flags);
+
+                if (source.hasBits()) {
+                    if (source.getBit(USERNAME_INDEX))
+                        merged._username = source._username;
+
+                    if (source.getBit(PASSWORD_INDEX))
+                        merged._password = source._password;
+
+                    if (source.getBit(USER_DATA_INDEX))
+                        merged._userData = mergeObject(merged._userData, source._userData);
+
+                    if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
+                        merged._error_objectfabric = source._error_objectfabric;
+                }
+
+                return merged;
+            }
+
+            @Override
+            public void writeWrite(com.objectfabric.Writer writer, int index) {
+                if (writer.interrupted())
+                    writer.resume();
+
+                switch (index) {
+                    case USERNAME_INDEX: {
+                        writer.writeString(_username);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case PASSWORD_INDEX: {
+                        writer.writeString(_password);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case USER_DATA_INDEX: {
+                        writer.writeObject(_userData);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case ERROR_OBJECTFABRIC_INDEX: {
+                        writer.writeString(_error_objectfabric);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    default: {
+                        super.writeWrite(writer, index);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void readWrite(com.objectfabric.Reader reader, int index) {
+                if (reader.interrupted())
+                    reader.resume();
+
+                switch (index) {
+                    case USERNAME_INDEX: {
+                        _username = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case PASSWORD_INDEX: {
+                        _password = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case USER_DATA_INDEX: {
+                        _userData = reader.readObject();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case ERROR_OBJECTFABRIC_INDEX: {
+                        _error_objectfabric = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    default: {
+                        super.readWrite(reader, index);
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version createRead() {
+                return null;
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version createVersion() {
+                return new Method0.Version(this, FIELD_COUNT);
+            }
+
+            @Override
+            public int getClassId() {
+                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_0_ID;
+            }
+
+            @SuppressWarnings("static-access")
+            @Override
+            public com.objectfabric.ObjectModel getObjectModel() {
+                return com.objectfabric.security.shiro.ShiroObjectModel.getInstance();
+            }
+        }
+    }
+
+    public static class Method1 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
+
+        public static final Method1 INSTANCE = new Method1(com.objectfabric.Site.getLocal().getTrunk());
+
+        public Method1(com.objectfabric.Transaction trunk) {
+            super(new Version(null, FIELD_COUNT), trunk);
+        }
+
+        public String getName() {
+            return "updateAccount";
+        }
+
+        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_1_ID);
+
+        public static final int USERNAME_INDEX = 0;
+
+        public static final java.lang.String USERNAME_NAME = "username";
+
+        public static final java.lang.Class USERNAME_CLASS = java.lang.String.class;
+
+        public static final int OLD_PASSWORD_INDEX = 1;
+
+        public static final java.lang.String OLD_PASSWORD_NAME = "oldPassword";
+
+        public static final java.lang.Class OLD_PASSWORD_CLASS = java.lang.String.class;
+
+        public static final int NEW_PASSWORD_INDEX = 2;
+
+        public static final java.lang.String NEW_PASSWORD_NAME = "newPassword";
+
+        public static final java.lang.Class NEW_PASSWORD_CLASS = java.lang.String.class;
+
+        public static final int USER_DATA_INDEX = 3;
+
+        public static final java.lang.String USER_DATA_NAME = "userData";
+
+        public static final java.lang.Class USER_DATA_CLASS = java.lang.Object.class;
+
+        public static final int ERROR_OBJECTFABRIC_INDEX = 4;
+
+        public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
+
+        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
+
+        public static final int FIELD_COUNT = 5;
+
+        @Override
+        public int getFieldCount() {
+            return FIELD_COUNT;
+        }
+
+        @Override
+        public java.lang.String getFieldName(int index) {
+            return getFieldNameStatic(index);
+        }
+
+        @SuppressWarnings("static-access")
+        public static java.lang.String getFieldNameStatic(int index) {
+            switch (index) {
+                case USERNAME_INDEX:
+                    return USERNAME_NAME;
+                case OLD_PASSWORD_INDEX:
+                    return OLD_PASSWORD_NAME;
+                case NEW_PASSWORD_INDEX:
+                    return NEW_PASSWORD_NAME;
+                case USER_DATA_INDEX:
+                    return USER_DATA_NAME;
+                case ERROR_OBJECTFABRIC_INDEX:
+                    return ERROR_OBJECTFABRIC_NAME;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public java.lang.Class getFieldClass(int index) {
+            return getFieldClassStatic(index);
+        }
+
+        @SuppressWarnings("static-access")
+        public static java.lang.Class getFieldClassStatic(int index) {
+            switch (index) {
+                case USERNAME_INDEX:
+                    return USERNAME_CLASS;
+                case OLD_PASSWORD_INDEX:
+                    return OLD_PASSWORD_CLASS;
+                case NEW_PASSWORD_INDEX:
+                    return NEW_PASSWORD_CLASS;
+                case USER_DATA_INDEX:
+                    return USER_DATA_CLASS;
+                case ERROR_OBJECTFABRIC_INDEX:
+                    return ERROR_OBJECTFABRIC_CLASS;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        public static class Version extends com.objectfabric.TGeneratedFields32.Version {
+
+            public java.lang.String _username;
+
+            public java.lang.String _oldPassword;
+
+            public java.lang.String _newPassword;
+
+            public java.lang.Object _userData;
+
+            public java.lang.String _error_objectfabric;
+
+            public Version(com.objectfabric.TGeneratedFields32.Version shared, int length) {
+                super(shared, length);
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
+                Method1.Version source = (Method1.Version) next;
+                Method1.Version merged = (Method1.Version) super.merge(target, next, flags);
+
+                if (source.hasBits()) {
+                    if (source.getBit(USERNAME_INDEX))
+                        merged._username = source._username;
+
+                    if (source.getBit(OLD_PASSWORD_INDEX))
+                        merged._oldPassword = source._oldPassword;
+
+                    if (source.getBit(NEW_PASSWORD_INDEX))
+                        merged._newPassword = source._newPassword;
+
+                    if (source.getBit(USER_DATA_INDEX))
+                        merged._userData = mergeObject(merged._userData, source._userData);
+
+                    if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
+                        merged._error_objectfabric = source._error_objectfabric;
+                }
+
+                return merged;
+            }
+
+            @Override
+            public void writeWrite(com.objectfabric.Writer writer, int index) {
+                if (writer.interrupted())
+                    writer.resume();
+
+                switch (index) {
+                    case USERNAME_INDEX: {
+                        writer.writeString(_username);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case OLD_PASSWORD_INDEX: {
+                        writer.writeString(_oldPassword);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case NEW_PASSWORD_INDEX: {
+                        writer.writeString(_newPassword);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case USER_DATA_INDEX: {
+                        writer.writeObject(_userData);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case ERROR_OBJECTFABRIC_INDEX: {
+                        writer.writeString(_error_objectfabric);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    default: {
+                        super.writeWrite(writer, index);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void readWrite(com.objectfabric.Reader reader, int index) {
+                if (reader.interrupted())
+                    reader.resume();
+
+                switch (index) {
+                    case USERNAME_INDEX: {
+                        _username = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case OLD_PASSWORD_INDEX: {
+                        _oldPassword = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case NEW_PASSWORD_INDEX: {
+                        _newPassword = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case USER_DATA_INDEX: {
+                        _userData = reader.readObject();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case ERROR_OBJECTFABRIC_INDEX: {
+                        _error_objectfabric = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    default: {
+                        super.readWrite(reader, index);
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version createRead() {
+                return null;
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version createVersion() {
+                return new Method1.Version(this, FIELD_COUNT);
+            }
+
+            @Override
+            public int getClassId() {
+                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_1_ID;
+            }
+
+            @SuppressWarnings("static-access")
+            @Override
+            public com.objectfabric.ObjectModel getObjectModel() {
+                return com.objectfabric.security.shiro.ShiroObjectModel.getInstance();
+            }
+        }
+    }
+
+    public static class Method2 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
+
+        public static final Method2 INSTANCE = new Method2(com.objectfabric.Site.getLocal().getTrunk());
+
+        public Method2(com.objectfabric.Transaction trunk) {
+            super(new Version(null, FIELD_COUNT), trunk);
+        }
+
+        public String getName() {
+            return "deleteAccount";
+        }
+
+        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_2_ID);
+
+        public static final int USERNAME_INDEX = 0;
+
+        public static final java.lang.String USERNAME_NAME = "username";
+
+        public static final java.lang.Class USERNAME_CLASS = java.lang.String.class;
+
+        public static final int ERROR_OBJECTFABRIC_INDEX = 1;
+
+        public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
+
+        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
+
+        public static final int FIELD_COUNT = 2;
+
+        @Override
+        public int getFieldCount() {
+            return FIELD_COUNT;
+        }
+
+        @Override
+        public java.lang.String getFieldName(int index) {
+            return getFieldNameStatic(index);
+        }
+
+        @SuppressWarnings("static-access")
+        public static java.lang.String getFieldNameStatic(int index) {
+            switch (index) {
+                case USERNAME_INDEX:
+                    return USERNAME_NAME;
+                case ERROR_OBJECTFABRIC_INDEX:
+                    return ERROR_OBJECTFABRIC_NAME;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        @Override
+        public java.lang.Class getFieldClass(int index) {
+            return getFieldClassStatic(index);
+        }
+
+        @SuppressWarnings("static-access")
+        public static java.lang.Class getFieldClassStatic(int index) {
+            switch (index) {
+                case USERNAME_INDEX:
+                    return USERNAME_CLASS;
+                case ERROR_OBJECTFABRIC_INDEX:
+                    return ERROR_OBJECTFABRIC_CLASS;
+                default:
+                    throw new IllegalArgumentException();
+            }
+        }
+
+        public static class Version extends com.objectfabric.TGeneratedFields32.Version {
+
+            public java.lang.String _username;
+
+            public java.lang.String _error_objectfabric;
+
+            public Version(com.objectfabric.TGeneratedFields32.Version shared, int length) {
+                super(shared, length);
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
+                Method2.Version source = (Method2.Version) next;
+                Method2.Version merged = (Method2.Version) super.merge(target, next, flags);
+
+                if (source.hasBits()) {
+                    if (source.getBit(USERNAME_INDEX))
+                        merged._username = source._username;
+
+                    if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
+                        merged._error_objectfabric = source._error_objectfabric;
+                }
+
+                return merged;
+            }
+
+            @Override
+            public void writeWrite(com.objectfabric.Writer writer, int index) {
+                if (writer.interrupted())
+                    writer.resume();
+
+                switch (index) {
+                    case USERNAME_INDEX: {
+                        writer.writeString(_username);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case ERROR_OBJECTFABRIC_INDEX: {
+                        writer.writeString(_error_objectfabric);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    default: {
+                        super.writeWrite(writer, index);
+
+                        if (writer.interrupted()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public void readWrite(com.objectfabric.Reader reader, int index) {
+                if (reader.interrupted())
+                    reader.resume();
+
+                switch (index) {
+                    case USERNAME_INDEX: {
+                        _username = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    case ERROR_OBJECTFABRIC_INDEX: {
+                        _error_objectfabric = reader.readString();
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                    default: {
+                        super.readWrite(reader, index);
+
+                        if (reader.interrupted()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+                        break;
+                    }
+                }
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version createRead() {
+                return null;
+            }
+
+            @Override
+            public com.objectfabric.TObject.Version createVersion() {
+                return new Method2.Version(this, FIELD_COUNT);
+            }
+
+            @Override
+            public int getClassId() {
+                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_2_ID;
+            }
+
+            @SuppressWarnings("static-access")
+            @Override
+            public com.objectfabric.ObjectModel getObjectModel() {
+                return com.objectfabric.security.shiro.ShiroObjectModel.getInstance();
+            }
+        }
+    }
+
+    public static class Method3 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
+
+        public static final Method3 INSTANCE = new Method3(com.objectfabric.Site.getLocal().getTrunk());
+
+        public Method3(com.objectfabric.Transaction trunk) {
+            super(new Version(null, FIELD_COUNT), trunk);
+        }
+
+        public String getName() {
+            return "login";
+        }
+
+        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_3_ID);
 
         public static final int USERNAME_INDEX = 0;
 
@@ -259,8 +994,8 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
             @Override
             public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
-                Method0.Version source = (Method0.Version) next;
-                Method0.Version merged = (Method0.Version) super.merge(target, next, flags);
+                Method3.Version source = (Method3.Version) next;
+                Method3.Version merged = (Method3.Version) super.merge(target, next, flags);
 
                 if (source.hasBits()) {
                     if (source.getBit(USERNAME_INDEX))
@@ -394,12 +1129,12 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
             @Override
             public com.objectfabric.TObject.Version createVersion() {
-                return new Method0.Version(this, FIELD_COUNT);
+                return new Method3.Version(this, FIELD_COUNT);
             }
 
             @Override
             public int getClassId() {
-                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_0_ID;
+                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_3_ID;
             }
 
             @SuppressWarnings("static-access")
@@ -410,11 +1145,11 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
         }
     }
 
-    public static class Method1 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
+    public static class Method4 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
 
-        public static final Method1 INSTANCE = new Method1(com.objectfabric.Site.getLocal().getTrunk());
+        public static final Method4 INSTANCE = new Method4(com.objectfabric.Site.getLocal().getTrunk());
 
-        public Method1(com.objectfabric.Transaction trunk) {
+        public Method4(com.objectfabric.Transaction trunk) {
             super(new Version(null, FIELD_COUNT), trunk);
         }
 
@@ -422,7 +1157,7 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
             return "bind";
         }
 
-        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_1_ID);
+        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_4_ID);
 
         public static final int SESSION_INDEX = 0;
 
@@ -430,13 +1165,19 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
         public static final java.lang.Class SESSION_CLASS = java.lang.String.class;
 
-        public static final int ERROR_OBJECTFABRIC_INDEX = 1;
+        public static final int RETURN_OBJECTFABRIC_INDEX = 1;
+
+        public static final java.lang.String RETURN_OBJECTFABRIC_NAME = "return_objectfabric";
+
+        public static final java.lang.Class RETURN_OBJECTFABRIC_CLASS = boolean.class;
+
+        public static final int ERROR_OBJECTFABRIC_INDEX = 2;
 
         public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
 
         public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
 
-        public static final int FIELD_COUNT = 2;
+        public static final int FIELD_COUNT = 3;
 
         @Override
         public int getFieldCount() {
@@ -453,6 +1194,8 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
             switch (index) {
                 case SESSION_INDEX:
                     return SESSION_NAME;
+                case RETURN_OBJECTFABRIC_INDEX:
+                    return RETURN_OBJECTFABRIC_NAME;
                 case ERROR_OBJECTFABRIC_INDEX:
                     return ERROR_OBJECTFABRIC_NAME;
                 default:
@@ -470,6 +1213,8 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
             switch (index) {
                 case SESSION_INDEX:
                     return SESSION_CLASS;
+                case RETURN_OBJECTFABRIC_INDEX:
+                    return RETURN_OBJECTFABRIC_CLASS;
                 case ERROR_OBJECTFABRIC_INDEX:
                     return ERROR_OBJECTFABRIC_CLASS;
                 default:
@@ -481,6 +1226,8 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
             public java.lang.String _session;
 
+            public boolean _return_objectfabric;
+
             public java.lang.String _error_objectfabric;
 
             public Version(com.objectfabric.TGeneratedFields32.Version shared, int length) {
@@ -489,12 +1236,15 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
             @Override
             public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
-                Method1.Version source = (Method1.Version) next;
-                Method1.Version merged = (Method1.Version) super.merge(target, next, flags);
+                Method4.Version source = (Method4.Version) next;
+                Method4.Version merged = (Method4.Version) super.merge(target, next, flags);
 
                 if (source.hasBits()) {
                     if (source.getBit(SESSION_INDEX))
                         merged._session = source._session;
+
+                    if (source.getBit(RETURN_OBJECTFABRIC_INDEX))
+                        merged._return_objectfabric = source._return_objectfabric;
 
                     if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
                         merged._error_objectfabric = source._error_objectfabric;
@@ -516,6 +1266,15 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
                             writer.interrupt(null);
                             return;
                         }
+                        break;
+                    }
+                    case RETURN_OBJECTFABRIC_INDEX: {
+                        if (!writer.canWriteBoolean()) {
+                            writer.interrupt(null);
+                            return;
+                        }
+
+                        writer.writeBoolean(_return_objectfabric);
                         break;
                     }
                     case ERROR_OBJECTFABRIC_INDEX: {
@@ -554,6 +1313,15 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
                         }
                         break;
                     }
+                    case RETURN_OBJECTFABRIC_INDEX: {
+                        if (!reader.canReadBoolean()) {
+                            reader.interrupt(null);
+                            return;
+                        }
+
+                        _return_objectfabric = reader.readBoolean();
+                        break;
+                    }
                     case ERROR_OBJECTFABRIC_INDEX: {
                         _error_objectfabric = reader.readString();
 
@@ -582,12 +1350,12 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
             @Override
             public com.objectfabric.TObject.Version createVersion() {
-                return new Method1.Version(this, FIELD_COUNT);
+                return new Method4.Version(this, FIELD_COUNT);
             }
 
             @Override
             public int getClassId() {
-                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_1_ID;
+                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_4_ID;
             }
 
             @SuppressWarnings("static-access")
@@ -598,11 +1366,11 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
         }
     }
 
-    public static class Method2 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
+    public static class Method5 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
 
-        public static final Method2 INSTANCE = new Method2(com.objectfabric.Site.getLocal().getTrunk());
+        public static final Method5 INSTANCE = new Method5(com.objectfabric.Site.getLocal().getTrunk());
 
-        public Method2(com.objectfabric.Transaction trunk) {
+        public Method5(com.objectfabric.Transaction trunk) {
             super(new Version(null, FIELD_COUNT), trunk);
         }
 
@@ -610,7 +1378,7 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
             return "logout";
         }
 
-        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_2_ID);
+        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_5_ID);
 
         public static final int ERROR_OBJECTFABRIC_INDEX = 0;
 
@@ -665,8 +1433,8 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
             @Override
             public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
-                Method2.Version source = (Method2.Version) next;
-                Method2.Version merged = (Method2.Version) super.merge(target, next, flags);
+                Method5.Version source = (Method5.Version) next;
+                Method5.Version merged = (Method5.Version) super.merge(target, next, flags);
 
                 if (source.hasBits()) {
                     if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
@@ -737,454 +1505,12 @@ public class ShiroObjectModel extends com.objectfabric.ObjectModel {
 
             @Override
             public com.objectfabric.TObject.Version createVersion() {
-                return new Method2.Version(this, FIELD_COUNT);
+                return new Method5.Version(this, FIELD_COUNT);
             }
 
             @Override
             public int getClassId() {
-                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_2_ID;
-            }
-
-            @SuppressWarnings("static-access")
-            @Override
-            public com.objectfabric.ObjectModel getObjectModel() {
-                return com.objectfabric.security.shiro.ShiroObjectModel.getInstance();
-            }
-        }
-    }
-
-    public static class Method3 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
-
-        public static final Method3 INSTANCE = new Method3(com.objectfabric.Site.getLocal().getTrunk());
-
-        public Method3(com.objectfabric.Transaction trunk) {
-            super(new Version(null, FIELD_COUNT), trunk);
-        }
-
-        public String getName() {
-            return "createAccount";
-        }
-
-        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_3_ID);
-
-        public static final int USERNAME_INDEX = 0;
-
-        public static final java.lang.String USERNAME_NAME = "username";
-
-        public static final java.lang.Class USERNAME_CLASS = java.lang.String.class;
-
-        public static final int PASSWORD_INDEX = 1;
-
-        public static final java.lang.String PASSWORD_NAME = "password";
-
-        public static final java.lang.Class PASSWORD_CLASS = java.lang.String.class;
-
-        public static final int RETURN_OBJECTFABRIC_INDEX = 2;
-
-        public static final java.lang.String RETURN_OBJECTFABRIC_NAME = "return_objectfabric";
-
-        public static final java.lang.Class RETURN_OBJECTFABRIC_CLASS = com.objectfabric.security.shiro.Account.class;
-
-        public static final int ERROR_OBJECTFABRIC_INDEX = 3;
-
-        public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
-
-        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
-
-        public static final int FIELD_COUNT = 4;
-
-        @Override
-        public int getFieldCount() {
-            return FIELD_COUNT;
-        }
-
-        @Override
-        public java.lang.String getFieldName(int index) {
-            return getFieldNameStatic(index);
-        }
-
-        @SuppressWarnings("static-access")
-        public static java.lang.String getFieldNameStatic(int index) {
-            switch (index) {
-                case USERNAME_INDEX:
-                    return USERNAME_NAME;
-                case PASSWORD_INDEX:
-                    return PASSWORD_NAME;
-                case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_NAME;
-                case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_NAME;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-        @Override
-        public java.lang.Class getFieldClass(int index) {
-            return getFieldClassStatic(index);
-        }
-
-        @SuppressWarnings("static-access")
-        public static java.lang.Class getFieldClassStatic(int index) {
-            switch (index) {
-                case USERNAME_INDEX:
-                    return USERNAME_CLASS;
-                case PASSWORD_INDEX:
-                    return PASSWORD_CLASS;
-                case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_CLASS;
-                case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_CLASS;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-        public static class Version extends com.objectfabric.TGeneratedFields32.Version {
-
-            public java.lang.String _username;
-
-            public java.lang.String _password;
-
-            public com.objectfabric.TObject _return_objectfabric;
-
-            public java.lang.String _error_objectfabric;
-
-            public Version(com.objectfabric.TGeneratedFields32.Version shared, int length) {
-                super(shared, length);
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
-                Method3.Version source = (Method3.Version) next;
-                Method3.Version merged = (Method3.Version) super.merge(target, next, flags);
-
-                if (source.hasBits()) {
-                    if (source.getBit(USERNAME_INDEX))
-                        merged._username = source._username;
-
-                    if (source.getBit(PASSWORD_INDEX))
-                        merged._password = source._password;
-
-                    if (source.getBit(RETURN_OBJECTFABRIC_INDEX))
-                        merged._return_objectfabric = mergeTObject(merged._return_objectfabric, source._return_objectfabric);
-
-                    if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
-                        merged._error_objectfabric = source._error_objectfabric;
-                }
-
-                return merged;
-            }
-
-            @Override
-            public void writeWrite(com.objectfabric.Writer writer, int index) {
-                if (writer.interrupted())
-                    writer.resume();
-
-                switch (index) {
-                    case USERNAME_INDEX: {
-                        writer.writeString(_username);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case PASSWORD_INDEX: {
-                        writer.writeString(_password);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case RETURN_OBJECTFABRIC_INDEX: {
-                        writer.writeTObject(_return_objectfabric);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case ERROR_OBJECTFABRIC_INDEX: {
-                        writer.writeString(_error_objectfabric);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    default: {
-                        super.writeWrite(writer, index);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void readWrite(com.objectfabric.Reader reader, int index) {
-                if (reader.interrupted())
-                    reader.resume();
-
-                switch (index) {
-                    case USERNAME_INDEX: {
-                        _username = reader.readString();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case PASSWORD_INDEX: {
-                        _password = reader.readString();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case RETURN_OBJECTFABRIC_INDEX: {
-                        _return_objectfabric = reader.readTObject();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case ERROR_OBJECTFABRIC_INDEX: {
-                        _error_objectfabric = reader.readString();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    default: {
-                        super.readWrite(reader, index);
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version createRead() {
-                return null;
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version createVersion() {
-                return new Method3.Version(this, FIELD_COUNT);
-            }
-
-            @Override
-            public int getClassId() {
-                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_3_ID;
-            }
-
-            @SuppressWarnings("static-access")
-            @Override
-            public com.objectfabric.ObjectModel getObjectModel() {
-                return com.objectfabric.security.shiro.ShiroObjectModel.getInstance();
-            }
-        }
-    }
-
-    public static class Method4 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
-
-        public static final Method4 INSTANCE = new Method4(com.objectfabric.Site.getLocal().getTrunk());
-
-        public Method4(com.objectfabric.Transaction trunk) {
-            super(new Version(null, FIELD_COUNT), trunk);
-        }
-
-        public String getName() {
-            return "deleteAccount";
-        }
-
-        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.security.shiro.ShiroObjectModel.getInstance(), com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_4_ID);
-
-        public static final int USERNAME_INDEX = 0;
-
-        public static final java.lang.String USERNAME_NAME = "username";
-
-        public static final java.lang.Class USERNAME_CLASS = java.lang.String.class;
-
-        public static final int ERROR_OBJECTFABRIC_INDEX = 1;
-
-        public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
-
-        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
-
-        public static final int FIELD_COUNT = 2;
-
-        @Override
-        public int getFieldCount() {
-            return FIELD_COUNT;
-        }
-
-        @Override
-        public java.lang.String getFieldName(int index) {
-            return getFieldNameStatic(index);
-        }
-
-        @SuppressWarnings("static-access")
-        public static java.lang.String getFieldNameStatic(int index) {
-            switch (index) {
-                case USERNAME_INDEX:
-                    return USERNAME_NAME;
-                case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_NAME;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-        @Override
-        public java.lang.Class getFieldClass(int index) {
-            return getFieldClassStatic(index);
-        }
-
-        @SuppressWarnings("static-access")
-        public static java.lang.Class getFieldClassStatic(int index) {
-            switch (index) {
-                case USERNAME_INDEX:
-                    return USERNAME_CLASS;
-                case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_CLASS;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-        public static class Version extends com.objectfabric.TGeneratedFields32.Version {
-
-            public java.lang.String _username;
-
-            public java.lang.String _error_objectfabric;
-
-            public Version(com.objectfabric.TGeneratedFields32.Version shared, int length) {
-                super(shared, length);
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
-                Method4.Version source = (Method4.Version) next;
-                Method4.Version merged = (Method4.Version) super.merge(target, next, flags);
-
-                if (source.hasBits()) {
-                    if (source.getBit(USERNAME_INDEX))
-                        merged._username = source._username;
-
-                    if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
-                        merged._error_objectfabric = source._error_objectfabric;
-                }
-
-                return merged;
-            }
-
-            @Override
-            public void writeWrite(com.objectfabric.Writer writer, int index) {
-                if (writer.interrupted())
-                    writer.resume();
-
-                switch (index) {
-                    case USERNAME_INDEX: {
-                        writer.writeString(_username);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case ERROR_OBJECTFABRIC_INDEX: {
-                        writer.writeString(_error_objectfabric);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    default: {
-                        super.writeWrite(writer, index);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void readWrite(com.objectfabric.Reader reader, int index) {
-                if (reader.interrupted())
-                    reader.resume();
-
-                switch (index) {
-                    case USERNAME_INDEX: {
-                        _username = reader.readString();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case ERROR_OBJECTFABRIC_INDEX: {
-                        _error_objectfabric = reader.readString();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    default: {
-                        super.readWrite(reader, index);
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version createRead() {
-                return null;
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version createVersion() {
-                return new Method4.Version(this, FIELD_COUNT);
-            }
-
-            @Override
-            public int getClassId() {
-                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_4_ID;
+                return com.objectfabric.security.shiro.ShiroObjectModel.COM_OBJECTFABRIC_SECURITY_SHIRO_SHIROOBJECTMODEL_METHOD_5_ID;
             }
 
             @SuppressWarnings("static-access")

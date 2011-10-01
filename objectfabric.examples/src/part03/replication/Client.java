@@ -63,7 +63,7 @@ public class Client {
                 }
             }
 
-            public void onDisconnected(Throwable t) {
+            public void onDisconnected(Exception e) {
             }
         });
 

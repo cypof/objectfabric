@@ -12,6 +12,7 @@
 
 package com.objectfabric;
 
+import java.io.IOException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -73,7 +74,7 @@ public class JDBMStoreTest extends TestsHelper {
 
         private final LazyMap<String, PersistenceClass> _map;
 
-        private TestWrite() {
+        private TestWrite() throws IOException {
             _store = new FileStore(PATH);
             Transaction trunk = Site.getLocal().createTrunk(_store);
             Transaction.setDefaultTrunk(trunk);
@@ -83,7 +84,7 @@ public class JDBMStoreTest extends TestsHelper {
             _store.setRoot(_map);
         }
 
-        public static void main(String[] args) {
+        public static void main(String[] args) throws IOException {
             PersistenceObjectModel.register();
             TestWrite test = new TestWrite();
             int perf = 0;
@@ -140,7 +141,7 @@ public class JDBMStoreTest extends TestsHelper {
                             maxLatency.Value = ms;
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception _) {
                         throw new IllegalStateException();
                     }
                 }, new AsyncOptions() {
@@ -211,7 +212,7 @@ public class JDBMStoreTest extends TestsHelper {
                         pending.decrementAndGet();
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception _) {
                     }
                 }, new AsyncOptions() {
 

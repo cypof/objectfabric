@@ -33,14 +33,14 @@ final class CallOutReader extends DistributedReader {
     }
 
     @Override
-    protected void onStopped(Throwable t) {
-        super.onStopped(t);
+    protected void onStopped(Exception e) {
+        super.onStopped(e);
 
         for (MethodCall call : _pendingCalls.values()) {
             if (Debug.ENABLED)
                 Helper.getInstance().setNoTransaction(false);
 
-            call.setException(t);
+            call.setException(e);
 
             if (Debug.ENABLED)
                 Helper.getInstance().setNoTransaction(true);

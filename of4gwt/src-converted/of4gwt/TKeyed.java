@@ -18,6 +18,7 @@ import of4gwt.TObject.UserTObject;
 import of4gwt.Visitor.ClassVisitor;
 import of4gwt.misc.Debug;
 import of4gwt.misc.List;
+import of4gwt.misc.PlatformClass;
 
 public abstract class TKeyed<K> extends UserTObject {
 
@@ -99,7 +100,7 @@ public abstract class TKeyed<K> extends UserTObject {
         TKeyedEntry entry = TKeyedBase1.getEntry(shared.getWrites(), key, hash);
 
         if (Debug.ENABLED)
-            if (!(this instanceof LazyMap) && entry != null)
+            if (!PlatformClass.getClassName(this).contains("Lazy") && entry != null)
                 Debug.assertion(!entry.isSoft() && entry.getKeyDirect() != null);
 
         return entry;

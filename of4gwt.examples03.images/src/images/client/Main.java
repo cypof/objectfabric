@@ -98,7 +98,7 @@ public class Main implements EntryPoint {
                 sendButton.setEnabled(true);
             }
 
-            public void onDisconnected(Throwable t) {
+            public void onDisconnected(Exception e) {
             }
         });
 

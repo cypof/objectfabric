@@ -193,52 +193,60 @@ final class CallInReader extends DistributedReader {
 
         @Override
         public void run() {
-            if (Debug.ENABLED)
-                Debug.assertion(Transaction.getCurrent() == null);
+            try {
+                if (Debug.ENABLED)
+                    Debug.assertion(Transaction.getCurrent() == null);
 
-            if (Debug.THREADS)
-                ThreadAssert.exchangeTake(this);
+                if (Debug.THREADS)
+                    ThreadAssert.exchangeTake(this);
 
-            if (getTransaction() != null)
-                Transaction.setCurrentUnsafe(getTransaction());
+                if (getTransaction() != null)
+                    Transaction.setCurrentUnsafe(getTransaction());
 
-            getTarget().invoke_objectfabric(this);
+                Connection.setCurrent(_endpoint.getConnection());
 
-            if (getTransaction() != null)
-                Transaction.setCurrentUnsafe(null);
+                getTarget().invoke_objectfabric(this);
 
-            if (Debug.THREADS)
-                ThreadAssert.exchangeGive(this, getTransaction());
+                Connection.setCurrent(null);
+
+                if (getTransaction() != null)
+                    Transaction.setCurrentUnsafe(null);
+
+                if (Debug.THREADS)
+                    ThreadAssert.exchangeGive(this, getTransaction());
+            } catch (Throwable t) {
+                OF.getConfig().onThrowable(t);
+            }
         }
 
         @SuppressWarnings("unchecked")
         @Override
         public void set(Object result, boolean direct) {
-            Throwable throwable = null;
+            Exception ex = null;
 
             if (!direct)
-                throwable = LocalMethodCall.afterRun(this, null);
+                ex = LocalMethodCall.afterRun(this, null);
 
             TObject.Version version = getMethod().getSharedVersion_objectfabric().createVersion();
 
-            if (throwable == null)
+            if (ex == null)
                 getTarget().setResult_objectfabric(version, getIndex(), result);
             else
-                getTarget().setError_objectfabric(version, getIndex(), com.objectfabric.misc.PlatformAdapter.getStackAsString(throwable));
+                getTarget().setError_objectfabric(version, getIndex(), com.objectfabric.misc.PlatformAdapter.getStackAsString(ex));
 
             setMethodVersion(version);
             super.set(result, direct);
         }
 
         @Override
-        public void setException(Throwable throwable, boolean direct) {
+        public void setException(Exception ex, boolean direct) {
             if (!direct)
-                throwable = LocalMethodCall.afterRun(this, throwable);
+                ex = LocalMethodCall.afterRun(this, ex);
 
             TObject.Version version = getMethod().getSharedVersion_objectfabric().createVersion();
-            getTarget().setError_objectfabric(version, getIndex(), com.objectfabric.misc.PlatformAdapter.getStackAsString(throwable));
+            getTarget().setError_objectfabric(version, getIndex(), com.objectfabric.misc.PlatformAdapter.getStackAsString(ex));
             setMethodVersion(version);
-            super.setException(throwable, direct);
+            super.setException(ex, direct);
         }
 
         @Override

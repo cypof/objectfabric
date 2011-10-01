@@ -170,7 +170,7 @@ public class VMTest3Client extends Privileged {
                                     _commitCount.incrementAndGet();
                             }
 
-                            public void onFailure(Throwable t) {
+                            public void onFailure(Exception t) {
                                 Log.write(t);
                             }
                         });

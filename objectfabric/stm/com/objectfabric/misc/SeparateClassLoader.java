@@ -121,8 +121,8 @@ public class SeparateClassLoader extends Thread implements Closeable {
     public Object getResult() {
         try {
             return _future.get();
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

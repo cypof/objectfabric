@@ -81,15 +81,15 @@ abstract class LazyMapBase extends of4gwt.TKeyed {
     protected final of4gwt.misc.Future<java.lang.Object> fetchAsync(java.lang.Object key, com.google.gwt.user.client.rpc.AsyncCallback<java.lang.Object> callback, of4gwt.AsyncOptions asyncOptions, of4gwt.misc.Executor executor) {
         if (executor == of4gwt.misc.TransparentExecutor.getInstance()) {
             java.lang.Object result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 result_ = fetchImplementation(key);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             of4gwt.DefaultObjectModel.Method0.Version version_ = (of4gwt.DefaultObjectModel.Method0.Version) createVersion_objectfabric(of4gwt.DefaultObjectModel.Method0.INSTANCE);
 
@@ -117,8 +117,8 @@ abstract class LazyMapBase extends of4gwt.TKeyed {
     protected void fetchImplementationAsync(java.lang.Object key, of4gwt.MethodCall call) {
         try {
             call.set(fetchImplementation(key));
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -132,8 +132,8 @@ abstract class LazyMapBase extends of4gwt.TKeyed {
 
                 try {
                     fetchImplementationAsync(key, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

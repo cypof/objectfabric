@@ -70,7 +70,7 @@ public class TLSTest extends Privileged {
             public void onConnection(SocketConnection session) {
             }
 
-            public void onDisconnection(SocketConnection session, Throwable t) {
+            public void onDisconnection(SocketConnection session, Exception e) {
             }
 
             public void onReceived(SocketConnection session, Object object) {

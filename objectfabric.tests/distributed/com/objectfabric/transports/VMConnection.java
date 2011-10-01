@@ -67,14 +67,14 @@ public abstract class VMConnection extends Connection {
     }
 
     @Override
-    protected void close_(Throwable throwable) {
-        super.close_(throwable);
+    protected void close_(Exception e) {
+        super.close_(e);
 
         if (Debug.ENABLED)
             setNoTransaction(true);
 
-        stopRead(throwable);
-        stopWrite(throwable);
+        stopRead(e);
+        stopWrite(e);
 
         if (Debug.ENABLED)
             setNoTransaction(false);

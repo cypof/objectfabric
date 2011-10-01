@@ -15,7 +15,6 @@ package com.objectfabric.extensions;
 import java.util.concurrent.Executor;
 
 import com.objectfabric.AsyncOptions;
-import com.objectfabric.OF;
 import com.objectfabric.Privileged;
 import com.objectfabric.Site;
 import com.objectfabric.TGeneratedFields;
@@ -95,7 +94,7 @@ public class Logger extends Walker {
         Flush flush = _run.startFlush();
 
         if (requestRun())
-            OF.getConfig().wait(flush);
+            wait(flush);
     }
 
     public void stop() {
@@ -145,13 +144,14 @@ public class Logger extends Walker {
         _executor.execute(_run);
     }
 
-    private final class Run extends DefaultRunnable implements Runnable {
+    private final class Run extends DefaultRunnable {
 
         public Run() {
             super(Logger.this);
         }
 
-        public void run() {
+        @Override
+        protected void checkedRun() {
             if (Debug.ENABLED) {
                 ThreadAssert.resume(this, false);
                 Debug.assertion(Transaction.getCurrent() == null);

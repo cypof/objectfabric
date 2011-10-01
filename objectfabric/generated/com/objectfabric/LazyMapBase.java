@@ -81,15 +81,15 @@ abstract class LazyMapBase extends com.objectfabric.TKeyed {
     protected final java.util.concurrent.Future<java.lang.Object> fetchAsync(java.lang.Object key, com.objectfabric.misc.AsyncCallback<java.lang.Object> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             java.lang.Object result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 result_ = fetchImplementation(key);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             com.objectfabric.DefaultObjectModel.Method0.Version version_ = (com.objectfabric.DefaultObjectModel.Method0.Version) createVersion_objectfabric(com.objectfabric.DefaultObjectModel.Method0.INSTANCE);
 
@@ -117,8 +117,8 @@ abstract class LazyMapBase extends com.objectfabric.TKeyed {
     protected void fetchImplementationAsync(java.lang.Object key, com.objectfabric.MethodCall call) {
         try {
             call.set(fetchImplementation(key));
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -132,8 +132,8 @@ abstract class LazyMapBase extends com.objectfabric.TKeyed {
 
                 try {
                     fetchImplementationAsync(key, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

@@ -84,7 +84,7 @@ public class VMTest4Client extends Privileged {
                             _exit = true;
                         }
 
-                        public void onFailure(Throwable t) {
+                        public void onFailure(Exception _) {
                         }
                     });
                 } else

@@ -51,7 +51,7 @@ class Index extends IndexBase {
 
         public abstract void onSuccess();
 
-        public abstract void onFailure(Throwable throwable);
+        public abstract void onFailure(Exception e);
     }
 
     protected Index(Transaction trunk) {

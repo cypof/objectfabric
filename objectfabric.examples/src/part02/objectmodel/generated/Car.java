@@ -351,15 +351,15 @@ public class Car extends com.objectfabric.TGeneratedFields32 {
     public final java.util.concurrent.Future<java.lang.Void> startAsync(com.objectfabric.misc.AsyncCallback<java.lang.Void> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             java.lang.Void result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 startImplementation();
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             part02.objectmodel.generated.MyObjectModel.Method0.Version version_ = (part02.objectmodel.generated.MyObjectModel.Method0.Version) createVersion_objectfabric(part02.objectmodel.generated.MyObjectModel.Method0.INSTANCE);
 
@@ -383,8 +383,8 @@ public class Car extends com.objectfabric.TGeneratedFields32 {
         try {
             startImplementation();
             call.set(null);
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -439,15 +439,15 @@ public class Car extends com.objectfabric.TGeneratedFields32 {
     public final java.util.concurrent.Future<part02.objectmodel.generated.Key> lendAsync(part02.objectmodel.generated.Driver friend, part02.objectmodel.generated.Key key, com.objectfabric.misc.AsyncCallback<part02.objectmodel.generated.Key> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             part02.objectmodel.generated.Key result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 result_ = lendImplementation(friend, key);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             part02.objectmodel.generated.MyObjectModel.Method1.Version version_ = (part02.objectmodel.generated.MyObjectModel.Method1.Version) createVersion_objectfabric(part02.objectmodel.generated.MyObjectModel.Method1.INSTANCE);
 
@@ -480,8 +480,8 @@ public class Car extends com.objectfabric.TGeneratedFields32 {
     protected void lendImplementationAsync(part02.objectmodel.generated.Driver friend, part02.objectmodel.generated.Key key, com.objectfabric.MethodCall call) {
         try {
             call.set(lendImplementation(friend, key));
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -492,8 +492,8 @@ public class Car extends com.objectfabric.TGeneratedFields32 {
             case METHOD_0: {
                 try {
                     startImplementationAsync(call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;
@@ -505,8 +505,8 @@ public class Car extends com.objectfabric.TGeneratedFields32 {
 
                 try {
                     lendImplementationAsync(friend, key, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

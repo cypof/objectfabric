@@ -2,8 +2,24 @@
 <ObjectModel xsi:noNamespaceSchemaLocation="http://objectfabric.com/schemas/objectfabric-0.8.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	name="ShiroObjectModel">
 	<Package name="com.objectfabric.security.shiro">
-		<Class name="Shiro" abstract="true">
-			<Field name="store" type="ShiroStore" readonly="true" />
+		<Class name="UsernamePasswordUserManager" abstract="true">
+			<Method name="createAccount">
+				<Argument name="username" type="String" />
+				<Argument name="password" type="String" />
+				<Argument name="userData" type="Object" />
+			</Method>
+			<Method name="updateAccount">
+				<Argument name="username" type="String" />
+				<Argument name="oldPassword" type="String" />
+				<Argument name="newPassword" type="String" />
+				<Argument name="userData" type="Object" />
+			</Method>
+			<Method name="deleteAccount">
+				<Argument name="username" type="String" />
+			</Method>
+		</Class>
+		<Class name="UsernamePasswordSession" abstract="true">
+			<Field name="userManager" type="UsernamePasswordUserManager" readonly="true" />
 			<Method name="login" comment="Creates a session">
 				<Argument name="username" type="String" />
 				<Argument name="password" type="String" />
@@ -11,31 +27,19 @@
 			</Method>
 			<Method name="bind" comment="Binds to existing session">
 				<Argument name="session" type="String" />
+				<ReturnValue type="boolean" />
 			</Method>
 			<Method name="logout" comment="Deletes current session" />
-			<Method name="createAccount">
-				<Argument name="username" type="String" />
-				<Argument name="password" type="String" />
-				<ReturnValue type="Account" />
-			</Method>
-			<Method name="deleteAccount">
-				<Argument name="username" type="String" />
-			</Method>
 		</Class>
 		<Class name="ShiroStore">
-			<Field name="accounts" type="Map(String, Account)" readonly="true" />
-			<Field name="roles" type="Map(String, Role)" readonly="true" />
+			<Field name="accounts" type="LazyMap(String, Account)" readonly="true" />
 			<Field name="sessions" type="LazyMap(String, Object)" readonly="true" />
 		</Class>
-		<Class name="Account" abstract="true">
+		<Class name="Account" public="false">
 			<Field name="username" type="String" readonly="true" />
 			<Field name="passwordHash" type="byte[]" />
 			<Field name="salt" type="byte[]" />
-			<Field name="roles" type="Set(Role)" readonly="true" />
-		</Class>
-		<Class name="Role">
-			<Field name="name" type="String" readonly="true" />
-			<Field name="permissions" type="Set(String)" readonly="true" />
+			<Field name="userData" type="Object" />
 		</Class>
 	</Package>
 </ObjectModel>

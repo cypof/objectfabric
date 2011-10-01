@@ -94,8 +94,8 @@ class Data {
         }
 
         @Override
-        protected void onWriteStopped(Throwable t) {
-            super.onWriteStopped(t);
+        protected void onWriteStopped(Exception e) {
+            super.onWriteStopped(e);
 
             log("Disconnected from " + getChannel().socket().getRemoteSocketAddress());
 

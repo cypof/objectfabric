@@ -82,7 +82,7 @@ abstract class CometTransport extends ConnectionState {
 
         void onDone();
 
-        void onError(Throwable t);
+        void onError(Exception e);
     }
 
     private final HTTPRequestBase _reader, _writer;
@@ -118,8 +118,8 @@ abstract class CometTransport extends ConnectionState {
             public void onDone() {
             }
 
-            public void onError(Throwable t) {
-                CometTransport.this.onError(t);
+            public void onError(Exception e) {
+                CometTransport.this.onError(e);
             }
         });
 
@@ -152,8 +152,8 @@ abstract class CometTransport extends ConnectionState {
                 endWrite();
             }
 
-            public void onError(Throwable t) {
-                CometTransport.this.onError(t);
+            public void onError(Exception e) {
+                CometTransport.this.onError(e);
             }
         });
     }
@@ -166,7 +166,7 @@ abstract class CometTransport extends ConnectionState {
 
     protected abstract int write(byte[] buffer, int offset, int limit);
 
-    protected abstract void onError(Throwable t);
+    protected abstract void onError(Exception e);
 
     //
 

@@ -40,8 +40,8 @@ public abstract class SocketConnection extends Connection {
     }
 
     @Override
-    protected void close_(Throwable throwable) {
-        super.close_(throwable);
+    protected void close_(Exception e) {
+        super.close_(e);
 
         _lastFilter.close();
     }
@@ -133,9 +133,9 @@ public abstract class SocketConnection extends Connection {
         }
 
         @Override
-        public void onReadStopped(Throwable t) {
-            super.onReadStopped(t);
-            _next.onReadStopped(t);
+        public void onReadStopped(Exception e) {
+            super.onReadStopped(e);
+            _next.onReadStopped(e);
         }
 
         @Override
@@ -145,9 +145,9 @@ public abstract class SocketConnection extends Connection {
         }
 
         @Override
-        public void onWriteStopped(Throwable t) {
-            super.onWriteStopped(t);
-            _next.onWriteStopped(t);
+        public void onWriteStopped(Exception e) {
+            super.onWriteStopped(e);
+            _next.onWriteStopped(e);
         }
 
         @Override
@@ -204,16 +204,16 @@ public abstract class SocketConnection extends Connection {
             SocketConnection.this.startRead();
         }
 
-        public void onReadStopped(Throwable t) {
-            SocketConnection.this.stopRead(t);
+        public void onReadStopped(Exception e) {
+            SocketConnection.this.stopRead(e);
         }
 
         public void onWriteStarted() {
             SocketConnection.this.startWrite();
         }
 
-        public void onWriteStopped(Throwable t) {
-            SocketConnection.this.stopWrite(t);
+        public void onWriteStopped(Exception e) {
+            SocketConnection.this.stopWrite(e);
         }
 
         public void read(ByteBuffer buffer) {

@@ -40,7 +40,7 @@ public class Server {
                 System.out.println("Connection from " + session.getRemoteAddress());
             }
 
-            public void onDisconnection(SocketConnection session, Throwable t) {
+            public void onDisconnection(SocketConnection session, Exception e) {
                 System.out.println("Disconnection from " + session.getRemoteAddress());
             }
 

@@ -23,6 +23,7 @@ import of4gwt.Site;
 import of4gwt.Transaction;
 import of4gwt.Validator;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import of4gwt.misc.CheckedRunnable;
 import of4gwt.misc.Debug;
 import of4gwt.misc.PlatformAdapter;
 import of4gwt.transports.Client.Callback;
@@ -78,8 +79,8 @@ abstract class HTTPConnection extends Connection {
             }
 
             @Override
-            protected void onError(Throwable t) {
-                HTTPConnection.this.close(t);
+            protected void onError(Exception e) {
+                HTTPConnection.this.close(e);
             }
         };
 
@@ -117,7 +118,7 @@ abstract class HTTPConnection extends Connection {
             if (ex.getCause() instanceof IOException)
                 throw (IOException) ex.getCause();
 
-            throw PlatformAdapter.createIOException(ex.getCause());
+            throw PlatformAdapter.createIOException((Exception) ex.getCause());
         }
     }
 
@@ -140,13 +141,13 @@ abstract class HTTPConnection extends Connection {
     }
 
     @Override
-    protected void close_(Throwable throwable) {
-        super.close_(throwable);
+    protected void close_(Exception e) {
+        super.close_(e);
 
         _transport.close();
 
         if (_connected.get() && _connected.compareAndSet(true, false))
-            stop(throwable);
+            stop(e);
     }
 
     @Override
@@ -163,14 +164,15 @@ abstract class HTTPConnection extends Connection {
     protected void onObject(final Object object) {
         super.onObject(object);
 
-        getCallbackExecutor().execute(new Runnable() {
+        getCallbackExecutor().execute(new CheckedRunnable() {
 
-            public void run() {
+            @Override
+            protected void checkedRun() {
                 if (_callback != null) {
                     try {
                         _callback.onReceived(object);
-                    } catch (Throwable t) {
-                        PlatformAdapter.logListenerException(t);
+                    } catch (Exception e) {
+                        PlatformAdapter.logUserCodeException(e);
                     }
                 }
             }
@@ -178,17 +180,18 @@ abstract class HTTPConnection extends Connection {
     }
 
     @Override
-    protected void onWriteStopped(final Throwable t) {
-        super.onWriteStopped(t);
+    protected void onWriteStopped(final Exception e) {
+        super.onWriteStopped(e);
 
-        getCallbackExecutor().execute(new Runnable() {
+        getCallbackExecutor().execute(new CheckedRunnable() {
 
-            public void run() {
+            @Override
+            protected void checkedRun() {
                 if (_callback != null) {
                     try {
-                        _callback.onDisconnected(t);
-                    } catch (Throwable t_) {
-                        PlatformAdapter.logListenerException(t_);
+                        _callback.onDisconnected(e);
+                    } catch (Exception user) {
+                        PlatformAdapter.logUserCodeException(user);
                     }
                 }
             }
@@ -208,15 +211,15 @@ abstract class HTTPConnection extends Connection {
             setNoTransaction(false);
     }
 
-    private void stop(Throwable t) {
+    private void stop(Exception e) {
         Transaction current = Transaction.getCurrent();
         Transaction.setCurrent(null);
 
         if (Debug.ENABLED)
             setNoTransaction(true);
 
-        stopRead(t);
-        stopWrite(t);
+        stopRead(e);
+        stopWrite(e);
 
         if (Debug.ENABLED)
             setNoTransaction(false);

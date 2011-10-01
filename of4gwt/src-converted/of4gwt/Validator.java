@@ -39,6 +39,8 @@ public interface Validator<C extends Connection> {
     /**
      * This method must throw an exception if the connection is not allowed to invoke this
      * method on this object, with a message describing what the problem was.
+     * <nl>
+     * TODO have full signature
      */
     void validateMethodCall(C connection, TObject object, String methodName);
 }

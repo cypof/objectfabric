@@ -18,5 +18,5 @@ public interface WritableFuture<V> extends Future<V> {
 
     void set(V value);
 
-    void setException(Throwable t);
+    void setException(Exception e);
 }

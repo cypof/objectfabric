@@ -111,15 +111,15 @@ public class OtherCar extends com.objectfabric.TGeneratedFields32 {
     public final java.util.concurrent.Future<java.lang.Void> openOtherWindowAsync(int height, com.objectfabric.misc.AsyncCallback<java.lang.Void> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             java.lang.Void result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 openOtherWindowImplementation(height);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             part02.objectmodel.generated.MyObjectModel.Method4.Version version_ = (part02.objectmodel.generated.MyObjectModel.Method4.Version) createVersion_objectfabric(part02.objectmodel.generated.MyObjectModel.Method4.INSTANCE);
 
@@ -148,8 +148,8 @@ public class OtherCar extends com.objectfabric.TGeneratedFields32 {
         try {
             openOtherWindowImplementation(height);
             call.set(null);
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -163,8 +163,8 @@ public class OtherCar extends com.objectfabric.TGeneratedFields32 {
 
                 try {
                     openOtherWindowImplementationAsync(height, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

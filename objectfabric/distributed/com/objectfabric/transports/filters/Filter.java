@@ -45,11 +45,11 @@ public interface Filter {
 
     void onReadStarted();
 
-    void onReadStopped(Throwable t);
+    void onReadStopped(Exception e);
 
     void onWriteStarted();
 
-    void onWriteStopped(Throwable t);
+    void onWriteStopped(Exception e);
 
     void read(ByteBuffer buffer);
 

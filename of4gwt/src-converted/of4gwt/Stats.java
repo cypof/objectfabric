@@ -18,6 +18,8 @@ import of4gwt.misc.PlatformAdapter;
 
 public final class Stats {
 
+    // TODO, export to JMX
+
     public static final boolean ENABLED = false;
 
     private static final Stats _instance;

@@ -178,9 +178,9 @@ abstract class TransactionBase extends of4gwt.TGeneratedFields32 {
 
         public of4gwt.Transaction.Granularity _granularity;
 
-        private static final of4gwt.Transaction.ConflictDetection[] COM_OBJECTFABRIC_TRANSACTION_CONFLICTDETECTION_ENUM_VALUES_ARRAY = of4gwt.Transaction.ConflictDetection.values();
-
         private static final of4gwt.Transaction.Granularity[] COM_OBJECTFABRIC_TRANSACTION_GRANULARITY_ENUM_VALUES_ARRAY = of4gwt.Transaction.Granularity.values();
+
+        private static final of4gwt.Transaction.ConflictDetection[] COM_OBJECTFABRIC_TRANSACTION_CONFLICTDETECTION_ENUM_VALUES_ARRAY = of4gwt.Transaction.ConflictDetection.values();
 
         private static final of4gwt.Transaction.Consistency[] COM_OBJECTFABRIC_TRANSACTION_CONSISTENCY_ENUM_VALUES_ARRAY = of4gwt.Transaction.Consistency.values();
 

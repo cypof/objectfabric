@@ -12,6 +12,8 @@
 
 package part05.stm;
 
+import java.io.IOException;
+
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -51,7 +53,7 @@ import com.objectfabric.misc.SeparateClassLoader;
  */
 public class STM_5_Trunks {
 
-    public Store run() {
+    public Store run() throws IOException {
         /*
          * By default transactions are started from local site's trunk.
          */
@@ -160,7 +162,7 @@ public class STM_5_Trunks {
     }
 
     @Test
-    public void asTest() {
+    public void asTest() throws IOException {
         Store store = run();
 
         store.close();
@@ -172,7 +174,7 @@ public class STM_5_Trunks {
 
     public static final class ReadBackTest {
 
-        public static void main(String[] args) {
+        public static void main(String[] args) throws IOException {
             SimpleObjectModel.register();
 
             FileStore store = new FileStore(part04.store.Main.TEMP_FILE);

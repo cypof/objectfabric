@@ -12,15 +12,6 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.Acknowledger;
-import com.objectfabric.Interception;
-import com.objectfabric.Snapshot;
-import com.objectfabric.TObject;
-import com.objectfabric.Transaction;
-import com.objectfabric.TransactionManager;
-import com.objectfabric.VersionMap;
-import com.objectfabric.Visitor;
 import com.objectfabric.Connection.Endpoint;
 import com.objectfabric.Connection.Endpoint.Status;
 import com.objectfabric.TObject.Version;
@@ -73,10 +64,10 @@ final class InterceptorWriter extends DistributedWriter {
     }
 
     @Override
-    protected void onStopped(Throwable t) {
-        _acknowledger.unregisterFromAllBranches(t);
+    protected void onStopped(Exception e) {
+        _acknowledger.unregisterFromAllBranches(e);
 
-        super.onStopped(t);
+        super.onStopped(e);
     }
 
     private enum WriteStep {

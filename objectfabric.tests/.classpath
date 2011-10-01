@@ -9,9 +9,13 @@
 	<classpathentry kind="src" path="mixed"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric.stores.file"/>
-	<classpathentry kind="lib" path="libs/junit-4.9b3.jar" sourcepath="libs/junit-4.9b3-src.jar"/>
-	<classpathentry kind="lib" path="/objectfabric.examples.sql/libs/hsqldb.jar" sourcepath="/objectfabric.examples.sql/libs/hsqldb-src.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.9b3.jar" sourcepath="lib/junit-4.9b3-src.jar"/>
+	<classpathentry kind="lib" path="/objectfabric.examples.sql/lib/hsqldb.jar" sourcepath="/objectfabric.examples.sql/lib/hsqldb-src.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric.stores.sql"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric.stores.cassandra"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric.examples"/>
+	<classpathentry kind="lib" path="/objectfabric.stores.cassandra/lib/apache-cassandra-thrift-0.8.6.jar"/>
+	<classpathentry kind="lib" path="/objectfabric.stores.cassandra/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="/objectfabric.stores.cassandra/lib/libthrift-0.6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

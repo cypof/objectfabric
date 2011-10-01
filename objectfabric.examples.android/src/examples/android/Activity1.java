@@ -133,7 +133,7 @@ public class Activity1 extends Activity {
                 });
             }
 
-            public void onDisconnected(Throwable t) {
+            public void onDisconnected(Exception e) {
             }
         });
 

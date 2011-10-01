@@ -26,6 +26,7 @@ import com.objectfabric.Privileged;
 import com.objectfabric.Site;
 import com.objectfabric.Strings;
 import com.objectfabric.Validator;
+import com.objectfabric.misc.CheckedRunnable;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.NIOConnection;
@@ -262,14 +263,15 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
             if (Debug.ENABLED)
                 enableEqualsOrHashCheck();
 
-            _server.getCallbackExecutor().execute(new Runnable() {
+            _server.getCallbackExecutor().execute(new CheckedRunnable() {
 
-                public void run() {
+                @Override
+                protected void checkedRun() {
                     if (_server.getCallback() != null) {
                         try {
                             _server.getCallback().onConnection(Session.this);
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -281,14 +283,15 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
         protected void onObject(final Object object) {
             super.onObject(object);
 
-            _server.getCallbackExecutor().execute(new Runnable() {
+            _server.getCallbackExecutor().execute(new CheckedRunnable() {
 
-                public void run() {
+                @Override
+                protected void checkedRun() {
                     if (_server.getCallback() != null) {
                         try {
                             _server.getCallback().onReceived(Session.this, object);
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -297,8 +300,8 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
 
         @SuppressWarnings("unchecked")
         @Override
-        protected void onWriteStopped(final Throwable t) {
-            super.onWriteStopped(t);
+        protected void onWriteStopped(final Exception e) {
+            super.onWriteStopped(e);
 
             if (Debug.ENABLED)
                 disableEqualsOrHashCheck();
@@ -308,14 +311,15 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
             if (Debug.ENABLED)
                 enableEqualsOrHashCheck();
 
-            _server.getCallbackExecutor().execute(new Runnable() {
+            _server.getCallbackExecutor().execute(new CheckedRunnable() {
 
-                public void run() {
+                @Override
+                protected void checkedRun() {
                     if (_server.getCallback() != null) {
                         try {
-                            _server.getCallback().onDisconnection(Session.this, t);
-                        } catch (Throwable t_) {
-                            PlatformAdapter.logListenerException(t_);
+                            _server.getCallback().onDisconnection(Session.this, e);
+                        } catch (Exception user) {
+                            PlatformAdapter.logUserCodeException(user);
                         }
                     }
                 }

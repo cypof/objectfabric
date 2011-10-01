@@ -79,7 +79,7 @@ public class ConnectionTestClient extends Privileged {
                 client.close();
             }
 
-            public void onDisconnected(Throwable t) {
+            public void onDisconnected(Exception e) {
             }
         });
 

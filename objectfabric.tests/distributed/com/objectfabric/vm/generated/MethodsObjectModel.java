@@ -10,7 +10,7 @@ package com.objectfabric.vm.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class MethodsObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -83, 90, 111, 64, -114, 107, -71, 46, -70, -64, -45, 37, 53, -81, -23, 49 };
+    private static final byte[] UID = { -78, -95, 108, 43, 66, 97, 124, 51, 108, 12, -49, 119, -124, -37, 97, -40 };
 
     private static volatile MethodsObjectModel _instance;
 

@@ -104,7 +104,7 @@ public class VMMethodsClient extends Privileged {
                         Assert.assertEquals(expected, result);
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception _) {
                         Debug.fail();
                     }
                 });
@@ -134,7 +134,7 @@ public class VMMethodsClient extends Privileged {
                         transaction.abort();
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception _) {
                         Debug.fail();
                     }
                 });
@@ -156,10 +156,10 @@ public class VMMethodsClient extends Privileged {
                         Assert.assertFalse(error);
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception e) {
                         Assert.assertTrue(error);
-                        Assert.assertTrue(t.getCause() instanceof ReplicatedException);
-                        Assert.assertTrue(t.getMessage().contains(SimpleMethodImpl.ERROR_MESSAGE));
+                        Assert.assertTrue(e.getCause() instanceof ReplicatedException);
+                        Assert.assertTrue(e.getMessage().contains(SimpleMethodImpl.ERROR_MESSAGE));
                     }
                 });
 
@@ -171,7 +171,7 @@ public class VMMethodsClient extends Privileged {
     public static int transfer(byte[] buffer, int length) {
         if (!_exit) {
             int written = _client.transfer(buffer, length);
-Log.write("_receivedCount: " + _receivedCount);
+            Log.write("_receivedCount: " + _receivedCount);
             if (_array != null && _receivedCount == _array.length() * _calls) {
                 _exit = true;
 

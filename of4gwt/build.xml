@@ -34,7 +34,14 @@
 				**/HTTPClient.java
 				**/HTTP.java
 				**/HTTPSession.java" />
-			<fileset dir="../objectfabric/persistence" includes="**/*.java" excludes="" />
+			<fileset dir="../objectfabric/persistence" includes="**/*.java" excludes="
+				**/BinaryStore.java
+				**/BPage.java
+				**/BTree.java
+				**/FileBackend.java
+				**/FileStore.java
+				**/StoreReader.java
+				**/StoreWriter.java" />
 
 			<filterchain>
 				<replacestring from="import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;" to="" />
@@ -75,10 +82,10 @@
 				<replacestring from="_currentIdUpdater = AtomicIntegerFieldUpdater.newUpdater(Session.class, &quot;_currentId&quot;);" to="" />
 				<replacestring from="_currentIdUpdater.compareAndSet(this, id, id + 1)" to="(_currentId == id ? ((_currentId = id + 1) == id + 1) : false)" />
 
-				<!-- MethodCall -->
+				<!-- MethodCallBase -->
 
-				<replacestring from="private static final AtomicReferenceFieldUpdater&lt;MethodCall, Future&gt; _userFutureUpdater;" to="" />
-				<replacestring from="_userFutureUpdater = AtomicReferenceFieldUpdater.newUpdater(MethodCall.class, Future.class, &quot;_userFuture&quot;);" to="" />
+				<replacestring from="private static final AtomicReferenceFieldUpdater&lt;MethodCallBase, Future&gt; _userFutureUpdater;" to="" />
+				<replacestring from="_userFutureUpdater = AtomicReferenceFieldUpdater.newUpdater(MethodCallBase.class, Future.class, &quot;_userFuture&quot;);" to="" />
 				<replacestring from="_userFutureUpdater.compareAndSet(this, null, future)" to="(_userFuture == null ? ((_userFuture = future) == future) : false)" />
 				<replacestring from="_userFutureUpdater.compareAndSet(this, null, mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)" to="(_userFuture == null ? ((_userFuture = (mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)) == (mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)) : false)" />
 

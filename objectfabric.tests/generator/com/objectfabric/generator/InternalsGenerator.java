@@ -60,7 +60,7 @@ class InternalsGenerator extends Privileged {
 
         //
 
-        generator.setFolder("../of4dotnet/VS/ObjectFabricCSharp/Generated");
+        generator.setFolder("../of4dotnet/VS/CSharp/Generated");
         generator.setTarget(Target.CSHARP);
 
         for (int i = 0; i < model.getAllPackages().size(); i++) {

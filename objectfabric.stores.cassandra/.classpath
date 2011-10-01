@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric"/>
+	<classpathentry kind="lib" path="lib/apache-cassandra-thrift-0.8.6.jar"/>
+	<classpathentry kind="lib" path="lib/libthrift-0.6.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

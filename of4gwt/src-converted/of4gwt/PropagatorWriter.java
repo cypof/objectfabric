@@ -95,11 +95,11 @@ final class PropagatorWriter extends DistributedWriter {
     }
 
     @Override
-    protected void onStopped(Throwable t) {
+    protected void onStopped(Exception e) {
         disposeCreatedSnapshot();
         _reader.onWriteThreadStopped(_walker.copyBranches());
-        _walker.unregisterFromAllBranches(t);
-        super.onStopped(t);
+        _walker.unregisterFromAllBranches(e);
+        super.onStopped(e);
     }
 
     private enum WriteStep {
@@ -439,12 +439,12 @@ final class PropagatorWriter extends DistributedWriter {
         }
 
         @Override
-        boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Throwable throwable) {
-            if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, throwable)) {
+        boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Exception exception) {
+            if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, exception)) {
                 if (branch.getConflictDetection() != ConflictDetection.LAST_WRITE_WINS)
                     _reader.onUnregistered(branch, snapshot);
                 else
-                    _sourceSplitter.unregister(branch, throwable);
+                    _sourceSplitter.unregister(branch, exception);
 
                 return true;
             }

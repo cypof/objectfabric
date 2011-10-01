@@ -12,12 +12,6 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.Connection;
-import com.objectfabric.Helper;
-import com.objectfabric.Snapshot;
-import com.objectfabric.Transaction;
-import com.objectfabric.VersionMap;
 import com.objectfabric.VersionMap.Source;
 import com.objectfabric.misc.Debug;
 
@@ -95,8 +89,8 @@ final class SourceSplitter extends Extension<SourceSplitter.State> {
     }
 
     @Override
-    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Throwable throwable) {
-        if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, throwable)) {
+    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Exception exception) {
+        if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, exception)) {
             State state = get(branch);
 
             int index = Helper.getIndex(snapshot, state.Map);

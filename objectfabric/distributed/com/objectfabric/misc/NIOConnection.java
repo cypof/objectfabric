@@ -114,17 +114,17 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
         NIOManager.getInstance().execute(_read);
     }
 
-    final void stop(final Throwable t) {
+    final void stop(Exception e) {
         /*
          * Volatile read to synchronize with assignment.
          */
         readState();
 
         if (_read != null)
-            _read.stop(t);
+            _read.stop(e);
 
         if (_write != null)
-            _write.stop(t);
+            _write.stop(e);
     }
 
     public final void onCancelledKey() {
@@ -143,7 +143,7 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
         OverrideAssert.set(_read);
     }
 
-    protected void onReadStopped(Throwable t) {
+    protected void onReadStopped(Exception e) {
         if (Debug.COMMUNICATIONS_LOG)
             Log.write(this + ".onReadStopped()");
 
@@ -167,7 +167,7 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
         OverrideAssert.set(_write);
     }
 
-    protected void onWriteStopped(Throwable t) {
+    protected void onWriteStopped(Exception e) {
         if (Debug.COMMUNICATIONS_LOG)
             Log.write(this + ".onWriteStopped()");
 
@@ -176,12 +176,12 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
 
         OverrideAssert.set(_write);
 
-        if (t != null) {
-            if (t instanceof java.lang.SecurityException)
-                Log.write("Closing a connection: " + t);
+        if (e != null) {
+            if (e instanceof java.lang.SecurityException)
+                Log.write("Closing a connection: " + e);
 
-            if (!(t instanceof ClosedConnectionException) || Debug.COMMUNICATIONS_LOG)
-                Log.write(t);
+            if (!(e instanceof ClosedConnectionException) || Debug.COMMUNICATIONS_LOG)
+                Log.write(e);
         }
     }
 

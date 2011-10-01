@@ -33,7 +33,7 @@ public interface Client extends Closeable {
          * Connection has been lost with remote site. Exception might contain additional
          * information about the disconnection.
          */
-        void onDisconnected(Throwable t);
+        void onDisconnected(Exception e);
     }
 
     Callback getCallback();

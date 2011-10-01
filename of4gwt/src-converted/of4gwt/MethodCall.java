@@ -12,22 +12,14 @@
 
 package of4gwt;
 
-import of4gwt.misc.Future;
-
-
 import of4gwt.TObject.UserTObject;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import of4gwt.misc.CompletedFuture;
 
 /**
  * Method calls on transactional objects. Call methods <code>set</code> and
  * <code>setException</code> to report the result of an asynchronous method.
  */
-public abstract class MethodCall extends FutureWithCallback {
-
-    private static final Future CANCELLED = new CompletedFuture<Void>(null);
-
-    private static final Future CANCELLED_INTERRUPT = new CompletedFuture<Void>(null);
+public abstract class MethodCall extends MethodCallBase {
 
     private final UserTObject _target;
 
@@ -43,22 +35,14 @@ public abstract class MethodCall extends FutureWithCallback {
 
     private TObject.Version _methodVersion;
 
-    private volatile Future _userFuture;
-
-    
-
     private TObject.Version[] _callbackWrites;
-
-    static {
-        
-    }
 
     /**
      * For local methods.
      */
     @SuppressWarnings("unchecked")
-    protected MethodCall(UserTObject target, UserTObject method, int index, AsyncCallback callback, AsyncOptions options) {
-        super(callback, options);
+    protected MethodCall(UserTObject target, UserTObject method, int index, AsyncCallback callback, AsyncOptions asyncOptions) {
+        super(callback, asyncOptions);
 
         if (target == null || method == null)
             throw new IllegalArgumentException();
@@ -75,7 +59,7 @@ public abstract class MethodCall extends FutureWithCallback {
      */
     @SuppressWarnings("unchecked")
     protected MethodCall(UserTObject target, UserTObject method, int index, Transaction transaction) {
-        super(NOP_CALLBACK, null);
+        super(FutureWithCallback.NOP_CALLBACK, null);
 
         if (target == null || method == null)
             throw new IllegalArgumentException();
@@ -124,64 +108,5 @@ public abstract class MethodCall extends FutureWithCallback {
 
     final void setCallbackWrites(TObject.Version[] value) {
         _callbackWrites = value;
-    }
-
-    @Override
-    public final void set(Object value) {
-        set(value, false);
-    }
-
-    @SuppressWarnings("unchecked")
-    protected void set(Object value, boolean direct) {
-        super.set(value);
-    }
-
-    @Override
-    public final void setException(Throwable t) {
-        setException(t, false);
-    }
-
-    protected void setException(Throwable t, boolean direct) {
-        super.setException(t);
-    }
-
-    /**
-     * If your method code is represented by a future, assign it using this method so the
-     * system can cancel the computation if requested by the caller.
-     */
-    public final void setFuture(Future future) {
-        for (;;) {
-            Future current = _userFuture;
-
-            if (current != null) {
-                if (current == CANCELLED) {
-                    future.cancel(false);
-                    break;
-                }
-
-                if (current == CANCELLED_INTERRUPT) {
-                    future.cancel(true);
-                    break;
-                }
-
-                throw new RuntimeException(Strings.ONLY_ONCE);
-            }
-
-            if ((_userFuture == null ? ((_userFuture = future) == future) : false))
-                break;
-        }
-    }
-
-    @Override
-    public final boolean cancel(boolean mayInterruptIfRunning) {
-        for (;;) {
-            Future current = _userFuture;
-
-            if (current != null)
-                return current.cancel(mayInterruptIfRunning);
-
-            if ((_userFuture == null ? ((_userFuture = (mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)) == (mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)) : false))
-                return false;
-        }
     }
 }

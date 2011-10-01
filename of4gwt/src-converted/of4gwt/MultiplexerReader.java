@@ -12,8 +12,6 @@
 
 package of4gwt;
 
-import of4gwt.Helper;
-import of4gwt.Reader;
 import of4gwt.TObject.UserTObject;
 import of4gwt.misc.Debug;
 import of4gwt.misc.List;
@@ -48,22 +46,22 @@ abstract class MultiplexerReader extends Reader {
 
     protected abstract byte read();
 
-    public final void stop(Throwable t) {
+    public final void stop(Exception e) {
         if (Debug.THREADS)
             if (this instanceof DistributedReader)
                 ((DistributedReader) this).getEndpoint().assertReadThread();
 
-        if (Debug.COMMUNICATIONS_LOG && t != null) {
+        if (Debug.COMMUNICATIONS_LOG && e != null) {
             Boolean previous = Helper.getInstance().getReaders().put(this, false);
             Debug.assertion(previous);
         }
 
         OverrideAssert.add(this);
-        onStopped(t);
+        onStopped(e);
         OverrideAssert.end(this);
     }
 
-    protected void onStopped(Throwable t) {
+    protected void onStopped(Exception e) {
         OverrideAssert.set(this);
     }
 }

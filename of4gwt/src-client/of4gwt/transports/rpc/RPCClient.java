@@ -121,7 +121,7 @@ public final class RPCClient extends Connection {
             try {
                 _connectCallback.onSuccess(null);
             } catch (Throwable ex) {
-                PlatformAdapter.logListenerException(ex);
+                PlatformAdapter.logUserCodeException(ex);
             }
         }
     }
@@ -138,7 +138,7 @@ public final class RPCClient extends Connection {
 
         private boolean _polling;
 
-        public void dispose(Throwable throwable) {
+        public void dispose(Exception e) {
             Transaction current = Transaction.getCurrent();
             Transaction.setCurrent(null);
 
@@ -146,8 +146,8 @@ public final class RPCClient extends Connection {
                 setNoTransaction(true);
 
             cancel();
-            stopRead(throwable);
-            stopWrite(throwable);
+            stopRead(e);
+            stopWrite(e);
 
             if (Debug.ENABLED)
                 setNoTransaction(false);
@@ -191,7 +191,7 @@ public final class RPCClient extends Connection {
                     }
 
                     public void onFailure(Throwable caught) {
-                        dispose(caught);
+                        dispose((Exception) caught);
                         _polling = false;
                     }
                 });

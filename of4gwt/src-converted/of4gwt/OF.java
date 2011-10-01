@@ -18,6 +18,7 @@ import of4gwt.misc.Future;
 import of4gwt.Transaction.CommitStatus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import of4gwt.misc.Debug;
+import of4gwt.misc.Log;
 import of4gwt.misc.PlatformAdapter;
 import of4gwt.misc.PlatformConcurrentMap;
 
@@ -77,14 +78,18 @@ public class OF {
 
     public static class Config {
 
-        public AsyncOptions createAsyncOptions() {
+        public AutoCommitPolicy getAutoCommitPolicy() {
+            return DEFAULT_AUTO_COMMIT_POLICY;
+        }
+
+        protected AsyncOptions createAsyncOptions() {
             return new AsyncOptions();
         }
 
         /**
          * Wait for a future to get done.
          */
-        public <V> void wait(Future<V> future) {
+        protected <V> void wait(Future<V> future) {
             try {
                 future.get();
             } catch (of4gwt.misc.InterruptedException e) {
@@ -93,18 +98,29 @@ public class OF {
             }
         }
 
-        public AutoCommitPolicy getAutoCommitPolicy() {
-            return DEFAULT_AUTO_COMMIT_POLICY;
-        }
-
         /**
          * This is only called when the policy is DELAYED. Warning: Commits must be
          * executed on the same thread transactions were created on.
          */
-        public void delayCommit(Runnable runnable) {
-            throw new IllegalStateException();
+        protected void delayCommit(Runnable runnable) {
+            throw new UnsupportedOperationException();
         }
 
+        /**
+         * OF catches all exceptions of type Exception. This method is only called if an
+         * exception does not derive from Exception, so it is probably an Error like
+         * OutOfMemoryError. The default reaction is to kill the process to prevent data
+         * corruption.
+         */
+        protected void onThrowable(Throwable t) {
+            Log.write(t);
+            Log.write(Strings.FATAL_ERROR);
+            PlatformAdapter.exit(1);
+        }
+
+        /**
+         * Internal.
+         */
         void onCommit() {
         }
     }
@@ -154,8 +170,8 @@ public class OF {
                 throw new RuntimeException(Strings.THREAD_BLOCKING_DISALLOWED);
 
             result.get();
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

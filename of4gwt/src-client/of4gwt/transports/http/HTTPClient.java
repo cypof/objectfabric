@@ -154,9 +154,9 @@ public final class HTTPClient extends HTTPConnection {
 
                     _request.send(data);
                     _offset = 0;
-                } catch (Throwable t) {
-                    Log.write(t);
-                    _callback.onError(t);
+                } catch (Exception e) {
+                    Log.write(e);
+                    _callback.onError(e);
                 }
             }
         }

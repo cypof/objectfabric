@@ -24,6 +24,7 @@ import of4gwt.misc.Debug;
 import of4gwt.misc.List;
 import of4gwt.misc.Log;
 import of4gwt.misc.OverrideAssert;
+import of4gwt.misc.PlatformThreadLocal;
 import of4gwt.misc.Queue;
 import of4gwt.misc.SparseArrayHelper;
 
@@ -33,6 +34,8 @@ import of4gwt.misc.SparseArrayHelper;
 public class Connection extends ConnectionBase {
 
     private final Endpoint _endpoint;
+
+    private static final PlatformThreadLocal<Connection> _current = new PlatformThreadLocal<Connection>();
 
     // Constructor for object model
     Connection(Transaction trunk, Site target) {
@@ -60,16 +63,16 @@ public class Connection extends ConnectionBase {
         close(new ClosedConnectionException());
     }
 
-    public void close(Throwable throwable) {
+    public void close(Exception e) {
         if (_endpoint == null)
             throw new RuntimeException(Strings.ONLY_ON_ORIGIN_OR_TARGET);
 
         OverrideAssert.add(this);
-        close_(throwable);
+        close_(e);
         OverrideAssert.end(this);
     }
 
-    protected void close_(Throwable throwable) {
+    protected void close_(Exception e) {
         OverrideAssert.set(this);
     }
 
@@ -100,6 +103,20 @@ public class Connection extends ConnectionBase {
 
     //
 
+    /**
+     * When called in a method implementation, returns the connection which invoked the
+     * method, or null if the call is local.
+     */
+    public static final Connection getCurrent() {
+        return _current.get();
+    }
+
+    static final void setCurrent(Connection value) {
+        _current.set(value);
+    }
+
+    //
+
     protected void onDialogEstablished() {
     }
 
@@ -123,19 +140,19 @@ public class Connection extends ConnectionBase {
         _endpoint.startRead();
     }
 
-    protected final void stopRead(Throwable t) {
+    protected final void stopRead(Exception e) {
         if (Debug.ENABLED)
             Debug.assertion(Helper.getInstance().getNoTransaction());
 
         OverrideAssert.add(this);
-        onReadStopped(t);
+        onReadStopped(e);
         OverrideAssert.end(this);
     }
 
-    protected void onReadStopped(Throwable t) {
+    protected void onReadStopped(Exception e) {
         OverrideAssert.set(this);
 
-        _endpoint.stopRead(t);
+        _endpoint.stopRead(e);
     }
 
     //
@@ -155,19 +172,19 @@ public class Connection extends ConnectionBase {
         _endpoint.startWrite();
     }
 
-    protected final void stopWrite(Throwable t) {
+    protected final void stopWrite(Exception e) {
         if (Debug.ENABLED)
             Debug.assertion(Helper.getInstance().getNoTransaction());
 
         OverrideAssert.add(this);
-        onWriteStopped(t);
+        onWriteStopped(e);
         OverrideAssert.end(this);
     }
 
-    protected void onWriteStopped(Throwable t) {
+    protected void onWriteStopped(Exception e) {
         OverrideAssert.set(this);
 
-        _endpoint.stopWrite(t);
+        _endpoint.stopWrite(e);
 
         if (Debug.ENABLED) {
             _endpoint._interceptor.getAcknowledger().assertIdle();
@@ -196,6 +213,10 @@ public class Connection extends ConnectionBase {
             throw new RuntimeException();
 
         return Transaction.currentNull();
+    }
+
+    protected static final void onThrowable(Throwable t) {
+        OF.getConfig().onThrowable(t);
     }
 
     //
@@ -706,16 +727,6 @@ public class Connection extends ConnectionBase {
                 transport.cancel(mayInterruptIfRunning);
 
             return super.cancel(mayInterruptIfRunning);
-        }
-
-        @Override
-        public void set(Void t) {
-            super.set(t);
-        }
-
-        @Override
-        public void setException(Throwable t) {
-            super.setException(t);
         }
     }
 }

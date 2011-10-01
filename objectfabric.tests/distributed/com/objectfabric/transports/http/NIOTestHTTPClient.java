@@ -54,8 +54,8 @@ public class NIOTestHTTPClient {
             }
 
             @Override
-            protected void onError(Throwable t) {
-                Log.write(t);
+            protected void onError(Exception e) {
+                Log.write(e);
             }
         };
 

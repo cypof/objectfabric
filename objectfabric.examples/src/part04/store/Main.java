@@ -12,6 +12,7 @@
 
 package part04.store;
 
+import java.io.IOException;
 import java.util.concurrent.Future;
 
 import junit.framework.Assert;
@@ -134,7 +135,7 @@ public class Main {
                 // Entries are safe in the store!
             }
 
-            public void onFailure(Throwable t) {
+            public void onFailure(Exception e) {
                 // Entries could not be persisted
             }
         });
@@ -154,7 +155,7 @@ public class Main {
     public static final class ReadBack {
 
         @SuppressWarnings("unchecked")
-        public static void main(String[] args) {
+        public static void main(String[] args) throws IOException {
             ObjectModel.register();
 
             FileStore store = new FileStore(part04.store.Main.TEMP_FILE);

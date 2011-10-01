@@ -12,8 +12,6 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.Connection;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.Log;
 
@@ -87,8 +85,8 @@ final class TKeyedRead extends TKeyedBase2 {
 
                 try {
                     conflict = isRead(entry.getKey(), entry.getHash());
-                } catch (Throwable t) {
-                    Log.write(t);
+                } catch (Exception e) {
+                    Log.write(e);
 
                     /*
                      * Don't let a user exception from K.equals() go up into the system as

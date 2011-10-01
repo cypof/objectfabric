@@ -178,8 +178,8 @@ public class SQLiteIndex extends Index {
             }
 
             @Override
-            public void onFailure(Throwable throwable) {
-                future.setException(throwable);
+            public void onFailure(Exception e) {
+                future.setException(e);
                 _pending.decrementAndGet();
             }
         });

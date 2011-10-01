@@ -18,6 +18,7 @@ import of4gwt.misc.Executor;
 import of4gwt.Snapshot.SlowChanging;
 import of4gwt.TObject.Reference;
 import of4gwt.TObject.Version;
+import of4gwt.misc.CheckedRunnable;
 import of4gwt.misc.Debug;
 import of4gwt.misc.List;
 import of4gwt.misc.Log;
@@ -213,7 +214,7 @@ public abstract class Extension<T> extends Visitor.Listener {
         return branch.casSharedSnapshot(snapshot, newSnapshot);
     }
 
-    protected final void unregister(Transaction branch, Throwable throwable) {
+    protected final void unregister(Transaction branch, Exception exception) {
         // NOT_REGISTERED tested in remove
 
         Snapshot newSnapshot = new Snapshot();
@@ -225,7 +226,7 @@ public abstract class Extension<T> extends Visitor.Listener {
             SlowChanging slowChanging = new SlowChanging(branch, extensions, snapshot.getSlowChanging().getBlocked());
             snapshot.copyWithNewSlowChanging(newSnapshot, slowChanging);
 
-            if (casSnapshotWithoutThis(branch, snapshot, newSnapshot, throwable))
+            if (casSnapshotWithoutThis(branch, snapshot, newSnapshot, exception))
                 break;
         }
 
@@ -237,17 +238,17 @@ public abstract class Extension<T> extends Visitor.Listener {
         _branchCount--;
     }
 
-    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Throwable throwable) {
+    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Exception exception) {
         return branch.casSharedSnapshot(snapshot, newSnapshot);
     }
 
-    protected final void unregisterFromAllBranches(Throwable throwable) {
+    protected final void unregisterFromAllBranches(Exception exception) {
         for (int i = 0; i < _branches.length; i++) {
             if (_branches[i] != null && _branches[i] != TObjectMapEntry.REMOVED) {
                 Transaction branch = (Transaction) _branches[i].getKey().getReference().get();
 
                 if (branch != null)
-                    unregister(branch, throwable);
+                    unregister(branch, exception);
             }
         }
     }
@@ -603,7 +604,7 @@ public abstract class Extension<T> extends Visitor.Listener {
 
     //
 
-    protected static abstract class DefaultRunnable implements Executor {
+    protected static abstract class DefaultRunnable extends CheckedRunnable implements Executor {
 
         private final Extension _extension;
 
@@ -618,7 +619,7 @@ public abstract class Extension<T> extends Visitor.Listener {
             _extension = extension;
         }
 
-        public void onException(Throwable throwable) {
+        public void onException(Exception e) {
             for (;;) {
                 Flush flush = _pendingFlushes.poll();
 

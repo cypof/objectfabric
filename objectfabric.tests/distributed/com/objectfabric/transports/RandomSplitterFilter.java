@@ -77,16 +77,16 @@ public class RandomSplitterFilter implements FilterFactory {
             _next.onReadStarted();
         }
 
-        public void onReadStopped(Throwable t) {
-            _next.onReadStopped(t);
+        public void onReadStopped(Exception e) {
+            _next.onReadStopped(e);
         }
 
         public void onWriteStarted() {
             _next.onWriteStarted();
         }
 
-        public void onWriteStopped(Throwable t) {
-            _next.onWriteStopped(t);
+        public void onWriteStopped(Exception e) {
+            _next.onWriteStopped(e);
         }
 
         public void read(ByteBuffer buffer) {

@@ -66,7 +66,7 @@ public class Server {
                 session.send(myObject);
             }
 
-            public void onDisconnection(SocketConnection session, Throwable t) {
+            public void onDisconnection(SocketConnection session, Exception e) {
                 System.out.println("Disconnection from " + session.getRemoteAddress());
             }
 

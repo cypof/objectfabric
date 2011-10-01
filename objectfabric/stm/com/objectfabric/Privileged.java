@@ -12,6 +12,8 @@
 
 package com.objectfabric;
 
+import java.util.concurrent.Future;
+
 import com.objectfabric.OF.AutoCommitPolicy;
 import com.objectfabric.TObject.UserTObject;
 import com.objectfabric.TObject.Version;
@@ -128,10 +130,6 @@ public abstract class Privileged {
         ExpectedExceptionThrower.expectException();
     }
 
-    protected static Class getUserTObjectClass() {
-        return UserTObject.class;
-    }
-
     protected static boolean isUserTObject(Object object) {
         return object instanceof UserTObject;
     }
@@ -142,6 +140,14 @@ public abstract class Privileged {
 
     protected static final void ensureThreadContextBufferLength(int length) {
         ThreadContext.getCurrent().ensureBufferLength(length);
+    }
+
+    protected static final <V> void wait(Future<V> future) {
+        OF.getConfig().wait(future);
+    }
+
+    protected static final void onThrowable(Throwable t) {
+        OF.getConfig().onThrowable(t);
     }
 
     protected static class FutureAccessor<V> extends FutureWithCallback<V> {

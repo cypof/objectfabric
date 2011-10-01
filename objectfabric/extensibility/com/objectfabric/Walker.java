@@ -12,12 +12,6 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.Connection;
-import com.objectfabric.Helper;
-import com.objectfabric.Snapshot;
-import com.objectfabric.Transaction;
-import com.objectfabric.VersionMap;
 import com.objectfabric.Transaction.Granularity;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.OverrideAssert;
@@ -116,8 +110,8 @@ public abstract class Walker extends Extension<Snapshot> {
      * been added.
      */
     @Override
-    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Throwable throwable) {
-        if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, throwable)) {
+    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Exception exception) {
+        if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, exception)) {
             Snapshot previous = get(branch);
 
             if (getGranularity(branch) == Granularity.COALESCE) {

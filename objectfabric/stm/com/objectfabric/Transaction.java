@@ -678,8 +678,8 @@ public final class Transaction extends TransactionPublic implements SystemClass 
                 throw new RuntimeException(Strings.THREAD_BLOCKING_DISALLOWED);
 
             return result.get();
-        } catch (Throwable t) {
-            throw new RuntimeException(t);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

@@ -54,7 +54,7 @@ public final class Strings {
 
     public static final String USER_CODE_CHANGED_CURRENT_TRANSACTION;
 
-    public static final String CALLBACK_RAISED_AN_EXCEPTION = "Callback raised an exception: ";
+    public static final String USER_CODE_RAISED_AN_EXCEPTION = "User code raised an exception: ";
 
     public static final String ITERATORS;
 
@@ -107,6 +107,8 @@ public final class Strings {
      * safe to retry.
      */
     public static final String CONCURRENT_ACCESS = "Concurrent http connection.";
+
+    public static final String FATAL_ERROR = "Fatal error, killing process.";
 
     static {
         String message;

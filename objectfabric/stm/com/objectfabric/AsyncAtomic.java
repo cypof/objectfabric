@@ -76,14 +76,14 @@ final class AsyncAtomic extends FutureWithCallback<CommitStatus> {
                 }
 
                 transaction.commitWithoutCurrentCheck(this);
-            } catch (Throwable t) {
+            } catch (Exception e) {
                 /*
                  * Transaction might have been aborted already.
                  */
                 if (transaction.getSnapshot() != null)
                     transaction.abort();
 
-                setException(t);
+                setException(e);
             }
         }
     }

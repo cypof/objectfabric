@@ -12,8 +12,6 @@
 
 package com.objectfabric.security.shiro;
 
-import java.util.HashSet;
-
 import org.apache.shiro.authc.AccountException;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.AuthenticationInfo;
@@ -28,9 +26,6 @@ import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.apache.shiro.util.ByteSource;
 import org.apache.shiro.util.SimpleByteSource;
-
-import com.objectfabric.TSet;
-import com.objectfabric.Transaction;
 
 /**
  * This realm reads data from an AccountService. This class is adapted from
@@ -47,7 +42,7 @@ final class OFRealm extends AuthorizingRealm {
     public ShiroStore getStore() {
         return _store;
     }
-    
+
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         UsernamePasswordToken upToken = (UsernamePasswordToken) token;
@@ -71,21 +66,7 @@ final class OFRealm extends AuthorizingRealm {
         if (principals == null)
             throw new AuthorizationException("PrincipalCollection method argument cannot be null.");
 
-        String username = (String) getAvailablePrincipal(principals);
-        Account account = _store.getAccounts().get(username);
-        TSet<Role> roles = account.getRoles();
-        HashSet<String> permissions = new HashSet<String>();
-        Transaction iteratorSnapshot = Transaction.start();
-
-        try {
-            for (Role role : roles)
-                permissions.addAll(role.getPermissions());
-        } finally {
-            iteratorSnapshot.abort();
-        }
-
         SimpleAuthorizationInfo info = new SimpleAuthorizationInfo();
-        info.setStringPermissions(permissions);
         return info;
     }
 }

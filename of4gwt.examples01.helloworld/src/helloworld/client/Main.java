@@ -52,7 +52,7 @@ public class Main implements EntryPoint {
                 client.send(object + " World!");
             }
 
-            public void onDisconnected(Throwable t) {
+            public void onDisconnected(Exception e) {
             }
         });
 

@@ -88,22 +88,22 @@ abstract class MultiplexerWriter extends Writer {
         }
     }
 
-    public final void stop(Throwable t) {
+    public final void stop(Exception e) {
         if (Debug.THREADS)
             if (this instanceof DistributedWriter)
                 ((DistributedWriter) this).getEndpoint().assertWriteThread();
 
-        if (Debug.COMMUNICATIONS_LOG && t != null) {
+        if (Debug.COMMUNICATIONS_LOG && e != null) {
             Boolean previous = Helper.getInstance().getWriters().put(this, false);
             Debug.assertion(previous);
         }
 
         OverrideAssert.add(this);
-        onStopped(t);
+        onStopped(e);
         OverrideAssert.end(this);
     }
 
-    protected void onStopped(Throwable t) {
+    protected void onStopped(Exception e) {
         OverrideAssert.set(this);
     }
 }

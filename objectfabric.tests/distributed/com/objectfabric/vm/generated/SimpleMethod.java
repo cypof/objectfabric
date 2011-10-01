@@ -225,15 +225,15 @@ public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
     public final java.util.concurrent.Future<java.lang.String> methodAsync(java.lang.String sql, com.objectfabric.vm.generated.SimpleMethod eg, com.objectfabric.misc.AsyncCallback<java.lang.String> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             java.lang.String result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 result_ = methodImplementation(sql, eg);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             com.objectfabric.vm.generated.MethodsObjectModel.Method0.Version version_ = (com.objectfabric.vm.generated.MethodsObjectModel.Method0.Version) createVersion_objectfabric(com.objectfabric.vm.generated.MethodsObjectModel.Method0.INSTANCE);
 
@@ -266,8 +266,8 @@ public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
     protected void methodImplementationAsync(java.lang.String sql, com.objectfabric.vm.generated.SimpleMethod eg, com.objectfabric.MethodCall call) {
         try {
             call.set(methodImplementation(sql, eg));
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -322,15 +322,15 @@ public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
     public final java.util.concurrent.Future<java.lang.Void> progressAsync(int state, com.objectfabric.misc.AsyncCallback<java.lang.Void> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             java.lang.Void result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 progressImplementation(state);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             com.objectfabric.vm.generated.MethodsObjectModel.Method1.Version version_ = (com.objectfabric.vm.generated.MethodsObjectModel.Method1.Version) createVersion_objectfabric(com.objectfabric.vm.generated.MethodsObjectModel.Method1.INSTANCE);
 
@@ -359,8 +359,8 @@ public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
         try {
             progressImplementation(state);
             call.set(null);
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -375,8 +375,8 @@ public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
 
                 try {
                     methodImplementationAsync(sql, eg, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;
@@ -387,8 +387,8 @@ public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
 
                 try {
                     progressImplementationAsync(state, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

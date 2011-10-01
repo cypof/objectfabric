@@ -21,7 +21,7 @@ package com.objectfabric.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class LimitsObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { 103, 43, -16, -104, 19, 44, -62, -115, 51, 99, -62, 3, 75, 44, -54, 104 };
+    private static final byte[] UID = { -15, -7, 8, 28, 16, -10, -81, -70, 91, -78, 14, 56, -102, -79, -33, 126 };
 
     private static volatile LimitsObjectModel _instance;
 

@@ -105,7 +105,7 @@ public class UI extends Data {
                         _connections.add(session);
                     }
 
-                    public void onDisconnection(SocketConnection session, Throwable t) {
+                    public void onDisconnection(SocketConnection session, Exception _) {
                         log("Disconnected from " + session.getRemoteAddress());
                         _connections.remove(session);
                     }
@@ -151,7 +151,7 @@ public class UI extends Data {
                             setMyClass(myClass);
                         }
 
-                        public void onDisconnected(Throwable t) {
+                        public void onDisconnected(Exception _) {
                         }
                     });
 

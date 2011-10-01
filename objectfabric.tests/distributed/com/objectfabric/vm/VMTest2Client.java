@@ -129,7 +129,7 @@ public class VMTest2Client extends Privileged {
                         _successes++;
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception _) {
                     }
                 });
 
@@ -146,7 +146,7 @@ public class VMTest2Client extends Privileged {
                         _successes++;
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception _) {
                     }
                 });
             }

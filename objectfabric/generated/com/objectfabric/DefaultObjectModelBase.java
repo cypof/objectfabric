@@ -21,7 +21,7 @@ package com.objectfabric;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { 88, 109, 2, -101, 91, 0, 93, 72, -106, -110, -23, 57, 43, 99, 7, 41 };
+    private static final byte[] UID = { 2, 72, 68, 90, -92, -76, -96, -87, -79, -13, -80, 19, 70, 106, 112, 36 };
 
     private static volatile DefaultObjectModel _instance;
 
@@ -137,9 +137,9 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
             case COM_OBJECTFABRIC_TRANSACTION_CLASS_ID:
                 return new com.objectfabric.Transaction(trunk, null, 0, null, null, null);
             case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID:
-                return Method0.INSTANCE;
+                return new Method0(trunk);
             case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID:
-                return Method1.INSTANCE;
+                return new Method1(trunk);
         }
 
         return super.createInstance(trunk, classId, genericParameters);
@@ -161,7 +161,7 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
 
         public static final Method0 INSTANCE = new Method0(com.objectfabric.Site.getLocal().getTrunk());
 
-        private Method0(com.objectfabric.Transaction trunk) {
+        public Method0(com.objectfabric.Transaction trunk) {
             super(new Version(null, FIELD_COUNT), trunk);
         }
 
@@ -382,7 +382,7 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
 
         public static final Method1 INSTANCE = new Method1(com.objectfabric.Site.getLocal().getTrunk());
 
-        private Method1(com.objectfabric.Transaction trunk) {
+        public Method1(com.objectfabric.Transaction trunk) {
             super(new Version(null, FIELD_COUNT), trunk);
         }
 

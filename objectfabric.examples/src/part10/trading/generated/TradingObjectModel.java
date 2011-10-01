@@ -10,7 +10,7 @@ package part10.trading.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class TradingObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -99, -108, -49, -117, -121, -59, 46, 92, -122, -52, 123, 77, 79, -113, 72, -45 };
+    private static final byte[] UID = { 11, 37, -69, 126, 68, 24, -93, -95, -5, -117, -44, 2, 16, -103, 77, 25 };
 
     private static volatile TradingObjectModel _instance;
 

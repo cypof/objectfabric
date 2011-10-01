@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicReference;
 
 import com.objectfabric.Privileged;
 import com.objectfabric.Strings;
+import com.objectfabric.misc.CheckedRunnable;
 import com.objectfabric.misc.ClosedConnectionException;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
@@ -49,7 +50,7 @@ final class HTTPSession extends Privileged implements Filter {
         _scheduler = Executors.newScheduledThreadPool(1, new ThreadFactory() {
 
             public Thread newThread(Runnable r) {
-                Thread thread = new Thread();
+                Thread thread = new Thread(r);
                 thread.setName("HTTPSession Scheduler");
                 thread.setDaemon(true);
                 return thread;
@@ -647,7 +648,7 @@ final class HTTPSession extends Privileged implements Filter {
         }
     }
 
-    private abstract class Scheduled implements Runnable {
+    private abstract class Scheduled extends CheckedRunnable {
 
         private ScheduledFuture<?> _future;
 
@@ -666,14 +667,16 @@ final class HTTPSession extends Privileged implements Filter {
 
     private final class Timeout extends Scheduled {
 
-        public void run() {
+        @Override
+        protected void checkedRun() {
             close();
         }
     }
 
     private final class Heartbeat extends Scheduled {
 
-        public void run() {
+        @Override
+        protected void checkedRun() {
             FilterState writer = _writer.get();
 
             if (writer.Filter != null)
@@ -691,7 +694,7 @@ final class HTTPSession extends Privileged implements Filter {
         throw new UnsupportedOperationException();
     }
 
-    public void onReadStopped(Throwable t) {
+    public void onReadStopped(Exception e) {
         throw new UnsupportedOperationException();
     }
 
@@ -699,7 +702,7 @@ final class HTTPSession extends Privileged implements Filter {
         throw new UnsupportedOperationException();
     }
 
-    public void onWriteStopped(Throwable t) {
+    public void onWriteStopped(Exception e) {
         throw new UnsupportedOperationException();
     }
 

@@ -12,6 +12,7 @@
 
 package com.objectfabric;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -37,19 +38,20 @@ public class BTreeTest {
     private static final byte[] KEY5 = { 62, -102, -92, -11 };
 
     @Test
-    public void test() {
+    public void test() throws IOException {
         write();
         read();
     }
 
-    private void write() {
+    private void write() throws IOException {
         PlatformFile.mkdir(JdbmTest.TEMP);
         PlatformFile.deleteFileIfExists(JdbmTest.FILE);
         PlatformFile.deleteFileIfExists(JdbmTest.FILE + ".log");
 
         PlatformFile db = new PlatformFile(JdbmTest.FILE);
         PlatformFile lg = new PlatformFile(JdbmTest.FILE + ".log");
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         long root = manager.getRoot(0);
         Debug.assertAlways(root == 0);
@@ -62,10 +64,11 @@ public class BTreeTest {
         manager.close();
     }
 
-    private void read() {
+    private void read() throws IOException {
         PlatformFile db = new PlatformFile(JdbmTest.FILE);
         PlatformFile lg = new PlatformFile(JdbmTest.FILE + ".log");
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         long root = manager.getRoot(0);
         BTree tree = BTree.load(manager, root, true);
@@ -76,18 +79,19 @@ public class BTreeTest {
     }
 
     @Test
-    public void test2() {
+    public void test2() throws IOException {
         write2();
         read2();
     }
 
-    private void write2() {
+    private void write2() throws IOException {
         PlatformFile.deleteFileIfExists(JdbmTest.FILE);
         PlatformFile.deleteFileIfExists(JdbmTest.FILE + ".log");
 
         PlatformFile db = new PlatformFile(JdbmTest.FILE);
         PlatformFile lg = new PlatformFile(JdbmTest.FILE + ".log");
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         long root = manager.getRoot(0);
         Debug.assertAlways(root == 0);
@@ -100,10 +104,11 @@ public class BTreeTest {
         manager.close();
     }
 
-    private void read2() {
+    private void read2() throws IOException {
         PlatformFile db = new PlatformFile(JdbmTest.FILE);
         PlatformFile lg = new PlatformFile(JdbmTest.FILE + ".log");
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         long root = manager.getRoot(0);
         BTree tree = BTree.load(manager, root, false);
@@ -113,13 +118,14 @@ public class BTreeTest {
     }
 
     @Test
-    public void test5() {
+    public void test5() throws IOException {
         PlatformFile.deleteFileIfExists(JdbmTest.FILE);
         PlatformFile.deleteFileIfExists(JdbmTest.FILE + ".log");
 
         PlatformFile db = new PlatformFile(JdbmTest.FILE);
         PlatformFile lg = new PlatformFile(JdbmTest.FILE + ".log");
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         BTree tree = new BTree(manager, false);
         manager.setRoot(0, tree.getId());
@@ -174,7 +180,8 @@ public class BTreeTest {
                 manager.close();
                 db = new PlatformFile(JdbmTest.FILE);
                 lg = new PlatformFile(JdbmTest.FILE + ".log");
-                manager = new RecordManager(db, lg);
+                backend = new FileBackend(db, lg, false);
+                manager = new RecordManager(backend);
                 long root = manager.getRoot(0);
                 tree = BTree.load(manager, root, false);
                 closings++;
@@ -247,7 +254,7 @@ public class BTreeTest {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         BTreeTest test = new BTreeTest();
         test.test();
     }

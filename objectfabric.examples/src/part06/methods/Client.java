@@ -48,12 +48,12 @@ public class Client {
                         client.send("Done!");
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception e) {
                     }
                 });
             }
 
-            public void onDisconnected(Throwable t) {
+            public void onDisconnected(Exception e) {
             }
         });
 

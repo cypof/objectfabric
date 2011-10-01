@@ -37,14 +37,9 @@ public final class PlatformFile extends Privileged {
 
     private final RandomAccessFile _file;
 
-    public PlatformFile(String name) {
+    public PlatformFile(String name) throws IOException {
         _name = name;
-
-        try {
-            _file = new RandomAccessFile(name, "rw");
-        } catch (IOException ex) {
-            throw new RuntimeIOException(ex);
-        }
+        _file = new RandomAccessFile(name, "rw");
     }
 
     public long length() {

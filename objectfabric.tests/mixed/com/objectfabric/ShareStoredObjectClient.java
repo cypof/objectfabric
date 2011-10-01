@@ -74,7 +74,7 @@ public class ShareStoredObjectClient extends Privileged {
                         _exit = true;
                     }
 
-                    public void onFailure(Throwable t) {
+                    public void onFailure(Exception _) {
                         throw new IllegalStateException();
                     }
                 });

@@ -97,7 +97,7 @@ public class ConnectionTest extends Privileged {
                 session.send(share);
             }
 
-            public void onDisconnection(SocketConnection session, Throwable t) {
+            public void onDisconnection(SocketConnection session, Exception e) {
             }
 
             public void onReceived(SocketConnection session, Object object) {

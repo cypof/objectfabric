@@ -287,12 +287,12 @@ final class Interceptor {
         }
     }
 
-    public static final void nack(Transaction branch, CommitStatus result, Throwable throwableOrNullForConflict) {
+    public static final void nack(Transaction branch, CommitStatus result, Exception exceptionOrNullForConflict) {
         for (;;) {
             Snapshot snapshot = branch.getSharedSnapshot();
             int length = snapshot.getAcknowledgedIndex() + 1;
 
-            if (trim(branch, snapshot, length, result, throwableOrNullForConflict))
+            if (trim(branch, snapshot, length, result, exceptionOrNullForConflict))
                 break;
         }
     }
@@ -326,7 +326,7 @@ final class Interceptor {
         }
     }
 
-    private static final boolean trim(Transaction branch, Snapshot snapshot, int length, CommitStatus result, Throwable throwableOrNullForConflict) {
+    private static final boolean trim(Transaction branch, Snapshot snapshot, int length, CommitStatus result, Exception exceptionOrNullForConflict) {
         if (length == snapshot.getVersionMaps().length)
             return true;
 
@@ -449,13 +449,13 @@ final class Interceptor {
                             Debug.assertion(!done);
                         }
 
-                        if (throwableOrNullForConflict == null)
+                        if (exceptionOrNullForConflict == null)
                             map.getInterception().getAsync().set(result);
                         else
-                            map.getInterception().getAsync().setException(throwableOrNullForConflict);
+                            map.getInterception().getAsync().setException(exceptionOrNullForConflict);
 
                         if (multi)
-                            ((MultiMapInterception) map.getInterception()).setCallbacks(result, throwableOrNullForConflict);
+                            ((MultiMapInterception) map.getInterception()).setCallbacks(result, exceptionOrNullForConflict);
                     }
 
                     if (Debug.ENABLED)

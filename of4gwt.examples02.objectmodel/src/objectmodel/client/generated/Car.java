@@ -321,15 +321,15 @@ public class Car extends of4gwt.TGeneratedFields32 {
     public final of4gwt.misc.Future<java.lang.Void> startAsync(com.google.gwt.user.client.rpc.AsyncCallback<java.lang.Void> callback, of4gwt.AsyncOptions asyncOptions, of4gwt.misc.Executor executor) {
         if (executor == of4gwt.misc.TransparentExecutor.getInstance()) {
             java.lang.Void result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 startImplementation();
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             objectmodel.client.generated.MyObjectModel.Method0.Version version_ = (objectmodel.client.generated.MyObjectModel.Method0.Version) createVersion_objectfabric(objectmodel.client.generated.MyObjectModel.Method0.INSTANCE);
 
@@ -353,8 +353,8 @@ public class Car extends of4gwt.TGeneratedFields32 {
         try {
             startImplementation();
             call.set(null);
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -379,15 +379,15 @@ public class Car extends of4gwt.TGeneratedFields32 {
     public final of4gwt.misc.Future<objectmodel.client.generated.Key> lendAsync(objectmodel.client.generated.Driver friend, objectmodel.client.generated.Key key, com.google.gwt.user.client.rpc.AsyncCallback<objectmodel.client.generated.Key> callback, of4gwt.AsyncOptions asyncOptions, of4gwt.misc.Executor executor) {
         if (executor == of4gwt.misc.TransparentExecutor.getInstance()) {
             objectmodel.client.generated.Key result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 result_ = lendImplementation(friend, key);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             objectmodel.client.generated.MyObjectModel.Method1.Version version_ = (objectmodel.client.generated.MyObjectModel.Method1.Version) createVersion_objectfabric(objectmodel.client.generated.MyObjectModel.Method1.INSTANCE);
 
@@ -420,8 +420,8 @@ public class Car extends of4gwt.TGeneratedFields32 {
     protected void lendImplementationAsync(objectmodel.client.generated.Driver friend, objectmodel.client.generated.Key key, of4gwt.MethodCall call) {
         try {
             call.set(lendImplementation(friend, key));
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -432,8 +432,8 @@ public class Car extends of4gwt.TGeneratedFields32 {
             case METHOD_0: {
                 try {
                     startImplementationAsync(call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;
@@ -445,8 +445,8 @@ public class Car extends of4gwt.TGeneratedFields32 {
 
                 try {
                     lendImplementationAsync(friend, key, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

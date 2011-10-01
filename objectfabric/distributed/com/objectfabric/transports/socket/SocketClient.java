@@ -22,6 +22,7 @@ import com.objectfabric.AsyncOptions;
 import com.objectfabric.Site;
 import com.objectfabric.Validator;
 import com.objectfabric.misc.AsyncCallback;
+import com.objectfabric.misc.CheckedRunnable;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.NIOManager;
 import com.objectfabric.misc.PlatformAdapter;
@@ -102,7 +103,7 @@ public class SocketClient extends SocketConnection implements Client {
         } catch (java.lang.InterruptedException ex) {
             throw new RuntimeException(ex);
         } catch (java.util.concurrent.ExecutionException ex) {
-            throw PlatformAdapter.createIOException(ex.getCause());
+            throw PlatformAdapter.createIOException((Exception) ex.getCause());
         }
     }
 
@@ -134,8 +135,8 @@ public class SocketClient extends SocketConnection implements Client {
             public void onSuccess(Void result) {
             }
 
-            public void onFailure(Throwable t) {
-                future.setException(t);
+            public void onFailure(Exception e) {
+                future.setException(e);
             }
         }, new AsyncOptions() {
 
@@ -160,14 +161,15 @@ public class SocketClient extends SocketConnection implements Client {
     protected void onObject(final Object object) {
         super.onObject(object);
 
-        getCallbackExecutor().execute(new Runnable() {
+        getCallbackExecutor().execute(new CheckedRunnable() {
 
-            public void run() {
+            @Override
+            protected void checkedRun() {
                 if (_callback != null) {
                     try {
                         _callback.onReceived(object);
-                    } catch (Throwable t) {
-                        PlatformAdapter.logListenerException(t);
+                    } catch (Exception e) {
+                        PlatformAdapter.logUserCodeException(e);
                     }
                 }
             }
@@ -175,17 +177,18 @@ public class SocketClient extends SocketConnection implements Client {
     }
 
     @Override
-    protected void onWriteStopped(final Throwable t) {
-        super.onWriteStopped(t);
+    protected void onWriteStopped(final Exception e) {
+        super.onWriteStopped(e);
 
-        getCallbackExecutor().execute(new Runnable() {
+        getCallbackExecutor().execute(new CheckedRunnable() {
 
-            public void run() {
+            @Override
+            protected void checkedRun() {
                 if (_callback != null) {
                     try {
-                        _callback.onDisconnected(t);
-                    } catch (Throwable t_) {
-                        PlatformAdapter.logListenerException(t_);
+                        _callback.onDisconnected(e);
+                    } catch (Exception user) {
+                        PlatformAdapter.logUserCodeException(user);
                     }
                 }
             }

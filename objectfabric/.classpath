@@ -7,5 +7,6 @@
 	<classpathentry kind="src" path="distributed"/>
 	<classpathentry kind="src" path="persistence"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="src" path="jdbm"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

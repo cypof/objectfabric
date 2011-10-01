@@ -122,15 +122,15 @@ abstract class IndexBase extends of4gwt.TGeneratedFields32 {
     protected final of4gwt.misc.Future<of4gwt.TObject> fetchAsync(byte[] ref, com.google.gwt.user.client.rpc.AsyncCallback<of4gwt.TObject> callback, of4gwt.AsyncOptions asyncOptions, of4gwt.misc.Executor executor) {
         if (executor == of4gwt.misc.TransparentExecutor.getInstance()) {
             of4gwt.TObject result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 result_ = fetchImplementation(ref);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             of4gwt.DefaultObjectModel.Method1.Version version_ = (of4gwt.DefaultObjectModel.Method1.Version) createVersion_objectfabric(of4gwt.DefaultObjectModel.Method1.INSTANCE);
 
@@ -158,8 +158,8 @@ abstract class IndexBase extends of4gwt.TGeneratedFields32 {
     protected void fetchImplementationAsync(byte[] ref, of4gwt.MethodCall call) {
         try {
             call.set(fetchImplementation(ref));
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -173,8 +173,8 @@ abstract class IndexBase extends of4gwt.TGeneratedFields32 {
 
                 try {
                     fetchImplementationAsync(ref, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

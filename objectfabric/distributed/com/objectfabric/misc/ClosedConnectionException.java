@@ -18,7 +18,7 @@ public class ClosedConnectionException extends RuntimeIOException {
         super("Connection closed");
     }
 
-    public ClosedConnectionException(Throwable t) {
-        super(t);
+    public ClosedConnectionException(Exception e) {
+        super(e);
     }
 }

@@ -93,10 +93,15 @@ public abstract class TObject {
     }
 
     @SuppressWarnings("unchecked")
-    protected final <V> Future<V> getCompletedFuture_objectfabric(V result, Throwable throwable, AsyncCallback<V> callback, AsyncOptions asyncOptions) {
-        if (callback != null) {
+    protected final <V> Future<V> getCompletedFuture_objectfabric(V result, Exception exception, AsyncCallback<V> callback, AsyncOptions asyncOptions) {
+        if (callback != null || exception != null) {
             FutureWithCallback<V> async = new FutureWithCallback<V>(callback, asyncOptions);
-            async.set(result);
+
+            if (exception != null)
+                async.setException(exception);
+            else
+                async.set(result);
+
             return async;
         }
 
@@ -357,8 +362,8 @@ public abstract class TObject {
             call.set(value, true);
         }
 
-        protected static final void setExceptionDirect(MethodCall call, Throwable t) {
-            call.setException(t, true);
+        protected static final void setExceptionDirect(MethodCall call, Exception e) {
+            call.setException(e, true);
         }
 
         //
@@ -401,25 +406,25 @@ public abstract class TObject {
                 if (direct)
                     super.set(value, direct);
                 else {
-                    Throwable throwable = afterRun(this, null);
+                    Exception e = afterRun(this, null);
 
-                    if (throwable == null) {
+                    if (e == null) {
                         beforePut();
 
                         super.set(value, direct);
                     } else
-                        setException(throwable, direct);
+                        setException(e, direct);
                 }
             }
 
             @Override
-            public final void setException(Throwable t, boolean direct) {
+            public final void setException(Exception e, boolean direct) {
                 if (!direct) {
-                    t = afterRun(this, t);
+                    e = afterRun(this, e);
                     beforePut();
                 }
 
-                super.setException(t, direct);
+                super.setException(e, direct);
             }
 
             private final void beforePut() {
@@ -435,40 +440,40 @@ public abstract class TObject {
                     OF.updateAsync();
             }
 
-            static final Throwable afterRun(MethodCall call, Throwable throwable) {
+            static final Exception afterRun(MethodCall call, Exception ex) {
                 Transaction current = Transaction.getCurrent();
 
                 if (call.getTransaction() == null) {
                     if (current != null) {
-                        if (throwable != null) {
+                        if (ex != null) {
                             /*
                              * Method probably failed before it was done with transaction,
                              * ignore.
                              */
                         } else {
                             String message = ((Method) call.getMethod()).getName() + ": " + Strings.USER_CODE_CHANGED_CURRENT_TRANSACTION;
-                            throwable = new RuntimeException(message);
+                            ex = new RuntimeException(message);
                         }
 
                         Transaction.setCurrent(null);
                     }
                 } else {
                     if (current != call.getTransaction()) {
-                        if (throwable != null) {
+                        if (ex != null) {
                             /*
                              * Method probably failed before it could switch back to
                              * transaction, ignore.
                              */
                         } else {
                             String message = ((Method) call.getMethod()).getName() + ": " + Strings.USER_CODE_CHANGED_CURRENT_TRANSACTION;
-                            throwable = new RuntimeException(message);
+                            ex = new RuntimeException(message);
                         }
 
                         Transaction.setCurrent(call.getTransaction());
                     }
                 }
 
-                return throwable;
+                return ex;
             }
 
             @Override

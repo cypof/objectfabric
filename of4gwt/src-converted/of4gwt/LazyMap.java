@@ -186,6 +186,17 @@ public class LazyMap<K, V> extends LazyMapBase {
     //
 
     @Override
+    protected Object fetchImplementation(Object key) {
+        TKeyedEntry entry = getEntry((K) key);
+
+        if (entry != null)
+            return !entry.isRemoval() ? entry.getValue() : null;
+
+        // If got there, transparent executor so no store
+        return null;
+    }
+
+    @Override
     protected void fetchImplementationAsync(Object key, MethodCall call) {
         TKeyedEntry entry = getEntry((K) key);
 

@@ -64,9 +64,9 @@ final class GCQueue extends ReferenceQueue {
                 try {
                     Reference ref = (Reference) remove();
                     ref.collected();
-                } catch (java.lang.InterruptedException ex) {
-                } catch (Throwable t) {
-                    Log.write(t);
+                } catch (java.lang.InterruptedException _) {
+                } catch (Exception e) {
+                    Log.write(e);
                 }
             }
         }

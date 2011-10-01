@@ -52,7 +52,7 @@ class AutoGenerator extends Privileged {
 
                 try {
                     c = loader.loadClass(name);
-                } catch (Throwable t) {
+                } catch (Throwable _) {
                 }
 
                 if (c != null) {

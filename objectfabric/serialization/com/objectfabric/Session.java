@@ -74,8 +74,9 @@ final class Session extends SessionBase implements SystemClass {
     }
 
     public void setRecords(long value) {
-        if (Debug.ENABLED)
-            Debug.assertion(_records == Record.NOT_STORED);
+        int i; // TODO
+//        if (Debug.ENABLED)
+//            Debug.assertion(_records == Record.NOT_STORED);
 
         _records = value;
     }
@@ -193,7 +194,7 @@ final class Session extends SessionBase implements SystemClass {
                     Debug.assertion(PlatformClass.isInstance(c, object));
             } else {
                 Debug.assertion(model == DefaultObjectModelBase.getInstance());
-                Debug.assertion(PlatformClass.getSimpleName(object.getClass()).startsWith("TArray"));
+                Debug.assertion(PlatformClass.getClassName(object).contains("TArray"));
             }
         }
 

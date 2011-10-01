@@ -46,7 +46,7 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
 
     private V _result;
 
-    private Throwable _throwable;
+    private Exception _exception;
 
     public FutureWithCallback(AsyncCallback<V> callback, AsyncOptions options) {
         if (Debug.ENABLED)
@@ -75,8 +75,8 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
         }
     }
 
-    public void setException(Throwable t) {
-        _throwable = t;
+    public void setException(Exception e) {
+        _exception = e;
         setDone();
 
         if (_callback != null) {
@@ -85,7 +85,7 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
                 executor.execute(this);
             }
         } else
-            Log.write(Strings.NO_CALLBACK_FOR_EXCEPTION + Utils.NEW_LINE + PlatformAdapter.getStackAsString(t));
+            Log.write(Strings.NO_CALLBACK_FOR_EXCEPTION + Utils.NEW_LINE + PlatformAdapter.getStackAsString(e));
     }
 
     public void run() {
@@ -96,12 +96,12 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
         }
 
         try {
-            if (_throwable == null)
+            if (_exception == null)
                 _callback.onSuccess(_result);
             else
-                _callback.onFailure(_throwable);
+                _callback.onFailure(_exception);
         } catch (Throwable ex) {
-            PlatformAdapter.logListenerException(ex);
+            PlatformAdapter.logUserCodeException(ex);
         }
     }
 }

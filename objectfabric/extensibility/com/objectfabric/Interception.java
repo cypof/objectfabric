@@ -87,7 +87,7 @@ abstract class Interception {
             }
         }
 
-        public void setCallbacks(CommitStatus result, Throwable throwable) {
+        public void setCallbacks(CommitStatus result, Exception exception) {
             Object current = null;
 
             for (;;) {
@@ -104,10 +104,10 @@ abstract class Interception {
             CallBackQueue queue = (CallBackQueue) current;
 
             while (queue != null) {
-                if (throwable == null)
+                if (exception == null)
                     queue.getAsync().set(result);
                 else
-                    queue.getAsync().setException(throwable);
+                    queue.getAsync().setException(exception);
 
                 queue = queue.getNext();
             }

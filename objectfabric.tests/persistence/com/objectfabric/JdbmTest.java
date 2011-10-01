@@ -12,6 +12,8 @@
 
 package com.objectfabric;
 
+import java.io.IOException;
+
 import org.junit.Test;
 
 import com.objectfabric.misc.Debug;
@@ -24,14 +26,14 @@ public class JdbmTest {
     public static final String FILE = TEMP + "/test.db";
 
     @Test
-    public void test() {
+    public void test() throws IOException {
         write();
         read();
         update();
         read2();
     }
 
-    private void write() {
+    private void write() throws IOException {
         PlatformFile.mkdir(TEMP);
 
         PlatformFile.deleteFileIfExists(FILE);
@@ -40,7 +42,8 @@ public class JdbmTest {
         PlatformFile db = new PlatformFile(FILE);
         PlatformFile lg = new PlatformFile(FILE + FileStore.LOG_EXTENSION);
 
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         long root = manager.getRoot(0);
         Debug.assertAlways(root == 0);
@@ -50,10 +53,11 @@ public class JdbmTest {
         manager.close();
     }
 
-    private void read() {
+    private void read() throws IOException {
         PlatformFile db = new PlatformFile(FILE);
         PlatformFile lg = new PlatformFile(FILE + FileStore.LOG_EXTENSION);
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         long root = manager.getRoot(0);
         byte[] read = manager.fetch(root);
@@ -61,20 +65,22 @@ public class JdbmTest {
         manager.close();
     }
 
-    private void update() {
+    private void update() throws IOException {
         PlatformFile db = new PlatformFile(FILE);
         PlatformFile lg = new PlatformFile(FILE + FileStore.LOG_EXTENSION);
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         long root = manager.getRoot(0);
         manager.update(root, new byte[] { 0, 7, 2 });
         manager.close();
     }
 
-    private void read2() {
+    private void read2() throws IOException {
         PlatformFile db = new PlatformFile(FILE);
         PlatformFile lg = new PlatformFile(FILE + FileStore.LOG_EXTENSION);
-        RecordManager manager = new RecordManager(db, lg);
+        FileBackend backend = new FileBackend(db, lg, false);
+        RecordManager manager = new RecordManager(backend);
 
         long root = manager.getRoot(0);
         byte[] read = manager.fetch(root);
@@ -82,7 +88,7 @@ public class JdbmTest {
         manager.close();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         JdbmTest test = new JdbmTest();
         test.test();
     }

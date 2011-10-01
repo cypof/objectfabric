@@ -99,9 +99,9 @@ final class ExpectedExceptionThrower {
         throw new IndexOutOfBoundsException();
     }
 
-    public static final void throwRuntimeException(Throwable t) {
+    public static final void throwRuntimeException(Exception e) {
         onException();
-        throw new RuntimeException(t);
+        throw new RuntimeException(e);
     }
 
     public static final void throwRuntimeException(String message) {

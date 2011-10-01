@@ -149,10 +149,10 @@ final class PropagatorReader extends DistributedReader {
     }
 
     @Override
-    protected void onStopped(Throwable t) {
-        super.onStopped(t);
+    protected void onStopped(Exception e) {
+        super.onStopped(e);
 
-        _sourceSplitter.unregisterFromAllBranches(t);
+        _sourceSplitter.unregisterFromAllBranches(e);
 
         synchronized (_lock) {
             if (_branchesToUnblock == null)

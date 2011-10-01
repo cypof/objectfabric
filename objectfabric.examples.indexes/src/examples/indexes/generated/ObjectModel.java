@@ -10,7 +10,7 @@ package examples.indexes.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class ObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -122, 63, 77, -2, 12, -69, -115, 73, -33, -122, -92, 84, 66, 66, -25, 82 };
+    private static final byte[] UID = { 74, 7, 23, 56, 45, 34, -89, 10, -57, 10, -88, 121, -82, 30, 68, 48 };
 
     private static volatile ObjectModel _instance;
 

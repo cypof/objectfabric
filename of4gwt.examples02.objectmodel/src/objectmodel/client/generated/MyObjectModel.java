@@ -10,7 +10,7 @@ package objectmodel.client.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class MyObjectModel extends of4gwt.ObjectModel {
 
-    private static final byte[] UID = { 123, -106, 28, -41, 56, 12, -23, -41, -43, 29, 72, 16, 43, 38, 79, -104 };
+    private static final byte[] UID = { 113, 29, -77, -26, 41, -9, -59, -26, 96, 51, -111, 124, 46, -63, 110, 18 };
 
     private static volatile MyObjectModel _instance;
 

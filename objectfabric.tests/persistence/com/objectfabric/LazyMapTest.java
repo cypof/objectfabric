@@ -12,6 +12,8 @@
 
 package com.objectfabric;
 
+import java.io.IOException;
+
 import junit.framework.Assert;
 
 import org.junit.Test;
@@ -58,7 +60,7 @@ public class LazyMapTest extends TestsHelper {
 
     public static final class TestWrite {
 
-        public static void main(String[] args) {
+        public static void main(String[] args) throws IOException {
             PersistenceObjectModel.register();
 
             OF.setConfig(new Config() {
@@ -157,7 +159,7 @@ public class LazyMapTest extends TestsHelper {
 
     public static final class TestUpdate {
 
-        public static void main(String[] args) {
+        public static void main(String[] args) throws IOException {
             PersistenceObjectModel.register();
 
             FileStore store = new FileStore(JdbmTest.FILE);
@@ -230,7 +232,7 @@ public class LazyMapTest extends TestsHelper {
 
     public static final class TestRead {
 
-        public static void main(String[] args) {
+        public static void main(String[] args) throws IOException {
             PersistenceObjectModel.register();
 
             FileStore store = new FileStore(JdbmTest.FILE);

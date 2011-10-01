@@ -31,5 +31,5 @@ public interface AsyncCallback<T> {
      * 
      * @see com.objectfabric.misc.ReplicatedException
      */
-    void onFailure(Throwable t);
+    void onFailure(Exception e);
 }

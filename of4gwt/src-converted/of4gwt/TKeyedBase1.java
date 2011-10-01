@@ -180,8 +180,8 @@ class TKeyedBase1 extends TObject.Version {
     protected final TKeyedEntry putEntryAndSkipOnException(TKeyedEntry[] entries, Object key, TKeyedEntry entry, boolean keepRemovals, boolean weak) {
         try {
             return putEntry(entries, key, entry, keepRemovals, weak);
-        } catch (Throwable t) {
-            Log.write(t);
+        } catch (Exception e) {
+            Log.write(e);
 
             /*
              * Don't let a user exception from K.equals() go up into the system as it's

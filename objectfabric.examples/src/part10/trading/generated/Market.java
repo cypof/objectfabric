@@ -139,15 +139,15 @@ public class Market extends com.objectfabric.TGeneratedFields32 {
     public final java.util.concurrent.Future<com.objectfabric.TList<part10.trading.generated.Instrument>> getInstrumentsAsync(java.lang.String query, com.objectfabric.misc.AsyncCallback<com.objectfabric.TList<part10.trading.generated.Instrument>> callback, com.objectfabric.AsyncOptions asyncOptions, java.util.concurrent.Executor executor) {
         if (executor == com.objectfabric.misc.TransparentExecutor.getInstance()) {
             com.objectfabric.TList<part10.trading.generated.Instrument> result_ = null;
-            java.lang.Throwable throwable_ = null;
+            java.lang.Exception exception_ = null;
 
             try {
                 result_ = getInstrumentsImplementation(query);
-            } catch (java.lang.Throwable t_) {
-                throwable_ = t_;
+            } catch (java.lang.Exception e_) {
+                exception_ = e_;
             }
 
-            return getCompletedFuture_objectfabric(result_, throwable_, callback, asyncOptions);
+            return getCompletedFuture_objectfabric(result_, exception_, callback, asyncOptions);
         } else {
             part10.trading.generated.TradingObjectModel.Method0.Version version_ = (part10.trading.generated.TradingObjectModel.Method0.Version) createVersion_objectfabric(part10.trading.generated.TradingObjectModel.Method0.INSTANCE);
 
@@ -175,8 +175,8 @@ public class Market extends com.objectfabric.TGeneratedFields32 {
     protected void getInstrumentsImplementationAsync(java.lang.String query, com.objectfabric.MethodCall call) {
         try {
             call.set(getInstrumentsImplementation(query));
-        } catch (java.lang.Throwable t_) {
-            call.setException(t_);
+        } catch (java.lang.Exception e_) {
+            call.setException(e_);
         }
     }
 
@@ -190,8 +190,8 @@ public class Market extends com.objectfabric.TGeneratedFields32 {
 
                 try {
                     getInstrumentsImplementationAsync(query, call);
-                } catch (java.lang.Throwable t_) {
-                    call.setException(t_);
+                } catch (java.lang.Exception e_) {
+                    call.setException(e_);
                 }
 
                 break;

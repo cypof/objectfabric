@@ -43,7 +43,7 @@ class FileGeneratorClass extends FileGenerator {
             line = line.replace(" static final ", " const ");
             line = line.replace("java.lang.Object", "object");
             line = line.replace("java.lang.String", "string");
-            line = line.replace("java.lang.Throwable", "System.Exception");
+            line = line.replace("java.lang.Exception", "System.Exception");
             line = line.replace("IllegalArgumentException", "ArgumentException");
             line = line.replace("IllegalStateException", "InvalidOperationException");
         }

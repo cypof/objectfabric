@@ -96,7 +96,7 @@ public class Main implements EntryPoint {
                 }
             }
 
-            public void onDisconnected(Throwable t) {
+            public void onDisconnected(Exception e) {
             }
         });
 

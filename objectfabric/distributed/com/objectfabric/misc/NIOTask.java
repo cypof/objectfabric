@@ -40,15 +40,15 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
 
     private boolean _stopped;
 
-    public final void stop(Throwable t) {
+    public final void stop(Exception e) {
         NIOManager.assertUnlocked();
 
         OverrideAssert.add(this);
-        stop_(t);
+        stop_(e);
         OverrideAssert.end(this);
     }
 
-    public void stop_(Throwable t) {
+    public void stop_(Exception e) {
         OverrideAssert.set(this);
 
         SelectionKey key = getKey();
@@ -72,7 +72,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
             NIOConnection connection = getConnection();
 
             if (connection != null)
-                connection.stop(t);
+                connection.stop(e);
         }
     }
 
@@ -212,13 +212,13 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
         }
 
         @Override
-        public void stop_(Throwable t) {
-            super.stop_(t);
+        public void stop_(Exception e) {
+            super.stop_(e);
 
             // Test necessary to avoid double callbacks
             if (!_future.isDone()) {
                 // In case listener was still starting
-                _future.setException(t);
+                _future.setException(e);
             }
         }
 
@@ -302,12 +302,12 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
         }
 
         @Override
-        public void stop_(Throwable t) {
-            super.stop_(t);
+        public void stop_(Exception e) {
+            super.stop_(e);
 
             // Test necessary to avoid double callbacks
             if (_future != null && !_future.isDone())
-                _future.setException(t);
+                _future.setException(e);
         }
     }
 
@@ -372,10 +372,10 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
         }
 
         @Override
-        public void stop_(Throwable t) {
-            super.stop_(t);
+        public void stop_(Exception e) {
+            super.stop_(e);
 
-            NIOManager.getInstance().execute(new ReadEnd(this, t));
+            NIOManager.getInstance().execute(new ReadEnd(this, e));
         }
 
         public boolean selecting() {
@@ -459,14 +459,14 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
 
                 if (Debug.ENABLED)
                     Debug.assertion(buffer.position() == buffer.limit());
-            } catch (Throwable t) {
+            } catch (Exception e) {
                 if (Debug.ENABLED) {
                     ThreadAssert.suspend(this);
                     setNoTransaction(true);
                 }
 
                 assertThreadContextEmpty();
-                stop(t);
+                stop(e);
                 NIOManager.getInstance().execute(this);
                 return false;
             }
@@ -479,11 +479,11 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
 
         private final Read _read;
 
-        private final Throwable _throwable;
+        private final Exception _exception;
 
-        public ReadEnd(Read read, Throwable t) {
+        public ReadEnd(Read read, Exception e) {
             _read = read;
-            _throwable = t;
+            _exception = e;
         }
 
         @Override
@@ -521,7 +521,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                     ThreadAssert.assertPrivate(_read);
 
                 OverrideAssert.add(_read);
-                getConnection().onReadStopped(_throwable);
+                getConnection().onReadStopped(_exception);
                 OverrideAssert.end(_read);
 
                 getConnection().onReadDisposed();
@@ -589,10 +589,10 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
         }
 
         @Override
-        public void stop_(Throwable t) {
-            super.stop_(t);
+        public void stop_(Exception e) {
+            super.stop_(e);
 
-            NIOManager.getInstance().execute(new WriteEnd(this, t));
+            NIOManager.getInstance().execute(new WriteEnd(this, e));
         }
 
         public void select(final ByteBuffer buffer) {
@@ -622,15 +622,15 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                 if (Debug.ENABLED)
                     for (int i = 0; i < _headers.size(); i++)
                         Debug.assertion(_headers.get(i).remaining() != 0);
-            } catch (Throwable t) {
+            } catch (Exception e) {
                 if (Debug.ENABLED) {
                     ThreadAssert.suspend(this);
                     setNoTransaction(true);
+                    assertThreadContextEmpty();
                 }
 
                 _connection.setIdle();
-                assertThreadContextEmpty();
-                stop(t);
+                stop(e);
                 return;
             }
 
@@ -728,11 +728,11 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
 
         private final Write _write;
 
-        private final Throwable _throwable;
+        private final Exception _exception;
 
-        public WriteEnd(Write write, Throwable throwable) {
+        public WriteEnd(Write write, Exception exception) {
             _write = write;
-            _throwable = throwable;
+            _exception = exception;
         }
 
         @Override
@@ -768,7 +768,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                         ThreadAssert.assertPrivate(_write);
 
                     OverrideAssert.add(_write);
-                    getConnection().onWriteStopped(_throwable);
+                    getConnection().onWriteStopped(_exception);
                     OverrideAssert.end(_write);
 
                     getConnection().onWriteDisposed();

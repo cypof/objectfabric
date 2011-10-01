@@ -40,7 +40,7 @@ public class Client {
                 client.send(object + " World!");
             }
 
-            public void onDisconnected(Throwable t) {
+            public void onDisconnected(Exception e) {
             }
         });
 

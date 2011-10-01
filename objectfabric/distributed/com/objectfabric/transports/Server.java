@@ -30,7 +30,7 @@ public interface Server<C extends Connection> {
          * A client has disconnected. Exception might contain additional information about
          * the disconnection.
          */
-        void onDisconnection(C session, Throwable t);
+        void onDisconnection(C session, Exception e);
 
         /**
          * An object has been sent by the client. Events occurring on it will be

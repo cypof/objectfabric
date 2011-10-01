@@ -179,8 +179,8 @@ public class NIOTestHTTP extends TestsHelper {
         }
 
         @Override
-        protected void onWriteStopped(Throwable t) {
-            super.onWriteStopped(t);
+        protected void onWriteStopped(Exception e) {
+            super.onWriteStopped(e);
 
             Log.write("Disconnection");
         }
@@ -200,13 +200,13 @@ public class NIOTestHTTP extends TestsHelper {
             public void onReadStarted() {
             }
 
-            public void onReadStopped(Throwable t) {
+            public void onReadStopped(Exception _) {
             }
 
             public void onWriteStarted() {
             }
 
-            public void onWriteStopped(Throwable t) {
+            public void onWriteStopped(Exception _) {
             }
 
             //

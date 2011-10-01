@@ -36,7 +36,7 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
         public void onSuccess(Object result) {
         }
 
-        public void onFailure(Throwable t) {
+        public void onFailure(Exception e) {
         }
     };
 
@@ -71,8 +71,12 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
     }
 
     @Override
-    public void setException(Throwable t) {
-        super.setException(t);
+    protected void setException(Throwable t) {
+        setException((Exception) t);
+    }
+
+    public void setException(Exception e) {
+        super.setException(e);
 
         if (_callback != null) {
             if (_callback != NOP_CALLBACK) {
@@ -80,33 +84,37 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
                 executor.execute(this);
             }
         } else
-            Log.write(Strings.NO_CALLBACK_FOR_EXCEPTION + Utils.NEW_LINE + PlatformAdapter.getStackAsString(t));
+            Log.write(Strings.NO_CALLBACK_FOR_EXCEPTION + Utils.NEW_LINE + PlatformAdapter.getStackAsString(e));
     }
 
     @Override
     public void run() {
-        if (Debug.ENABLED) {
-            Debug.assertion(isDone());
-            Debug.assertion(_callback != null);
-            Helper.getInstance().removeCallback(_callback);
-        }
-
-        V result = null;
-        Throwable throwable = null;
-
         try {
-            result = get();
+            if (Debug.ENABLED) {
+                Debug.assertion(isDone());
+                Debug.assertion(_callback != null);
+                Helper.getInstance().removeCallback(_callback);
+            }
+
+            V result = null;
+            Exception ex = null;
+
+            try {
+                result = get();
+            } catch (Exception e) {
+                ex = e;
+            }
+
+            try {
+                if (ex == null)
+                    _callback.onSuccess(result);
+                else
+                    _callback.onFailure(ex);
+            } catch (Exception e) {
+                PlatformAdapter.logUserCodeException(e);
+            }
         } catch (Throwable t) {
-            throwable = t;
-        }
-
-        try {
-            if (throwable == null)
-                _callback.onSuccess(result);
-            else
-                _callback.onFailure(throwable);
-        } catch (Throwable ex) {
-            PlatformAdapter.logListenerException(ex);
+            OF.getConfig().onThrowable(t);
         }
     }
 }

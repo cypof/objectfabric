@@ -112,8 +112,8 @@ final class ThreadContext { // TODO merge with transactions' sets
                 if (_autoCommitPolicy == AutoCommitPolicy.IMMEDIATE) {
                     try {
                         status = result.get();
-                    } catch (Throwable t) {
-                        ExpectedExceptionThrower.throwRuntimeException(t);
+                    } catch (Exception e) {
+                        ExpectedExceptionThrower.throwRuntimeException(e);
                     }
 
                     if (status != CommitStatus.SUCCESS)
@@ -291,7 +291,7 @@ final class ThreadContext { // TODO merge with transactions' sets
 
         public final AtomicInteger Count = new AtomicInteger();
 
-        private Throwable _throwable;
+        private Exception _exception;
 
         public UpdateFuture(AsyncCallback<CommitStatus> callback, AsyncOptions options) {
             super(callback, options);
@@ -300,10 +300,10 @@ final class ThreadContext { // TODO merge with transactions' sets
         @Override
         public void set(CommitStatus value) {
             if (Count.decrementAndGet() == 0) {
-                if (_throwable == null)
+                if (_exception == null)
                     super.set(value);
                 else
-                    super.setException(_throwable);
+                    super.setException(_exception);
             }
         }
 
@@ -312,11 +312,11 @@ final class ThreadContext { // TODO merge with transactions' sets
         }
 
         @Override
-        public void setException(Throwable t) {
+        public void setException(Exception e) {
             if (Count.decrementAndGet() == 0)
-                super.setException(t);
+                super.setException(e);
             else
-                _throwable = t;
+                _exception = e;
         }
     }
 

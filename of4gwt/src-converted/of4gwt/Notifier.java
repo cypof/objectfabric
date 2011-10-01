@@ -110,14 +110,15 @@ class Notifier extends Walker {
         _executor.execute(_run);
     }
 
-    private final class Run extends DefaultRunnable implements Runnable {
+    private final class Run extends DefaultRunnable {
 
         public Run() {
             super(Notifier.this);
         }
 
         @SuppressWarnings("fallthrough")
-        public void run() {
+        @Override
+        protected void checkedRun() {
             if (Debug.ENABLED)
                 ThreadAssert.resume(this, false);
 
@@ -284,8 +285,8 @@ class Notifier extends Walker {
                     if (listener instanceof FieldListener) {
                         try {
                             ((FieldListener) listener).onFieldChanged(index);
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -314,8 +315,8 @@ class Notifier extends Walker {
                     if (listener instanceof KeyListener) {
                         try {
                             ((KeyListener) listener).onPut(key);
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -337,8 +338,8 @@ class Notifier extends Walker {
                     if (listener instanceof KeyListener) {
                         try {
                             ((KeyListener) listener).onRemoved(key);
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -360,8 +361,8 @@ class Notifier extends Walker {
                     if (listener instanceof KeyListener) {
                         try {
                             ((KeyListener) listener).onCleared();
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -394,8 +395,8 @@ class Notifier extends Walker {
                     if (listener instanceof ListListener) {
                         try {
                             ((ListListener) listener).onAdded(index);
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -416,8 +417,8 @@ class Notifier extends Walker {
                     if (listener instanceof ListListener) {
                         try {
                             ((ListListener) listener).onRemoved(index);
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -438,8 +439,8 @@ class Notifier extends Walker {
                     if (listener instanceof ListListener) {
                         try {
                             ((ListListener) listener).onCleared();
-                        } catch (Throwable t) {
-                            PlatformAdapter.logListenerException(t);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
                         }
                     }
                 }
@@ -517,8 +518,8 @@ class Notifier extends Walker {
                         if (listener instanceof FieldListener) {
                             try {
                                 ((FieldListener) listener).onFieldChanged(_fieldIndex);
-                            } catch (Throwable t) {
-                                PlatformAdapter.logListenerException(t);
+                            } catch (Exception e) {
+                                PlatformAdapter.logUserCodeException(e);
                             }
                         }
                     }
@@ -547,8 +548,8 @@ class Notifier extends Walker {
                         if (listener instanceof PropertyListener) {
                             try {
                                 ((PropertyListener) listener).onPropertyChanged(_propertyName);
-                            } catch (Throwable t) {
-                                PlatformAdapter.logListenerException(t);
+                            } catch (Exception e) {
+                                PlatformAdapter.logUserCodeException(e);
                             }
                         }
                     }

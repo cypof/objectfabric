@@ -19,15 +19,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Test;
 
-import com.objectfabric.FieldListener;
-import com.objectfabric.OF;
-import com.objectfabric.Site;
-import com.objectfabric.Stats;
-import com.objectfabric.TArrayInteger;
-import com.objectfabric.TArrayTObject;
-import com.objectfabric.TList;
-import com.objectfabric.TMap;
-import com.objectfabric.Transaction;
 import com.objectfabric.Transaction.CommitStatus;
 import com.objectfabric.Transaction.Granularity;
 import com.objectfabric.generated.Limit32;
@@ -236,7 +227,7 @@ public class Cross extends TestsHelper {
                                             callbackConflictCount.incrementAndGet();
                                     }
 
-                                    public void onFailure(Throwable _) {
+                                    public void onFailure(Exception _) {
                                     }
                                 });
 

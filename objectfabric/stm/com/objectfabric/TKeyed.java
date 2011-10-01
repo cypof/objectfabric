@@ -18,6 +18,7 @@ import com.objectfabric.TObject.UserTObject;
 import com.objectfabric.Visitor.ClassVisitor;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
+import com.objectfabric.misc.PlatformClass;
 
 public abstract class TKeyed<K> extends UserTObject {
 
@@ -99,7 +100,7 @@ public abstract class TKeyed<K> extends UserTObject {
         TKeyedEntry entry = TKeyedBase1.getEntry(shared.getWrites(), key, hash);
 
         if (Debug.ENABLED)
-            if (!(this instanceof LazyMap) && entry != null)
+            if (!PlatformClass.getClassName(this).contains("Lazy") && entry != null)
                 Debug.assertion(!entry.isSoft() && entry.getKeyDirect() != null);
 
         return entry;

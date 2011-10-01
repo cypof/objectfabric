@@ -77,8 +77,8 @@ public class NIOTest extends TestsHelper {
         // private int _read;
 
         @Override
-        protected void onWriteStopped(Throwable t) {
-            super.onWriteStopped(t);
+        protected void onWriteStopped(Exception e) {
+            super.onWriteStopped(e);
 
             Log.write("Disconnection");
         }

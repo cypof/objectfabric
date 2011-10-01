@@ -147,15 +147,15 @@ class FileGeneratorMethod {
             wl("        if (executor == ObjectFabric.TransparentTaskScheduler.Instance) {");
 
         wl("            " + returnVarType + " result_ = " + _method.ReturnValue.getType().getDefaultString() + ";");
-        wl("            java.lang.Throwable throwable_ = null;");
+        wl("            java.lang.Exception exception_ = null;");
         wl();
         wl("            try {");
         wl("                " + (returnVoid ? "" : "result_ = ") + name + "Implementation(" + argsNames + ");");
-        wl("            } catch (java.lang.Throwable t_) {");
-        wl("                throwable_ = t_;");
+        wl("            } catch (java.lang.Exception e_) {");
+        wl("                exception_ = e_;");
         wl("            }");
         wl();
-        wl("            return getCompletedFuture_objectfabric(result_, throwable_" + (_gen.isJava() ? ", callback, asyncOptions" : "") + ");");
+        wl("            return getCompletedFuture_objectfabric(result_, exception_" + (_gen.isJava() ? ", callback, asyncOptions" : "") + ");");
         wl("        } else {");
 
         wl("            " + _method.getFullType(_gen) + ".Version version_ = (" + _method.getFullType(_gen) + ".Version) createVersion_objectfabric(" + _method.getFullType(_gen) + ".INSTANCE);");
@@ -207,8 +207,8 @@ class FileGeneratorMethod {
             } else
                 wl("            call.set(" + name + "Implementation(" + argsNames + "));");
 
-            wl("        } catch (java.lang.Throwable t_) {");
-            wl("            call.setException(t_);");
+            wl("        } catch (java.lang.Exception e_) {");
+            wl("            call.setException(e_);");
             wl("        }");
             wl("    }");
         }
@@ -247,8 +247,8 @@ class FileGeneratorMethod {
 
         wl("                try {");
         wl("                    " + _method.getNameWithRightCaps(_gen) + "ImplementationAsync(" + args + "call);");
-        wl("                } catch (java.lang.Throwable t_) {");
-        wl("                    call.setException(t_);");
+        wl("                } catch (java.lang.Exception e_) {");
+        wl("                    call.setException(e_);");
         wl("                }");
         wl();
     }

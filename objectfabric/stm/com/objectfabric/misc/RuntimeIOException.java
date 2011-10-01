@@ -22,8 +22,8 @@ public class RuntimeIOException extends RuntimeException {
     public RuntimeIOException() {
     }
 
-    public RuntimeIOException(Throwable t) {
-        super(t);
+    public RuntimeIOException(Exception e) {
+        super(e);
     }
 
     public RuntimeIOException(String message) {

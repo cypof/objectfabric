@@ -12,15 +12,6 @@
 
 package of4gwt;
 
-
-import of4gwt.Acknowledger;
-import of4gwt.Interception;
-import of4gwt.Snapshot;
-import of4gwt.TObject;
-import of4gwt.Transaction;
-import of4gwt.TransactionManager;
-import of4gwt.VersionMap;
-import of4gwt.Visitor;
 import of4gwt.Connection.Endpoint;
 import of4gwt.Connection.Endpoint.Status;
 import of4gwt.TObject.Version;
@@ -73,10 +64,10 @@ final class InterceptorWriter extends DistributedWriter {
     }
 
     @Override
-    protected void onStopped(Throwable t) {
-        _acknowledger.unregisterFromAllBranches(t);
+    protected void onStopped(Exception e) {
+        _acknowledger.unregisterFromAllBranches(e);
 
-        super.onStopped(t);
+        super.onStopped(e);
     }
 
     private enum WriteStep {

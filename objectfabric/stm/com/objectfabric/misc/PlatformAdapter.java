@@ -33,6 +33,7 @@ import com.objectfabric.OverloadHandler;
 import com.objectfabric.Privileged;
 import com.objectfabric.Site;
 import com.objectfabric.Store;
+import com.objectfabric.Strings;
 import com.objectfabric.TList;
 import com.objectfabric.TMap;
 import com.objectfabric.TObject;
@@ -172,11 +173,11 @@ public final class PlatformAdapter extends Privileged {
         return array.clone();
     }
 
-    public static IOException createIOException(Throwable throwable) {
+    public static IOException createIOException(Exception e) {
         if (USE_IO_EXCEPTION_CTOR)
-            return NotLoadedInDalvik.createIOException(throwable);
+            return NotLoadedInDalvik.createIOException(e);
 
-        return new IOException(getStackAsString(throwable));
+        return new IOException(getStackAsString(e));
     }
 
     public static final class NotLoadedInDalvik {
@@ -185,8 +186,8 @@ public final class PlatformAdapter extends Privileged {
             return Arrays.copyOf((Object[]) original, newLength, newType);
         }
 
-        public static final IOException createIOException(Throwable throwable) {
-            return new IOException(throwable);
+        public static final IOException createIOException(Exception e) {
+            return new IOException(e);
         }
     }
 
@@ -257,18 +258,18 @@ public final class PlatformAdapter extends Privileged {
 
     //
 
-    public static String getStackAsString(Throwable value) {
+    public static String getStackAsString(Throwable t) {
         Writer result = new StringWriter();
         PrintWriter printWriter = new PrintWriter(result);
-        value.printStackTrace(printWriter);
+        t.printStackTrace(printWriter);
         return result.toString();
     }
 
-    public static void logListenerException(Throwable t) {
+    public static void logUserCodeException(Exception e) {
         final Writer result = new StringWriter();
         final PrintWriter printWriter = new PrintWriter(result);
-        t.printStackTrace(printWriter);
-        Log.write("A listener raised an exception: " + result.toString());
+        e.printStackTrace(printWriter);
+        Log.write(Strings.USER_CODE_RAISED_AN_EXCEPTION + result.toString());
     }
 
     public static boolean shallowEquals(Object a, Object b, Class c, String... exceptions) {
@@ -401,7 +402,7 @@ public final class PlatformAdapter extends Privileged {
             java.lang.reflect.Method h = object.getClass().getMethod("hashCode");
             Class c = e.getDeclaringClass();
             Debug.assertion(c == h.getDeclaringClass());
-            Debug.assertion(c == getUserTObjectClass() || c == TList.class || c == TMap.class || c == TSet.class);
+            Debug.assertion(c.getName().equals("com.objectfabric.TObject$UserTObject") || c == TList.class || c == TMap.class || c == TSet.class);
         } catch (Exception ex) {
             throw new RuntimeException();
         }
@@ -462,5 +463,9 @@ public final class PlatformAdapter extends Privileged {
         reset();
         PlatformThreadPool.shutdown();
         disposeGCQueue();
+    }
+
+    public static final void exit(int i) {
+        System.exit(1);
     }
 }

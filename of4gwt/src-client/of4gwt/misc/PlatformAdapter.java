@@ -22,6 +22,7 @@ import of4gwt.OverloadHandler;
 import of4gwt.Privileged;
 import of4gwt.Site;
 import of4gwt.Store;
+import of4gwt.Strings;
 import of4gwt.TObject;
 import of4gwt.TType;
 import of4gwt.Transaction;
@@ -208,9 +209,9 @@ public final class PlatformAdapter extends Privileged {
         return value.toString();
     }
 
-    public static void logListenerException(Throwable value) {
+    public static void logUserCodeException(Throwable value) {
         value.printStackTrace();
-        Log.write("A listener raised an exception: " + value.toString());
+        Log.write(Strings.USER_CODE_RAISED_AN_EXCEPTION + value.toString());
     }
 
     public static boolean shallowEquals(Object a, Object b, Class c, String... exceptions) {
@@ -240,6 +241,10 @@ public final class PlatformAdapter extends Privileged {
 
         // Otherwise use ==
         return a == b;
+    }
+
+    public static final void exit(int i) {
+        Log.write("Fatal error.");
     }
 
     // Debug

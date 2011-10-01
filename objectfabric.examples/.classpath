@@ -3,7 +3,11 @@
 	<classpathentry excluding="part7/security/keys/" kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric.stores.file"/>
-	<classpathentry kind="lib" path="/objectfabric.tests/libs/junit-4.9b3.jar" sourcepath="/objectfabric.tests/libs/junit-4.9b3-src.jar"/>
+	<classpathentry kind="lib" path="/objectfabric.tests/lib/junit-4.9b3.jar" sourcepath="/objectfabric.tests/lib/junit-4.9b3-src.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric.security.shiro"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/objectfabric.stores.cassandra"/>
+	<classpathentry kind="lib" path="/objectfabric.stores.cassandra/lib/apache-cassandra-thrift-0.8.6.jar"/>
+	<classpathentry kind="lib" path="/objectfabric.stores.cassandra/lib/commons-lang-2.4.jar"/>
+	<classpathentry kind="lib" path="/objectfabric.stores.cassandra/lib/libthrift-0.6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

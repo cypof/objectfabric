@@ -178,9 +178,9 @@ abstract class TransactionBase extends com.objectfabric.TGeneratedFields32 {
 
         public com.objectfabric.Transaction.Granularity _granularity;
 
-        private static final com.objectfabric.Transaction.ConflictDetection[] COM_OBJECTFABRIC_TRANSACTION_CONFLICTDETECTION_ENUM_VALUES_ARRAY = com.objectfabric.Transaction.ConflictDetection.values();
-
         private static final com.objectfabric.Transaction.Granularity[] COM_OBJECTFABRIC_TRANSACTION_GRANULARITY_ENUM_VALUES_ARRAY = com.objectfabric.Transaction.Granularity.values();
+
+        private static final com.objectfabric.Transaction.ConflictDetection[] COM_OBJECTFABRIC_TRANSACTION_CONFLICTDETECTION_ENUM_VALUES_ARRAY = com.objectfabric.Transaction.ConflictDetection.values();
 
         private static final com.objectfabric.Transaction.Consistency[] COM_OBJECTFABRIC_TRANSACTION_CONSISTENCY_ENUM_VALUES_ARRAY = com.objectfabric.Transaction.Consistency.values();
 

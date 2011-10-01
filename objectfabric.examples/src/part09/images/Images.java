@@ -108,7 +108,7 @@ public class Images {
                 session.send(images);
             }
 
-            public void onDisconnection(SocketConnection session, Throwable t) {
+            public void onDisconnection(SocketConnection session, Exception e) {
                 Log.write("Disconnection from " + session.getRemoteAddress());
             }
 
@@ -150,7 +150,7 @@ public class Images {
                     onReceivedImages();
                 }
 
-                public void onDisconnected(Throwable t) {
+                public void onDisconnected(Exception e) {
                     Log.write("Disconnection");
                 }
             });

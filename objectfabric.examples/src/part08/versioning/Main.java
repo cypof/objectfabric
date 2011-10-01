@@ -17,6 +17,7 @@ import org.junit.Test;
 import part08.versioning.generated.ObjectModel;
 import part08.versioning.generated.SimpleClass;
 
+import com.objectfabric.TObject;
 import com.objectfabric.misc.PlatformAdapter;
 
 /**
@@ -48,30 +49,33 @@ public class Main {
         part08.versioning.generated.v1.ObjectModel.register();
 
         /*
-         * Create a new version object.
+         * Let's say your application needs to load an object from a store, or download it
+         * from a remote machine which might be running an old version of your software.
          */
-        SimpleClass newVersion = new SimpleClass();
+        TObject object = loadDataWithUnknownVersion();
 
         /*
-         * Get the old class version, e.g. from a store or by connecting to another
-         * process.
+         * If object turns out to be old version, either run old code, or convert it to
+         * new version.
          */
-        part08.versioning.generated.v1.SimpleClass oldVersion = getOldData();
+        if (object instanceof part08.versioning.generated.v1.SimpleClass) {
+            /*
+             * Create a new version object.
+             */
+            SimpleClass newVersion = new SimpleClass();
+            part08.versioning.generated.v1.SimpleClass oldVersion = (part08.versioning.generated.v1.SimpleClass) object;
 
-        /*
-         * Transform data from the old model to the new one.
-         */
-        newVersion.setValue(Integer.parseInt(oldVersion.getText()));
-
-        /*
-         * To migrate a database you should back it up first and write new object versions
-         * to the same store, leaving unchanged data as it is.
-         */
-        // Write newVersion to same store
+            /*
+             * Transform data from the old model (e.g. text) to the new one (int).
+             */
+            newVersion.setValue(Integer.parseInt(oldVersion.getText()));
+        }
 
         /*
          * If data must be migrated to new store instead, unmodified objects also needs to
-         * be copied, since an object cannot be part of two different stores.
+         * be copied, since an object cannot be part of two different stores. ObjectFabric
+         * offers methods to access fields using an index without resorting to reflection
+         * (For GWT and .NET support).
          */
         SimpleClass unmodifiedObjectFromStoreA = new SimpleClass();
         SimpleClass newInstanceToWriteToStoreB = new SimpleClass();
@@ -82,7 +86,7 @@ public class Main {
         }
     }
 
-    private static part08.versioning.generated.v1.SimpleClass getOldData() {
+    private static TObject loadDataWithUnknownVersion() {
         part08.versioning.generated.v1.SimpleClass object = new part08.versioning.generated.v1.SimpleClass();
         object.setText("42");
         return object;

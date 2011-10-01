@@ -12,10 +12,6 @@
 
 package of4gwt;
 
-
-import of4gwt.Snapshot;
-import of4gwt.Transaction;
-import of4gwt.VersionMap;
 import of4gwt.Interception.SingleMapInterception;
 import of4gwt.Snapshot.SlowChanging;
 import of4gwt.Transaction.CommitStatus;
@@ -71,7 +67,7 @@ public abstract class Acknowledger extends Extension<Acknowledger.LastAcknowledg
     }
 
     @Override
-    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Throwable throwable) {
+    boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Exception exception) {
         boolean blocked = false;
 
         if (newSnapshot.getSlowChanging() == null) {
@@ -85,9 +81,9 @@ public abstract class Acknowledger extends Extension<Acknowledger.LastAcknowledg
             blocked = true;
         }
 
-        if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, throwable)) {
+        if (super.casSnapshotWithoutThis(branch, snapshot, newSnapshot, exception)) {
             if (blocked)
-                Interceptor.nack(branch, CommitStatus.ABORT, throwable);
+                Interceptor.nack(branch, CommitStatus.ABORT, exception);
 
             return true;
         }
