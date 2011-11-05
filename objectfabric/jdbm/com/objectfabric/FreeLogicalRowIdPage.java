@@ -84,12 +84,12 @@ final class FreeLogicalRowIdPage extends PageHeader {
      * Factory method to create or return a data page for the indicated block.
      */
     static FreeLogicalRowIdPage getFreeLogicalRowIdPageView(BlockIo block) {
-
         BlockView view = block.getView();
+
         if (view != null && view instanceof FreeLogicalRowIdPage)
             return (FreeLogicalRowIdPage) view;
-        else
-            return new FreeLogicalRowIdPage(block);
+
+        return new FreeLogicalRowIdPage(block);
     }
 
     /** Returns the number of free rowids on this page. */

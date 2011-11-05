@@ -40,7 +40,9 @@ public class Cross extends TestsHelper {
 
     public static final int FLAG_RESETS = 1 << 2;
 
-    public static final int FLAG_ALL = (1 << 3) - 1;
+    public static final int FLAG_MAX_OFFSET = 2;
+
+    public static final int FLAG_ALL = (1 << (FLAG_MAX_OFFSET + 1)) - 1;
 
     @Test
     public void runSimple1() {

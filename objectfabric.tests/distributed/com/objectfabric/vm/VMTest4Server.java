@@ -89,7 +89,10 @@ public class VMTest4Server extends TestsHelper {
 
             for (int i = 0; i < clientCount; i++) {
                 VMConnection c = connections.get(i);
-                c.setLength(c.transfer(c.getBuffer(), c.length()));
+
+                if (c.length() != VMConnection.EXIT)
+                    c.setLength(c.transfer(c.getBuffer(), c.length()));
+
                 SeparateClassLoader client = c.getClassLoader();
                 c.setLength((Integer) client.invoke("transfer", new Class[] { byte[].class, int.class }, c.getBuffer(), c.length()));
 
@@ -100,6 +103,10 @@ public class VMTest4Server extends TestsHelper {
             if (count == clientCount)
                 break;
         }
+
+        for (int i = 0; i < clientCount; i++)
+            if (connections.get(i).length() == VMConnection.EXIT)
+                connections.get(i).close();
 
         while (server.getSessions().size() > 0) {
             for (int i = connections.size() - 1; i >= 0; i--) {
@@ -124,9 +131,6 @@ public class VMTest4Server extends TestsHelper {
         }
 
         server.stop();
-
-        Debug.ProcessName = "";
-        Debug.AssertNoConflict = false;
 
         for (SeparateClassLoader client : clients)
             client.close();

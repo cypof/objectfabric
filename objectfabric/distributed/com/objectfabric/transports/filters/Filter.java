@@ -14,6 +14,7 @@ package com.objectfabric.transports.filters;
 
 import java.nio.ByteBuffer;
 
+import com.objectfabric.Connection;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.Queue;
 
@@ -34,6 +35,8 @@ public interface Filter {
     Filter getNext();
 
     void setNext(Filter value);
+
+    Connection getConnection();
 
     // Called by next filter on previous one
 

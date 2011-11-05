@@ -15,10 +15,11 @@ package com.objectfabric.misc;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
 
+import com.objectfabric.Schedulable;
 import com.objectfabric.Strings;
 import com.objectfabric.misc.NIOManager.NIOAttachement;
 
-public abstract class NIOConnection extends ConnectionState implements NIOAttachement {
+public abstract class NIOConnection extends Schedulable implements NIOAttachement {
 
     private NIOTask.Read _read;
 
@@ -37,7 +38,6 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
         return (SocketChannel) _write.getChannel();
     }
 
-    @SuppressWarnings("static-access")
     public final void close() {
         /*
          * Volatile read to synchronize with assignment.
@@ -48,7 +48,7 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
             throw new RuntimeException(Strings.NOT_STARTED);
 
         _write.getKey().cancel();
-        requestWrite();
+        requestRun();
 
         while (!_readDisposed || !_writeDisposed) {
             try {
@@ -143,6 +143,9 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
         OverrideAssert.set(_read);
     }
 
+    /**
+     * @param e
+     */
     protected void onReadStopped(Exception e) {
         if (Debug.COMMUNICATIONS_LOG)
             Log.write(this + ".onReadStopped()");
@@ -192,7 +195,7 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
     //
 
     @Override
-    protected void startWrite() {
+    protected void startRun() {
         NIOManager.getInstance().execute(_write);
     }
 
@@ -204,4 +207,44 @@ public abstract class NIOConnection extends ConnectionState implements NIOAttach
      * @return true if done, false if more data pending.
      */
     protected abstract boolean write(ByteBuffer buffer, Queue<ByteBuffer> headers);
+
+    /*
+     * Accessors (Methods are not in right package).
+     */
+
+    final boolean onRunStartingAccessor() {
+        return onRunStarting();
+    }
+
+    final void onRunEndedAccessor() {
+        onRunEnded();
+    }
+
+    final boolean isDisposedAccessor() {
+        return isDisposed();
+    }
+
+    final boolean disposeFromOtherThreadAccessor() {
+        return disposeFromOtherThread();
+    }
+
+    final void setIdleAccessor() {
+        setIdle();
+    }
+
+    final void setScheduledAccessor() {
+        setScheduled();
+    }
+
+    final void assertStartingAccessor() {
+        assertStarting();
+    }
+
+    final void assertScheduledAccessor() {
+        assertScheduled();
+    }
+
+    final void assertRunningAccessor() {
+        assertRunning();
+    }
 }

@@ -45,6 +45,9 @@ public class PlatformFuture<V> implements Future<V> {
         _isDone = true;
     }
 
+    /**
+     * @param value  
+     */
     protected void set(V value) {
         setDone();
     }

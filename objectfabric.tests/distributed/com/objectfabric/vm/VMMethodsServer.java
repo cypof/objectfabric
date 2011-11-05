@@ -107,9 +107,6 @@ public class VMMethodsServer extends TestsHelper {
 
         server.stop();
 
-        Debug.ProcessName = "";
-        Debug.AssertNoConflict = false;
-
         for (SeparateClassLoader client : clients)
             client.close();
 

@@ -19,13 +19,8 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Vector;
 
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import com.objectfabric.ExpectedExceptionThrower;
-import com.objectfabric.TList;
-import com.objectfabric.Transaction;
 import com.objectfabric.tools.TransactionalProxy;
 
 @SuppressWarnings("unchecked")
@@ -80,13 +75,17 @@ public class TListTests extends TestsHelper {
         list.add(null);
     }
 
-    @Before
-    public void disableExceptionCheck() {
+    @Override
+    public void before() {
+        super.before();
+
         ExpectedExceptionThrower.disableCounter();
     }
 
-    @After
-    public void enableExceptionCheck() {
+    @Override
+    public void after() {
+        super.after();
+
         ExpectedExceptionThrower.enableCounter();
     }
 

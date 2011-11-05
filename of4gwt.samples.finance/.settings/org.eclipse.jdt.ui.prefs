@@ -1,0 +1,9 @@
+#Tue Jun 14 12:08:16 PDT 2011
+eclipse.preferences.version=1
+formatter_profile=_ObjectFabric
+formatter_settings_version=11
+internal.default.compliance=default
+org.eclipse.jdt.ui.ignorelowercasenames=true
+org.eclipse.jdt.ui.importorder=java;javax;org;com;
+org.eclipse.jdt.ui.ondemandthreshold=999
+org.eclipse.jdt.ui.staticondemandthreshold=999

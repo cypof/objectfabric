@@ -19,15 +19,17 @@ package com.objectfabric.misc;
  */
 public class PlatformThread {
 
-    public static boolean holdsLock(Object obj) {
-        return Thread.holdsLock(obj);
-    }
-
     public static void sleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    // Debug
+
+    public static void assertHoldsLock(Object obj) {
+        Debug.assertion(Thread.holdsLock(obj));
     }
 }

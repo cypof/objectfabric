@@ -85,7 +85,7 @@ abstract class TArrayTemplate/* generic_declaration */extends TIndexed implement
             value = version != null ? (float) version.get(index) : 0 /* Default */;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ abstract class TArrayTemplate/* generic_declaration */extends TIndexed implement
             value = version != null ? (float) version.get(index) : 0 /* Default */;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

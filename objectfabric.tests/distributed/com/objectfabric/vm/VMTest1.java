@@ -83,7 +83,7 @@ public class VMTest1 extends VMTest {
     public void run(Granularity granularity, int clients, int flags) {
         SeparateClassLoader thread = new SeparateClassLoader(VMTest1Server.class.getName());
         thread.setArgTypes(int.class, int.class, int.class);
-        thread.setArgs(granularity.ordinal(), clients, flags);
+        thread.setArgs(granularity.ordinal(), clients, flags | FLAG_PERSIST);
         thread.start();
 
         try {
@@ -100,7 +100,7 @@ public class VMTest1 extends VMTest {
 
         for (int i = 0; i < 100; i++) {
             test.before();
-            test.run(Granularity.ALL, 1, FLAG_INTERCEPT);
+            test.run(Granularity.COALESCE, 2, FLAG_INTERCEPT);
             test.after();
         }
     }

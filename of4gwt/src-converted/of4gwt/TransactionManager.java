@@ -122,7 +122,6 @@ final class TransactionManager {
         return result;
     }
 
-    @SuppressWarnings("null")
     private static final Future<CommitStatus> validateAndUpdateSnapshot(Transaction transaction, WritableFuture<CommitStatus> callback) {
         final Transaction branch = transaction.getParent();
         final Version[] reads = transaction.getReads();
@@ -269,6 +268,10 @@ final class TransactionManager {
                         if (Debug.ENABLED) {
                             watchersList.add(transaction);
                             temporaryWatchersList.add(transaction);
+
+                            if (lastValidatedAddedWatchersList == null)
+                                throw new AssertionError();
+
                             boolean r = lastValidatedAddedWatchersList.remove(transaction);
                             Debug.assertion(r);
                         }
@@ -323,9 +326,13 @@ final class TransactionManager {
                 //
 
                 if (lastValidatedAddedWatchers != 0) {
-                    if (Debug.ENABLED)
+                    if (Debug.ENABLED) {
+                        if (lastValidatedAddedWatchersList == null)
+                            throw new AssertionError();
+
                         for (int i = 0; i < lastValidatedAddedWatchersList.size(); i++)
                             Helper.getInstance().removeWatcher(lastValidated.getLast(), lastValidatedAddedWatchersList.get(i), "Validation done");
+                    }
 
                     delayedMerge = lastValidated.getLast().removeWatchers(branch, lastValidatedAddedWatchers, true, lastValidated);
                 }
@@ -362,6 +369,8 @@ final class TransactionManager {
                     newSnapshot.setReads(newReads);
                 } else if (reads != null || snapshot.getReads() != null)
                     newSnapshot.setReads(Helper.addReads(snapshot.getReads(), reads));
+                else
+                    newSnapshot.setReads(null);
 
                 newSnapshot.setAcknowledgedIndex(snapshot.getAcknowledgedIndex());
             } else {
@@ -493,6 +502,9 @@ final class TransactionManager {
                     delayedMerge.run();
 
                 if (Debug.ENABLED) {
+                    if (temporaryWatchersList == null)
+                        throw new AssertionError();
+
                     for (int i = 0; i < temporaryWatchersList.size(); i++)
                         Helper.getInstance().removeWatcher(snapshot.getLast(), temporaryWatchersList.get(i), "Success!");
 
@@ -604,10 +616,9 @@ final class TransactionManager {
      * validated on another site. Map is inserted between two others, so watcher counts
      * must be adjusted for both sides.
      */
-    @SuppressWarnings("null")
     public static void propagate(Transaction branch, Version[] versions, Source source) {
         if (Debug.ENABLED) {
-            Debug.assertion(versions != null);
+            Debug.assertion(versions.length > 0);
             Debug.assertion(source.Propagated);
         }
 

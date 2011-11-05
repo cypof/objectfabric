@@ -29,7 +29,4 @@ public class RuntimeIOException extends RuntimeException {
     public RuntimeIOException(String message) {
         super(message);
     }
-
-    public static final class StoreCloseException extends RuntimeIOException {
-    }
 }

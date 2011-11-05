@@ -43,8 +43,12 @@ public class VMTest1Server extends TestsHelper {
         final boolean clientWrites = (flags & VMTest.FLAG_INTERCEPT) != 0;
         Debug.AssertNoConflict = serverWrites != clientWrites && clients == 1;
         LimitsObjectModel.register();
-        Transaction trunk = VMTest.createTrunk(granularity);
+        Transaction trunk = VMTest.createTrunk(granularity, flags);
         final Limit32 object = new Limit32();
+
+        if (trunk.getStore() != null)
+            trunk.getStore().setRoot(object);
+
         final int[] lastFields = new int[3];
 
         object.addListener(new FieldListener() {
@@ -112,6 +116,9 @@ public class VMTest1Server extends TestsHelper {
                         c.close();
                 }
 
+                if (granularity == Granularity.COALESCE.ordinal())
+                    Debug.assertAlways(!OverloadHandler.isOverloaded(object.getTrunk()));
+
                 Transaction.run(new Runnable() {
 
                     public void run() {
@@ -137,15 +144,16 @@ public class VMTest1Server extends TestsHelper {
 
         server.stop();
 
-        Debug.ProcessName = "";
-        Debug.AssertNoConflict = false;
-
         for (SeparateClassLoader client : loaders)
             client.close();
 
         Assert.assertTrue(lastFields[0] == VMTest1Client.LIMIT && lastFields[1] == VMTest1Client.LIMIT && lastFields[2] == VMTest1Client.LIMIT);
 
         Transaction.setDefaultTrunk(Site.getLocal().getTrunk());
+
+        if (trunk.getStore() != null)
+            trunk.getStore().close();
+
         PlatformAdapter.shutdown();
     }
 }

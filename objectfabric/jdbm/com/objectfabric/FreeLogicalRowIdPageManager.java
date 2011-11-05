@@ -91,10 +91,10 @@ final class FreeLogicalRowIdPageManager {
                     file.release(curs.getCurrent(), true);
 
                 return retval;
-            } else {
-                // no luck, go to next page
-                file.release(curs.getCurrent(), false);
             }
+
+            // no luck, go to next page
+            file.release(curs.getCurrent(), false);
         }
 
         return null;

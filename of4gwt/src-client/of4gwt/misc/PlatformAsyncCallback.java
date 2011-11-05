@@ -36,8 +36,4 @@ public final class PlatformAsyncCallback implements AsyncCallback {
     public static final AsyncCallback getCallBack(AsyncCallback value) {
         return value;
     }
-
-    public static final Object getState(AsyncCallback value) {
-        return null;
-    }
 }

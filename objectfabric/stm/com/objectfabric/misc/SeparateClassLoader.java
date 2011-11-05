@@ -126,7 +126,6 @@ public class SeparateClassLoader extends Thread implements Closeable {
         }
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public void run() {
         _initialClassLoader = Thread.currentThread().getContextClassLoader();

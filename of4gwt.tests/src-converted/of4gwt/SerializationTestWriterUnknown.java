@@ -215,7 +215,7 @@ public class SerializationTestWriterUnknown extends of4gwt.SerializationTest.Tes
                     break;
                 }
                 case 40: {
-                    of4gwt.UnknownObjectSerializer.write(this, "$^%ï¿½ï¿½ï¿½%ï¿½ï¿½%ï¿½ï¿½ï¿½%ï¿½", -1);
+                    of4gwt.UnknownObjectSerializer.write(this, "$^%£¨µ%£¨%£¨µ%µ", -1);
 
                     if (interrupted())
                         return;

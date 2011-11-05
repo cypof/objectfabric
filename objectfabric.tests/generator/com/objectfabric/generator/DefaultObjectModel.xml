@@ -18,12 +18,6 @@
 				<ReturnValue type="object" />
 			</Method>
 		</Class>
-		<Class name="Index" public="false" abstract="true">
-			<Method name="fetch" public="false">
-				<Argument type="byte[]" name="ref" />
-				<ReturnValue type="TObject" />
-			</Method>
-		</Class>
 		<Class name="Session" public="false" abstract="true">
 			<Field type="Site" name="originImpl" readonly="true" public="false" />
 			<Field type="Transaction" name="trunkImpl" readonly="true" public="false" />

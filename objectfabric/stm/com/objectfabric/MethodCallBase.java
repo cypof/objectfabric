@@ -42,6 +42,9 @@ abstract class MethodCallBase extends FutureWithCallback {
         set(value, false);
     }
 
+    /**
+     * @param direct
+     */
     @SuppressWarnings("unchecked")
     protected void set(Object value, boolean direct) {
         super.set(value);
@@ -52,6 +55,9 @@ abstract class MethodCallBase extends FutureWithCallback {
         setException(e, false);
     }
 
+    /**
+     * @param direct
+     */
     protected void setException(Exception e, boolean direct) {
         super.setException(e);
     }

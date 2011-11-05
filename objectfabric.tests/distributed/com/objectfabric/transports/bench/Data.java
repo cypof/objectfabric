@@ -21,7 +21,7 @@ import junit.framework.Assert;
 import com.objectfabric.misc.NIOConnection;
 import com.objectfabric.misc.Queue;
 
-class Data {
+abstract class Data {
 
     protected final CopyOnWriteArrayList<TestConnection> _connections = new CopyOnWriteArrayList<TestConnection>();
 
@@ -36,8 +36,7 @@ class Data {
     public Data() {
     }
 
-    protected void log(String text) {
-    }
+    protected abstract void log(String text);
 
     protected void sendData() {
         synchronized (_lock) {
@@ -151,7 +150,7 @@ class Data {
 
         public void startData() {
             _writing = true;
-            requestWrite();
+            requestRun();
         }
 
         public void stopData() {

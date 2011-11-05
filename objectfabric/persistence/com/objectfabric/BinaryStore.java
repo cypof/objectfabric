@@ -13,19 +13,17 @@
 package com.objectfabric;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicReference;
 
-import com.objectfabric.Index.Insert;
 import com.objectfabric.TObject.Descriptor;
 import com.objectfabric.TObject.Record;
 import com.objectfabric.TObject.UserTObject;
 import com.objectfabric.TObject.Version;
 import com.objectfabric.misc.AsyncCallback;
 import com.objectfabric.misc.Debug;
-import com.objectfabric.misc.Log;
+import com.objectfabric.misc.List;
 import com.objectfabric.misc.PlatformAdapter;
+import com.objectfabric.misc.Queue;
 import com.objectfabric.misc.RuntimeIOException;
-import com.objectfabric.misc.RuntimeIOException.StoreCloseException;
 import com.objectfabric.misc.SparseArrayHelper;
 import com.objectfabric.misc.ThreadAssert;
 import com.objectfabric.misc.Utils;
@@ -46,8 +44,6 @@ abstract class BinaryStore extends Store {
 
     private final Executor _executor;
 
-    private final boolean _terminateProcessOnException;
-
     private final UserTObjectSetAndList<Transaction> _processed = new UserTObjectSetAndList<Transaction>();
 
     private BTree _sessions;
@@ -62,11 +58,10 @@ abstract class BinaryStore extends Store {
 
     private long[] _updatedSessionsRecords = new long[10];
 
-    protected BinaryStore(Backend backend, boolean start, Executor executor, boolean terminateProcessOnException) throws RuntimeIOException {
+    protected BinaryStore(Backend backend, boolean start, Executor executor) throws RuntimeIOException {
         _backend = backend;
         _jdbm = new RecordManager(backend, start);
         _executor = executor;
-        _terminateProcessOnException = terminateProcessOnException;
 
         _reader = new StoreReader(this);
         _writer = new StoreWriter(this);
@@ -78,6 +73,8 @@ abstract class BinaryStore extends Store {
     }
 
     public final void start() {
+        onStarting();
+
         long sessionsId = _jdbm.getRoot(SESSIONS);
 
         if (sessionsId != 0) {
@@ -90,125 +87,63 @@ abstract class BinaryStore extends Store {
             _jdbm.setRoot(SESSIONS, _sessions.getId());
         }
 
-        if (!end())
-            requestRunOnce();
-
         if (Debug.THREADS) {
             ThreadAssert.exchangeGive(this, _sessions);
             ThreadAssert.exchangeGiveList(this, _reader.getThreadContextObjects());
             ThreadAssert.exchangeGiveList(this, _writer.getThreadContextObjects());
             ThreadAssert.exchangeGive(this, this);
         }
+
+        onStarted();
     }
 
-    public final Backend getBackend() {
+    final Backend getBackend() {
         return _backend;
-    }
-
-    public final Object getRoot() throws RuntimeIOException {
-        FutureWithCallback<Object> result = getRootAsync();
-
-        try {
-            return result.get();
-        } catch (Exception e) {
-            throw new RuntimeIOException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public final FutureWithCallback<Object> getRootAsync() {
-        return getRootAsync(FutureWithCallback.NOP_CALLBACK);
-    }
-
-    public final FutureWithCallback<Object> getRootAsync(AsyncCallback<Object> callback) {
-        return getRootAsync(callback, null);
-    }
-
-    public final FutureWithCallback<Object> getRootAsync(AsyncCallback<Object> callback, AsyncOptions options) {
-        final FutureWithCallback<Object> future = new FutureWithCallback<Object>(callback, options);
-
-        getRun().execute(new Runnable() {
-
-            public void run() {
-                long rootId = _jdbm.getRoot(ROOT);
-                byte[] data = null;
-
-                if (rootId == 0)
-                    future.set(null);
-                else {
-                    data = _jdbm.fetch(rootId);
-
-                    if (data == null)
-                        throw new RuntimeIOException(Strings.CORRUPTED_STORE);
-
-                    Object root = _reader.read(data);
-
-                    _reader.readVersions();
-                    _reader.importVersions();
-                    future.set(root);
-                }
-            }
-        });
-
-        return future;
-    }
-
-    public final void setRoot(Object value) throws RuntimeIOException {
-        FutureWithCallback<Void> result = setRootAsync(value);
-
-        try {
-            result.get();
-        } catch (Exception e) {
-            ExpectedExceptionThrower.throwRuntimeException(e);
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    public final FutureWithCallback<Void> setRootAsync(Object value) {
-        return setRootAsync(value, FutureWithCallback.NOP_CALLBACK);
-    }
-
-    public final FutureWithCallback<Void> setRootAsync(Object value, AsyncCallback<Void> callback) {
-        return setRootAsync(value, callback, null);
-    }
-
-    public final FutureWithCallback<Void> setRootAsync(final Object value, AsyncCallback<Void> callback, AsyncOptions options) {
-        final FutureWithCallback<Void> future = new FutureWithCallback<Void>(callback, options);
-
-        getRun().execute(new Runnable() {
-
-            public void run() {
-                if (value instanceof UserTObject && ((UserTObject) value).getTrunk().getStore() != BinaryStore.this)
-                    future.setException(new RuntimeException(Strings.WRONG_STORE));
-                else {
-                    byte[] data = writeObject(value);
-                    long id = _jdbm.getRoot(ROOT);
-
-                    if (id != 0)
-                        _jdbm.update(id, data);
-                    else {
-                        id = _jdbm.insert(data);
-                        _jdbm.setRoot(ROOT, id);
-                    }
-
-                    future.set(null);
-                }
-            }
-        });
-
-        return future;
     }
 
     //
 
     @Override
-    protected void getAsync(byte[] ref, FutureWithCallback<Object> future) {
-        Object value = _reader.read(ref);
-        _reader.readVersions();
-        _reader.importVersions();
-        future.set(value);
+    protected void getRootAsync(FutureWithCallback<Object> future) {
+        long rootId = _jdbm.getRoot(ROOT);
+        byte[] data = null;
+
+        if (rootId == 0)
+            future.set(null);
+        else {
+            data = _jdbm.fetch(rootId);
+
+            if (data == null)
+                throw new RuntimeIOException(Strings.CORRUPTED_STORE);
+
+            Object root = _reader.read(data);
+
+            _reader.readVersions();
+            _reader.importVersions();
+            future.set(root);
+        }
     }
 
+    @Override
+    protected void setRootAsync(Object value, FutureWithCallback<Void> future) {
+        if (value instanceof UserTObject && ((UserTObject) value).getTrunk().getStore() != BinaryStore.this)
+            future.setException(new RuntimeException(Strings.WRONG_STORE));
+        else {
+            byte[] data = writeObject(value);
+            long id = _jdbm.getRoot(ROOT);
+
+            if (id != 0)
+                _jdbm.update(id, data);
+            else {
+                id = _jdbm.insert(data);
+                _jdbm.setRoot(ROOT, id);
+            }
+
+            future.set(null);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
     @Override
     protected void getAsync(UserTObject object, Object key, FutureWithCallback<Object> future) {
         if (object.getSharedVersion_objectfabric().getUnion() instanceof Record) {
@@ -228,10 +163,12 @@ abstract class BinaryStore extends Store {
                     _reader.readVersions();
 
                     Version version = _reader.getOrCreateVersion(object);
-                    @SuppressWarnings("unchecked")
                     TKeyedEntry entry = new TKeyedEntry(key, TKeyed.hash(key), value, false);
-                    ((LazyMapVersion) version).putEntry(key, entry, true, true);
 
+                    if (Debug.ENABLED)
+                        Debug.assertion(value != TKeyedEntry.REMOVAL);
+
+                    ((LazyMapVersion) version).putEntry(key, entry, true, true);
                     _reader.importVersions();
                     future.set(value);
                     return;
@@ -242,19 +179,26 @@ abstract class BinaryStore extends Store {
         future.set(null);
     }
 
+    //
+
     @Override
-    protected void insert(Insert insert) {
-        AtomicReference<Insert> inserts = ((Run) getRun())._inserts;
+    protected void fetchAsync(List<byte[]> refs, AsyncCallback<Object[]> objects) {
+        Object[] result = new Object[refs.size()];
 
-        for (;;) {
-            Insert current = inserts.get();
-            insert.setNext(current);
-
-            if (inserts.compareAndSet(current, insert)) {
-                requestRun();
-                return;
-            }
+        for (int i = 0; i < result.length; i++) {
+            result[i] = _reader.read(refs.get(i));
+            _reader.readVersions();
+            _reader.importVersions();
         }
+
+        objects.onSuccess(result);
+    }
+
+    @Override
+    protected void insertAsync(Object object, AsyncCallback<byte[]> ref) {
+        Run run = (Run) getRun();
+        run._inserts.add(object);
+        run._callbacks.add(ref);
     }
 
     //
@@ -466,7 +410,7 @@ abstract class BinaryStore extends Store {
     //
 
     @Override
-    protected void requestRunOnce() {
+    protected void startRun() {
         _executor.execute(getRun());
     }
 
@@ -474,11 +418,11 @@ abstract class BinaryStore extends Store {
 
     private final class Run extends DefaultRunnable {
 
-        private final AtomicReference<Insert> _inserts = new AtomicReference<Insert>();
+        private final Queue<Object> _inserts = new Queue<Object>();
 
-        public Run() {
-            super(BinaryStore.this);
-        }
+        private final Queue<AsyncCallback<byte[]>> _callbacks = new Queue<AsyncCallback<byte[]>>();
+
+        private final Queue<byte[]> _refs = new Queue<byte[]>();
 
         @Override
         public void onException(Exception e) {
@@ -490,7 +434,7 @@ abstract class BinaryStore extends Store {
                 // Ignore
             }
 
-            dispose();
+            disposeFromRunThread();
 
             super.onException(e);
 
@@ -513,127 +457,105 @@ abstract class BinaryStore extends Store {
             Exception ex;
 
             try {
+                onRunStarting();
+                runTasks();
+
+                //
+
+                while (_inserts.size() > 0)
+                    _refs.add(writeObject(_inserts.poll()));
+
+                //
+
+                if (Debug.ENABLED)
+                    Debug.assertion(!_writer.interrupted());
+
                 for (;;) {
-                    before();
-
-                    //
-
-                    Insert inserts = null;
-
-                    for (;;) {
-                        inserts = _inserts.get();
-
-                        if (inserts == null)
-                            break;
-
-                        if (_inserts.compareAndSet(inserts, null))
-                            break;
-                    }
-
-                    Insert insert = inserts;
-
-                    while (insert != null) {
-                        insert.setData(writeObject(insert.Object));
-                        insert = insert.getNext();
-                    }
-
-                    //
-
                     BinaryStore.this.run(_writer);
 
-                    if (Debug.ENABLED)
-                        Debug.assertion(!_writer.interrupted());
+                    if (!_writer.interrupted())
+                        break;
 
-                    _writer.writeSnapshots();
-
-                    //
-
-                    Exception wrongStore = null;
-
-                    if (_writer.getWrongStore() == null)
-                        _jdbm.commit();
-                    else {
-                        _jdbm.rollback();
-                        wrongStore = new RuntimeException(Strings.WRONG_STORE + _writer.getWrongStore());
-                    }
-
-                    while (_processed.size() > 0) {
-                        Transaction branch = _processed.pollPartOfClear();
-                        byte interception = _processedInterceptions[_processed.size()];
-
-                        if (wrongStore == null)
-                            Interceptor.ack(branch, interception, true);
-                        else
-                            Interceptor.nack(branch, null, wrongStore);
-                    }
-
-                    if (wrongStore != null) {
-                        if (Debug.ENABLED) {
-                            // Assert old records have been restored on rollback
-                            for (int i = 0; i < _updatedVersions.size(); i++) {
-                                Version shared = _updatedVersions.get(i);
-                                Debug.assertion(_jdbm.fetch(shared.getRecord()) != null);
-                            }
-                        }
-
-                        _updatedVersions.clear();
-                        _updatedSessions.clear();
-                    } else {
-                        while (_updatedVersions.size() > 0) {
-                            Version shared = _updatedVersions.pollPartOfClear();
-                            long record = _updatedVersionsRecords[_updatedVersions.size()];
-                            shared.setRecord(record);
-                        }
-
-                        while (_updatedSessions.size() > 0) {
-                            Session session = _updatedSessions.pollPartOfClear();
-                            long records = _updatedSessionsRecords[_updatedSessions.size()];
-                            session.setRecords(records);
-                        }
-                    }
-
-                    //
-
-                    insert = inserts;
-
-                    if (inserts != null)
-                        inserts.begin();
-
-                    while (insert != null) {
-                        if (wrongStore == null)
-                            insert.onSuccess();
-                        else
-                            insert.onFailure(wrongStore);
-
-                        insert = insert.getNext();
-                    }
-
-                    if (inserts != null)
-                        inserts.commit();
-
-                    //
-
-                    _writer.resetWrongStore();
-
-                    if (Debug.THREADS)
-                        ThreadAssert.suspend(this);
-
-                    if (after())
-                        return;
-
-                    if (Debug.THREADS)
-                        ThreadAssert.resume(this);
+                    _writer.grow();
                 }
+
+                _writer.writeSnapshots();
+
+                //
+
+                Exception wrongStore = null;
+                int toremove;
+
+                if (_writer.getWrongStore() == null)
+                    _jdbm.commit();
+                else {
+                    _jdbm.rollback();
+                    wrongStore = new RuntimeException(Strings.WRONG_STORE + _writer.getWrongStore());
+                }
+
+                while (_processed.size() > 0) {
+                    Transaction branch = _processed.pollPartOfClear();
+                    byte interception = _processedInterceptions[_processed.size()];
+
+                    if (wrongStore == null)
+                        Interceptor.ack(branch, interception, true);
+                    else
+                        Interceptor.nack(branch, null, wrongStore);
+                }
+
+                if (wrongStore != null) {
+                    if (Debug.ENABLED) {
+                        // Assert old records have been restored on rollback
+                        for (int i = 0; i < _updatedVersions.size(); i++) {
+                            Version shared = _updatedVersions.get(i);
+                            Debug.assertion(_jdbm.fetch(shared.getRecord()) != null);
+                        }
+                    }
+
+                    _updatedVersions.clear();
+                    _updatedSessions.clear();
+                } else {
+                    while (_updatedVersions.size() > 0) {
+                        Version shared = _updatedVersions.pollPartOfClear();
+                        long record = _updatedVersionsRecords[_updatedVersions.size()];
+                        shared.setRecord(record);
+                    }
+
+                    while (_updatedSessions.size() > 0) {
+                        Session session = _updatedSessions.pollPartOfClear();
+                        long records = _updatedSessionsRecords[_updatedSessions.size()];
+                        session.setRecords(records);
+                    }
+                }
+
+                //
+
+                while (_callbacks.size() > 0) {
+                    AsyncCallback<byte[]> callback = _callbacks.poll();
+                    byte[] ref = _refs.poll();
+
+                    if (wrongStore == null)
+                        callback.onSuccess(ref);
+                    else
+                        callback.onFailure(wrongStore);
+                }
+
+                //
+
+                _writer.resetWrongStore();
+
+                if (Debug.THREADS)
+                    ThreadAssert.suspend(this);
+
+                setFlushes();
+                onRunEnded();
+                return;
             } catch (Exception e) {
-                if (!(e instanceof StoreCloseException)) {
-                    Log.write(e);
-
-                    if (_terminateProcessOnException)
-                        System.exit(1);
-                }
-
                 ex = e;
             }
+
+            while (_callbacks.size() > 0)
+                _callbacks.poll().onFailure(ex);
 
             // Only in case of exception (can be closing)
             onException(ex);

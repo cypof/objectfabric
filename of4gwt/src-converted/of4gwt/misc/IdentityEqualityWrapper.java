@@ -42,8 +42,8 @@ public final class IdentityEqualityWrapper extends Privileged {
     public int hashCode() {
         if (_object instanceof TObject)
             return getSharedHashCode((TObject) _object);
-        else
-            return System.identityHashCode(_object);
+
+        return System.identityHashCode(_object);
     }
 
     @Override

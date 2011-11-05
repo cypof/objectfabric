@@ -19,7 +19,6 @@ import java.util.Map;
 
 import of4gwt.Interception.MultiMapInterception;
 import of4gwt.Snapshot.SlowChanging;
-import of4gwt.TObject.UserTObject;
 import of4gwt.TObject.Version;
 import of4gwt.misc.Debug;
 import of4gwt.misc.IdentityEqualityWrapper;
@@ -365,20 +364,11 @@ final class Helper {
         _expectedClass.set(value);
     }
 
-    public boolean allowEqualsOrHash(UserTObject object) {
+    public boolean allowEqualsOrHash() {
         Boolean value = _disableEqualsOrHashCheck.get();
 
         if (value != null && value)
             return true;
-
-        // if (value == null || !value) {
-        // if (object instanceof Transaction || object instanceof Session ||
-        // object instanceof Connection)
-        // return true;
-        //
-        // if (object instanceof TKeyed || object instanceof TList)
-        // return true;
-        // }
 
         return false;
     }
@@ -508,6 +498,7 @@ final class Helper {
         ThreadAssert.getOrCreateCurrent().resetCounters();
         Debug.assertion(Debug.ProcessName.length() == 0);
         Debug.assertion(!Debug.AssertNoConflict);
+        Debug.assertion(!ExpectedExceptionThrower.isCounterDisabled());
     }
 
     private void assertIdle(Transaction trunk) {

@@ -18,8 +18,8 @@ package com.objectfabric;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
-abstract class LazyMapBase extends com.objectfabric.TKeyed {
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
+abstract class LazyMapBase<K> extends com.objectfabric.TKeyed<K> {
 
     protected LazyMapBase(com.objectfabric.TObject.Version shared, com.objectfabric.Transaction trunk) {
         super(shared, trunk);

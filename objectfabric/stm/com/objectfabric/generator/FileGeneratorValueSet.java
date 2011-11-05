@@ -60,7 +60,7 @@ class FileGeneratorValueSet {
         wl("        return " + (tobj ? cast + "getUserTObject_objectfabric(" : "") + "v._" + value.Name + (tobj ? ")" : "") + ";");
     }
 
-    protected void writeFieldSet(String cast, ValueDef value) {
+    protected void writeFieldSet(ValueDef value) {
         wl("        com.objectfabric.Transaction outer = com.objectfabric.Transaction.getCurrent();");
         wl("        com.objectfabric.Transaction inner = startWrite_objectfabric(outer);");
         wl("        Version v = (Version) getOrCreateVersion_objectfabric(inner);");
@@ -108,7 +108,7 @@ class FileGeneratorValueSet {
                 wl("        {");
 
                 tab();
-                writeFieldSet(cast, value);
+                writeFieldSet(value);
                 untab();
 
                 wl("        }");
@@ -141,7 +141,7 @@ class FileGeneratorValueSet {
 
                 wl("    " + writeVisibility + " final void set" + name + "(" + type + " value) {");
 
-                writeFieldSet(cast, value);
+                writeFieldSet(value);
 
                 wl("    }");
             }
@@ -190,14 +190,8 @@ class FileGeneratorValueSet {
             wl("    " + visibility + " static final " + _gen.getTarget().stringString() + " " + constant + "_NAME = " + name + ";");
             wl();
 
-            String c;
-
-            if (_gen.isCSharp())
-                c = "typeof(" + _valueSet.getValue(i).getType().getFullName(_gen.getTarget(), true) + ")";
-            else
-                c = _valueSet.getValue(i).getType().getFullName(_gen.getTarget()) + ".class";
-
-            wl("    " + visibility + " static " + (_gen.isCSharp() ? "readonly" : "final") + " " + _gen.getTarget().classString() + " " + constant + "_CLASS = " + c + ";");
+            String t = _valueSet.getValue(i).getType().getTTypeString(_gen.getTarget());
+            wl("    " + visibility + " static " + (_gen.isCSharp() ? "readonly" : "final") + " com.objectfabric.TType " + constant + "_TYPE = " + t + ";");
         }
 
         wl();
@@ -250,28 +244,28 @@ class FileGeneratorValueSet {
         if (_gen.isJava())
             wl("    @Override");
 
-        wl("    public" + _gen.getTarget().overrideString() + _gen.getTarget().classString() + " " + g + "etFieldClass(int index) {");
-        wl("        return " + g + "etFieldClassStatic(index);");
+        wl("    public" + _gen.getTarget().overrideString() + " com.objectfabric.TType " + g + "etFieldType(int index) {");
+        wl("        return " + g + "etFieldTypeStatic(index);");
         wl("    }");
         wl();
 
         if (_gen.isJava())
             wl("    @SuppressWarnings(\"static-access\")");
 
-        wl("    public static " + _gen.getTarget().classString() + " " + g + "etFieldClassStatic(int index) {");
+        wl("    public static com.objectfabric.TType " + g + "etFieldTypeStatic(int index) {");
         wl("        switch (index) {");
 
         for (int i = 0; i < _valueSet.getValues().size(); i++) {
             String constant = _valueSet.getValue(i).getNameAsConstant();
 
             wl("            case " + _valueSet.getValue(i).getNameAsConstant() + "_INDEX:");
-            wl("                return " + constant + "_CLASS;");
+            wl("                return " + constant + "_TYPE;");
         }
 
         wl("            default:");
 
         if (_valueSet.getParent() != null)
-            wl("                return " + _valueSet.getParent().getFullName(_gen.getTarget()) + "." + g + "etFieldClassStatic(index);");
+            wl("                return " + _valueSet.getParent().getFullName(_gen.getTarget()) + "." + g + "etFieldTypeStatic(index);");
         else
             wl("                throw new IllegalArgumentException();");
 
@@ -684,7 +678,7 @@ class FileGeneratorValueSet {
         wl("        }");
         wl();
 
-        if (_gen.isJava()) 
+        if (_gen.isJava())
             wl("        @Override");
 
         wl("        public" + _gen.getTarget().overrideString() + "void readWrite(" + (_gen.isCSharp() ? "object" : "com.objectfabric.Reader") + " reader, int index) {");

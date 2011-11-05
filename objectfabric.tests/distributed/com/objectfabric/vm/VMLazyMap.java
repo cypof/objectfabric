@@ -12,29 +12,86 @@
 
 package com.objectfabric.vm;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
-import com.objectfabric.TestsHelper;
 import com.objectfabric.Transaction.Granularity;
 import com.objectfabric.misc.SeparateClassLoader;
 
-public class VMLazyMap extends TestsHelper {
+@Ignore
+public class VMLazyMap extends VMTest {
 
-    event?
-    
+    public static final String SERVER_KEY = "0";
+
+    public static final String CLIENT_KEY = "1";
+
+    public static final String MIXED_KEY = "2";
+
     @Test
-    public void runAll() {
-        for (Granularity granularity : new Granularity[] { Granularity.ALL, Granularity.COALESCE })
-            for (Granularity server : new Granularity[] { null, Granularity.ALL, Granularity.COALESCE })
-                for (Granularity client : new Granularity[] { null, Granularity.ALL, Granularity.COALESCE })
-                    for (int clients = 1; clients <= 8; clients += 7)
-                        run(granularity, server, client, clients);
+    public void runClientServer() {
+        run(Granularity.ALL, 1, FLAG_INTERCEPT);
     }
 
-    private final void run(Granularity granularity, Granularity server, Granularity client, int clients) {
-        SeparateClassLoader thread = new SeparateClassLoader(VMTest4Server.class.getName());
-        thread.setArgTypes(int.class, int.class, int.class, int.class);
-        thread.setArgs(granularity.ordinal(), server != null ? server.ordinal() : -1, client != null ? client.ordinal() : -1, clients);
+    @Test
+    public void runServerClient() {
+        run(Granularity.ALL, 1, FLAG_PROPAGATE);
+    }
+
+    @Test
+    public void runConflict() {
+        run(Granularity.ALL, 1, FLAG_INTERCEPT | FLAG_PROPAGATE);
+    }
+
+    @Test
+    public void runClientServer2() {
+        run(Granularity.ALL, 2, FLAG_INTERCEPT);
+    }
+
+    @Test
+    public void runServerClient2() {
+        run(Granularity.ALL, 2, FLAG_PROPAGATE);
+    }
+
+    @Test
+    public void runConflict2() {
+        run(Granularity.ALL, 2, FLAG_INTERCEPT | FLAG_PROPAGATE);
+    }
+
+    @Test
+    public void runClientServerCoalesce() {
+        run(Granularity.COALESCE, 1, FLAG_INTERCEPT);
+    }
+
+    @Test
+    public void runServerClientCoalesce() {
+        run(Granularity.COALESCE, 1, FLAG_PROPAGATE);
+    }
+
+    @Test
+    public void runConflictCoalesce() {
+        run(Granularity.COALESCE, 1, FLAG_INTERCEPT | FLAG_PROPAGATE);
+    }
+
+    @Test
+    public void runClientServer2Coalesce() {
+        run(Granularity.COALESCE, 2, FLAG_INTERCEPT);
+    }
+
+    @Test
+    public void runServerClient2Coalesce() {
+        run(Granularity.COALESCE, 2, FLAG_PROPAGATE);
+    }
+
+    @Test
+    public void runConflict2Coalesce() {
+        run(Granularity.COALESCE, 2, FLAG_INTERCEPT | FLAG_PROPAGATE);
+    }
+
+    @Override
+    public void run(Granularity granularity, int clients, int flags) {
+        SeparateClassLoader thread = new SeparateClassLoader(VMLazyMapServer.class.getName());
+        thread.setArgTypes(int.class, int.class, int.class);
+        thread.setArgs(granularity.ordinal(), clients, flags);
         thread.start();
 
         try {
@@ -51,7 +108,7 @@ public class VMLazyMap extends TestsHelper {
 
         for (int i = 0; i < 100; i++) {
             test.before();
-            test.run(Granularity.ALL, null, Granularity.ALL, 1);
+            test.run(Granularity.COALESCE, 1, FLAG_INTERCEPT);
             test.after();
         }
     }

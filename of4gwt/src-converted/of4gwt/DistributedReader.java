@@ -47,9 +47,6 @@ abstract class DistributedReader extends MultiplexerReader {
     public DistributedReader(Endpoint endpoint) {
         super(endpoint.getNewTObjects());
 
-        if (endpoint == null)
-            throw new IllegalArgumentException();
-
         _endpoint = endpoint;
 
         setVisitingGatheredVersions(false);
@@ -117,7 +114,7 @@ abstract class DistributedReader extends MultiplexerReader {
 
     public final void propagateStandalone() {
         for (int i = _publicImportsBranches.size() - 1; i >= 0; i--) {
-            Transaction branch = _publicImportsBranches.remove(i);
+            Transaction branch = _publicImportsBranches.removeLast();
             TObjectMapEntry<Version[]> entry = TObjectMapEntry.getEntry(_publicImports, branch);
 
             for (int j = 0; j < entry.getValue().length; j++)
@@ -135,7 +132,7 @@ abstract class DistributedReader extends MultiplexerReader {
         }
 
         for (int i = _immutables.size() - 1; i >= 0; i--) {
-            Version version = _immutables.remove(i);
+            Version version = _immutables.removeLast();
             version.mergeReadOnlyFields();
         }
     }
@@ -163,7 +160,7 @@ abstract class DistributedReader extends MultiplexerReader {
     }
 
     public final Object poll() {
-        Object object = _stack.remove(_stack.size() - 1);
+        Object object = _stack.removeLast();
         return object;
     }
 

@@ -30,9 +30,8 @@ public class NIOTestHTTPClient {
         Debug.ProcessName = "Client";
 
         final DataGen algo = new DataGen(NIOTestHTTP.WRITES, WRITES);
-        algo.start();
 
-        CometTransport transport = new CometTransport(false) {
+        CometTransport transport = new CometTransport() {
 
             @Override
             protected HTTPRequestBase createRequest(boolean serverToClient) {
@@ -50,6 +49,8 @@ public class NIOTestHTTPClient {
 
             @Override
             protected int write(byte[] buffer, int offset, int limit) {
+                buffer[CometTransport.FIELD_REQUEST_ENCODING] = CometTransport.ENCODING_NONE;
+                buffer[CometTransport.FIELD_RESPONSE_ENCODING] = CometTransport.ENCODING_NONE;
                 return algo.write(buffer, offset, limit);
             }
 
@@ -59,6 +60,8 @@ public class NIOTestHTTPClient {
             }
         };
 
+        algo.setConnection(transport);
+        algo.start();
         transport.connect();
 
         while (!algo.isDone())

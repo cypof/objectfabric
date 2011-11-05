@@ -74,7 +74,7 @@ final class TListSharedVersion extends TObject.Version {
             if (array != null) {
                 if (array.length < source.size())
                     array = new Object[Utils.nextPowerOf2(source.size())];
-                else if (array != null)
+                else
                     for (int i = array.length - 1; i >= 0; i--)
                         array[i] = null; // for GC
             }

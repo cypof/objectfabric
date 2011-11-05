@@ -85,7 +85,7 @@ public class TArrayCharacter extends TIndexed implements Iterable<Character> {
             value = version != null ? (char) version.get(index) : '\0';
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayCharacter extends TIndexed implements Iterable<Character> {
             value = version != null ? (char) version.get(index) : '\0';
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

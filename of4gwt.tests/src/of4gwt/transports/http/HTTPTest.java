@@ -15,28 +15,26 @@ package of4gwt.transports.http;
 import of4gwt.misc.Log;
 import of4gwt.transports.DataGen;
 
+import com.objectfabric.transports.NIOTestHTTP;
+
 public class HTTPTest {
 
     public static final int WRITES = (int) 1e6;
 
     public static void run() {
-        final DataGen algo = new DataGen(WRITES, WRITES);
+        final DataGen algo = new DataGen(NIOTestHTTP.WRITES, WRITES);
         algo.start();
 
-        CometTransport transport = new CometTransport(true) {
+        final CometTransport transport = new CometTransport() {
 
             @Override
             protected HTTPRequestBase createRequest(boolean serverToClient) {
-                try {
-                    return new HTTPClient.HTTPRequest("http://localhost:4444", serverToClient, null);
-                } catch (Exception ex) {
-                    throw new RuntimeException(ex);
-                }
+                HTTPRequestBase request = HTTPClient.createRequestStatic("http://localhost:4444", serverToClient);
+                return request;
             }
 
             @Override
             protected void read(byte[] buffer, int offset, int limit) {
-                Log.write("Read " + (limit - offset));
                 algo.read(buffer, offset, limit);
 
                 if (algo.isDone())
@@ -46,7 +44,6 @@ public class HTTPTest {
             @Override
             protected int write(byte[] buffer, int offset, int limit) {
                 int written = algo.write(buffer, offset, limit);
-                Log.write("Write " + written);
 
                 if (algo.isDone())
                     Log.write("Success!");
@@ -55,11 +52,12 @@ public class HTTPTest {
             }
 
             @Override
-            protected void onError(Throwable t) {
-                Log.write(t);
+            protected void onError(Exception e) {
+                Log.write(e);
             }
         };
 
+        algo.setConnection(transport);
         transport.connect();
     }
 }

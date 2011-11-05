@@ -26,7 +26,16 @@ class InternalsGenerator extends Privileged {
 
     public static void main(String[] args) throws Exception {
         ObjectModelDef model = ObjectModelDef.fromXMLFile("generator/com/objectfabric/generator/DefaultObjectModel.xml");
-        Generator generator = new Generator(model);
+        Generator generator = new Generator(model) {
+
+            @Override
+            protected void writeCacheToFile(FileGenerator file) {
+                replace("abstract class LazyMapBase extends com.objectfabric.TKeyed", "abstract class LazyMapBase<K> extends com.objectfabric.TKeyed<K>");
+
+                super.writeCacheToFile(file);
+            }
+        };
+
         generator.setCopyright(PlatformFile.readCopyright());
         generator.run("../objectfabric/generated", EnumSet.noneOf(Flag.class));
 

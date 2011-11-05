@@ -18,7 +18,7 @@ package com.objectfabric;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 abstract class TransactionBase extends com.objectfabric.TGeneratedFields32 {
 
     protected TransactionBase(com.objectfabric.Transaction parentImpl, int type, com.objectfabric.Transaction.ConflictDetection conflictDetection, com.objectfabric.Transaction.Consistency consistency, com.objectfabric.Transaction.Granularity granularity) {
@@ -87,31 +87,31 @@ abstract class TransactionBase extends com.objectfabric.TGeneratedFields32 {
 
     protected static final java.lang.String PARENT_IMPL_NAME = "parentImpl";
 
-    protected static final java.lang.Class PARENT_IMPL_CLASS = com.objectfabric.Transaction.class;
+    protected static final com.objectfabric.TType PARENT_IMPL_TYPE = com.objectfabric.Transaction.TYPE;
 
     protected static final int TYPE_INDEX = 1;
 
     protected static final java.lang.String TYPE_NAME = "type";
 
-    protected static final java.lang.Class TYPE_CLASS = int.class;
+    protected static final com.objectfabric.TType TYPE_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int CONFLICT_DETECTION_INDEX = 2;
 
     public static final java.lang.String CONFLICT_DETECTION_NAME = "conflictDetection";
 
-    public static final java.lang.Class CONFLICT_DETECTION_CLASS = com.objectfabric.Transaction.ConflictDetection.class;
+    public static final com.objectfabric.TType CONFLICT_DETECTION_TYPE = new com.objectfabric.TType(com.objectfabric.Transaction.ConflictDetection.class);
 
     public static final int CONSISTENCY_INDEX = 3;
 
     public static final java.lang.String CONSISTENCY_NAME = "consistency";
 
-    public static final java.lang.Class CONSISTENCY_CLASS = com.objectfabric.Transaction.Consistency.class;
+    public static final com.objectfabric.TType CONSISTENCY_TYPE = new com.objectfabric.TType(com.objectfabric.Transaction.Consistency.class);
 
     public static final int GRANULARITY_INDEX = 4;
 
     public static final java.lang.String GRANULARITY_NAME = "granularity";
 
-    public static final java.lang.Class GRANULARITY_CLASS = com.objectfabric.Transaction.Granularity.class;
+    public static final com.objectfabric.TType GRANULARITY_TYPE = new com.objectfabric.TType(com.objectfabric.Transaction.Granularity.class);
 
     public static final int FIELD_COUNT = 5;
 
@@ -144,23 +144,23 @@ abstract class TransactionBase extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case PARENT_IMPL_INDEX:
-                return PARENT_IMPL_CLASS;
+                return PARENT_IMPL_TYPE;
             case TYPE_INDEX:
-                return TYPE_CLASS;
+                return TYPE_TYPE;
             case CONFLICT_DETECTION_INDEX:
-                return CONFLICT_DETECTION_CLASS;
+                return CONFLICT_DETECTION_TYPE;
             case CONSISTENCY_INDEX:
-                return CONSISTENCY_CLASS;
+                return CONSISTENCY_TYPE;
             case GRANULARITY_INDEX:
-                return GRANULARITY_CLASS;
+                return GRANULARITY_TYPE;
             default:
                 throw new IllegalArgumentException();
         }
@@ -178,11 +178,11 @@ abstract class TransactionBase extends com.objectfabric.TGeneratedFields32 {
 
         public com.objectfabric.Transaction.Granularity _granularity;
 
-        private static final com.objectfabric.Transaction.Granularity[] COM_OBJECTFABRIC_TRANSACTION_GRANULARITY_ENUM_VALUES_ARRAY = com.objectfabric.Transaction.Granularity.values();
-
         private static final com.objectfabric.Transaction.ConflictDetection[] COM_OBJECTFABRIC_TRANSACTION_CONFLICTDETECTION_ENUM_VALUES_ARRAY = com.objectfabric.Transaction.ConflictDetection.values();
 
         private static final com.objectfabric.Transaction.Consistency[] COM_OBJECTFABRIC_TRANSACTION_CONSISTENCY_ENUM_VALUES_ARRAY = com.objectfabric.Transaction.Consistency.values();
+
+        private static final com.objectfabric.Transaction.Granularity[] COM_OBJECTFABRIC_TRANSACTION_GRANULARITY_ENUM_VALUES_ARRAY = com.objectfabric.Transaction.Granularity.values();
 
         private static final int _readOnlys;
 

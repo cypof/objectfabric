@@ -15,6 +15,7 @@ package of4gwt;
 import java.util.NoSuchElementException;
 import of4gwt.misc.ExecutionException;
 
+import of4gwt.Extension.ExtensionShutdownException;
 import of4gwt.TObject.UserTObject;
 import of4gwt.TObject.UserTObject.LocalMethodCall;
 import of4gwt.TObject.UserTObject.Method;
@@ -24,7 +25,6 @@ import of4gwt.misc.Debug;
 import of4gwt.misc.List;
 import of4gwt.misc.PlatformThreadLocal;
 import of4gwt.misc.RuntimeIOException;
-import of4gwt.misc.RuntimeIOException.StoreCloseException;
 import of4gwt.misc.ThreadAssert;
 
 /**
@@ -46,6 +46,13 @@ final class ExpectedExceptionThrower {
     }
 
     private ExpectedExceptionThrower() {
+    }
+
+    public static final boolean isCounterDisabled() {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
+        return _disabled;
     }
 
     public static final void disableCounter() {
@@ -114,9 +121,9 @@ final class ExpectedExceptionThrower {
         throw new RuntimeIOException();
     }
 
-    public static final void throwStoreCloseException() {
+    public static final void throwExtensionShutdownException() {
         onException();
-        throw new StoreCloseException();
+        throw new ExtensionShutdownException();
     }
 
     //
@@ -213,9 +220,15 @@ final class ExpectedExceptionThrower {
     @SuppressWarnings("unchecked")
     public static final void validateCall(Connection connection, Validator validator, UserTObject target, UserTObject method) {
         try {
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(false);
+
             validator.validateMethodCall(connection, target, ((Method) method).getName());
         } finally {
             OF.updateAsync();
+
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(true);
         }
     }
 }

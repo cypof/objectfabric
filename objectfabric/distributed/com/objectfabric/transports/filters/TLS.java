@@ -21,6 +21,7 @@ import javax.net.ssl.SSLEngineResult;
 import javax.net.ssl.SSLEngineResult.HandshakeStatus;
 import javax.net.ssl.SSLException;
 
+import com.objectfabric.Connection;
 import com.objectfabric.Reader;
 import com.objectfabric.Strings;
 import com.objectfabric.misc.Debug;
@@ -99,6 +100,10 @@ public class TLS implements FilterFactory {
 
         public void setNext(Filter value) {
             _next = value;
+        }
+
+        public Connection getConnection() {
+            return _next.getConnection();
         }
 
         //

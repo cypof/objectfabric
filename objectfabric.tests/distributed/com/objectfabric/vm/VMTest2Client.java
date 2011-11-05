@@ -116,6 +116,9 @@ public class VMTest2Client extends Privileged {
             if (_object != null) {
                 Executor executor = (_flags & VMTest.FLAG_TRANSPARENT_EXECUTOR) != 0 ? TransparentExecutor.getInstance() : PlatformThreadPool.getInstance();
 
+                if (_object.getTrunk().getGranularity() == Granularity.COALESCE)
+                    Debug.assertAlways(!OverloadHandler.isOverloaded(_object.getTrunk()));
+
                 Transaction.runAsync(new Runnable() {
 
                     public void run() {

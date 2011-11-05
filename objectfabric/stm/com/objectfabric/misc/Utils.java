@@ -108,6 +108,22 @@ public final class Utils {
         return s.substring(0, 1).toUpperCase() + s.substring(1);
     }
 
+    public static String getNameAsConstant(String name) {
+        StringBuffer sb = new StringBuffer(name.length());
+
+        for (int i = 0; i < name.length(); i++) {
+            char c = name.charAt(i);
+
+            if (Character.isUpperCase(c))
+                if (sb.length() > 0)
+                    sb.append('_');
+
+            sb.append(Character.toUpperCase(c));
+        }
+
+        return sb.toString();
+    }
+
     //
 
     public static short readShort(byte[] data, int pos) {

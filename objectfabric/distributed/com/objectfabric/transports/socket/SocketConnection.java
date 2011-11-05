@@ -109,7 +109,7 @@ public abstract class SocketConnection extends Connection {
         }
 
         public Filter getPrevious() {
-            throw new UnsupportedOperationException();
+            return null;
         }
 
         public void setPrevious(Filter value) {
@@ -122,6 +122,17 @@ public abstract class SocketConnection extends Connection {
 
         public void setNext(Filter value) {
             _next = value;
+        }
+
+        public Connection getConnection() {
+            throw new UnsupportedOperationException();
+        }
+
+        //
+
+        @Override
+        public void requestWrite() {
+            requestRun();
         }
 
         //
@@ -181,11 +192,15 @@ public abstract class SocketConnection extends Connection {
         }
 
         public Filter getNext() {
-            throw new UnsupportedOperationException();
+            return null;
         }
 
         public void setNext(Filter value) {
             throw new UnsupportedOperationException();
+        }
+
+        public Connection getConnection() {
+            return SocketConnection.this;
         }
 
         //

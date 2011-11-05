@@ -59,7 +59,7 @@ final class InterceptorWriter extends DistributedWriter {
                 Log.write("InterceptorWriter: registering branch " + branch);
 
             _acknowledger.register(branch);
-            getEndpoint().onBranchIntercepted(branch);
+            getEndpoint().onBranchIntercepted();
         }
     }
 
@@ -182,7 +182,7 @@ final class InterceptorWriter extends DistributedWriter {
                 }
 
                 for (int i = _snapshottedBranches.size() - 1; i >= 0; i--) {
-                    Transaction branch = _snapshottedBranches.remove(i);
+                    Transaction branch = _snapshottedBranches.removeLast();
                     getEndpoint().onBranchUpToDate(branch);
                 }
             }
@@ -308,13 +308,11 @@ final class InterceptorWriter extends DistributedWriter {
                 Debug.assertion(getEndpoint().getStatus(shared) == Status.CREATED);
 
             if (shared.isImmutable()) {
-                if (shared.visitable(this, TransactionManager.OBJECTS_VERSIONS_INDEX)) {
-                    shared.visit(this);
+                shared.visit(this);
 
-                    if (interrupted()) {
-                        interrupt(shared);
-                        return;
-                    }
+                if (interrupted()) {
+                    interrupt(shared);
+                    return;
                 }
 
                 getEndpoint().setStatus(shared, Status.SNAPSHOTTED);

@@ -18,7 +18,7 @@ package com.objectfabric.generated;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 public class ReferencesClass extends com.objectfabric.TGeneratedFields32 {
 
     public ReferencesClass() {
@@ -147,37 +147,37 @@ public class ReferencesClass extends com.objectfabric.TGeneratedFields32 {
 
     public static final java.lang.String TEXT_NAME = "text";
 
-    public static final java.lang.Class TEXT_CLASS = java.lang.String.class;
+    public static final com.objectfabric.TType TEXT_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
     public static final int INT_INDEX = 1;
 
     public static final java.lang.String INT_NAME = "int";
 
-    public static final java.lang.Class INT_CLASS = int.class;
+    public static final com.objectfabric.TType INT_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT2_INDEX = 2;
 
     public static final java.lang.String INT2_NAME = "int2";
 
-    public static final java.lang.Class INT2_CLASS = int.class;
+    public static final com.objectfabric.TType INT2_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int REF_INDEX = 3;
 
     public static final java.lang.String REF_NAME = "ref";
 
-    public static final java.lang.Class REF_CLASS = com.objectfabric.generated.ReferencesClass.class;
+    public static final com.objectfabric.TType REF_TYPE = com.objectfabric.generated.ReferencesClass.TYPE;
 
     public static final int REF2_INDEX = 4;
 
     public static final java.lang.String REF2_NAME = "ref2";
 
-    public static final java.lang.Class REF2_CLASS = com.objectfabric.generated.ReferencesClass.class;
+    public static final com.objectfabric.TType REF2_TYPE = com.objectfabric.generated.ReferencesClass.TYPE;
 
     public static final int ARRAY_INDEX = 5;
 
     public static final java.lang.String ARRAY_NAME = "array";
 
-    public static final java.lang.Class ARRAY_CLASS = com.objectfabric.TArrayTObject.class;
+    public static final com.objectfabric.TType ARRAY_TYPE = com.objectfabric.TArrayTObject.TYPE;
 
     public static final int FIELD_COUNT = 6;
 
@@ -212,25 +212,25 @@ public class ReferencesClass extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case TEXT_INDEX:
-                return TEXT_CLASS;
+                return TEXT_TYPE;
             case INT_INDEX:
-                return INT_CLASS;
+                return INT_TYPE;
             case INT2_INDEX:
-                return INT2_CLASS;
+                return INT2_TYPE;
             case REF_INDEX:
-                return REF_CLASS;
+                return REF_TYPE;
             case REF2_INDEX:
-                return REF2_CLASS;
+                return REF2_TYPE;
             case ARRAY_INDEX:
-                return ARRAY_CLASS;
+                return ARRAY_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

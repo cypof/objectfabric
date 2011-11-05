@@ -543,7 +543,7 @@ final class RecordFile {
      * @param obj
      * @throws CacheEvictionException
      */
-    public void cacheObjectEvicted(Object key, Object obj) {
+    public void cacheObjectEvicted(Object obj) {
         /*
          * Note: Eviction notices are fired by the "clean" MRU. Those notices carry
          * additional metadata defined by the CachePolicy interface that are ignored for

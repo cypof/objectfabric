@@ -85,6 +85,8 @@ public class OverloadHandler {
      * be merged together before distribution extensions have processed them. Those
      * callbacks can be used to slow down data production, and eventually block a writing
      * thread if the overload continues.
+     * 
+     * @param branch
      */
     protected void onMapQueueSizeThresholdReached(Transaction branch) {
     }
@@ -98,6 +100,8 @@ public class OverloadHandler {
      * reduces the rate of writing threads, and allows the overload to resolve itself. In
      * some cases it can be useful to override this method to implement another form of
      * thread blocking, e.g. pumping an event loop.
+     * 
+     * @param firstNotification
      */
     protected void onMapQueueSizeMaximumReached(Transaction branch, boolean firstNotification) {
         throw new RuntimeException("trunk " + branch + " has too many memory snapshots.");
@@ -128,6 +132,8 @@ public class OverloadHandler {
      * called from the user thread that is trying to add a new object to send, which can
      * be blocked as a throttling solution, e.g. Thread.sleep(1), or trigger an
      * application-specific mechanism.
+     * 
+     * @param connection
      */
     protected void onPendingSendsThresholdReached(Connection connection) {
     }
@@ -157,6 +163,8 @@ public class OverloadHandler {
      * method is called from the user thread that is trying to add a new method call,
      * which can be blocked as a throttling solution, e.g. Thread.sleep(1), or trigger an
      * application-specific mechanism.
+     * 
+     * @param connection
      */
     protected void onPendingCallsThresholdReached(Connection connection) {
     }

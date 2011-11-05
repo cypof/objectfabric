@@ -18,7 +18,7 @@ package com.objectfabric.generated;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 public class PersistenceClass extends com.objectfabric.TGeneratedFields32 {
 
     public PersistenceClass() {
@@ -147,37 +147,37 @@ public class PersistenceClass extends com.objectfabric.TGeneratedFields32 {
 
     public static final java.lang.String TEXT_NAME = "text";
 
-    public static final java.lang.Class TEXT_CLASS = java.lang.String.class;
+    public static final com.objectfabric.TType TEXT_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
     public static final int INT_INDEX = 1;
 
     public static final java.lang.String INT_NAME = "int";
 
-    public static final java.lang.Class INT_CLASS = int.class;
+    public static final com.objectfabric.TType INT_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int LONG_INDEX = 2;
 
     public static final java.lang.String LONG_NAME = "long";
 
-    public static final java.lang.Class LONG_CLASS = long.class;
+    public static final com.objectfabric.TType LONG_TYPE = com.objectfabric.ImmutableClass.LONG.getType();
 
     public static final int DOUBLE_INDEX = 3;
 
     public static final java.lang.String DOUBLE_NAME = "double";
 
-    public static final java.lang.Class DOUBLE_CLASS = java.lang.Double.class;
+    public static final com.objectfabric.TType DOUBLE_TYPE = com.objectfabric.ImmutableClass.DOUBLE_BOXED.getType();
 
     public static final int OBJECT_INDEX = 4;
 
     public static final java.lang.String OBJECT_NAME = "object";
 
-    public static final java.lang.Class OBJECT_CLASS = java.lang.Object.class;
+    public static final com.objectfabric.TType OBJECT_TYPE = com.objectfabric.TType.OBJECT;
 
     public static final int BYTES_INDEX = 5;
 
     public static final java.lang.String BYTES_NAME = "bytes";
 
-    public static final java.lang.Class BYTES_CLASS = byte[].class;
+    public static final com.objectfabric.TType BYTES_TYPE = com.objectfabric.ImmutableClass.BINARY.getType();
 
     public static final int FIELD_COUNT = 6;
 
@@ -212,25 +212,25 @@ public class PersistenceClass extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case TEXT_INDEX:
-                return TEXT_CLASS;
+                return TEXT_TYPE;
             case INT_INDEX:
-                return INT_CLASS;
+                return INT_TYPE;
             case LONG_INDEX:
-                return LONG_CLASS;
+                return LONG_TYPE;
             case DOUBLE_INDEX:
-                return DOUBLE_CLASS;
+                return DOUBLE_TYPE;
             case OBJECT_INDEX:
-                return OBJECT_CLASS;
+                return OBJECT_TYPE;
             case BYTES_INDEX:
-                return BYTES_CLASS;
+                return BYTES_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

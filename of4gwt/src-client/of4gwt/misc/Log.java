@@ -40,6 +40,13 @@ public abstract class Log {
     }
 
     public static void write(String message) {
+        write(message, null);
+    }
+
+    public static void write(String message, Throwable t) {
+        if (t != null)
+            message += " " + PlatformAdapter.getStackAsString(t);
+
         String result = format(message);
 
         for (Log log : _logs)

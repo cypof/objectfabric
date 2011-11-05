@@ -40,7 +40,6 @@ public abstract class MethodCall extends MethodCallBase {
     /**
      * For local methods.
      */
-    @SuppressWarnings("unchecked")
     protected MethodCall(UserTObject target, UserTObject method, int index, AsyncCallback callback, AsyncOptions asyncOptions) {
         super(callback, asyncOptions);
 
@@ -51,13 +50,14 @@ public abstract class MethodCall extends MethodCallBase {
         _method = method;
         _index = index;
 
+        OF.updateAsync();
+
         _transaction = Transaction.getCurrent();
     }
 
     /**
      * For remote methods.
      */
-    @SuppressWarnings("unchecked")
     protected MethodCall(UserTObject target, UserTObject method, int index, Transaction transaction) {
         super(FutureWithCallback.NOP_CALLBACK, null);
 
@@ -82,6 +82,9 @@ public abstract class MethodCall extends MethodCallBase {
         return _index;
     }
 
+    /**
+     * TODO: replace by branches
+     */
     final Transaction getTransaction() {
         return _transaction;
     }

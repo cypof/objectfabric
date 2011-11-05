@@ -85,7 +85,7 @@ public class TArrayBoolean extends TIndexed implements Iterable<Boolean> {
             value = version != null ? (boolean) version.get(index) : false;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayBoolean extends TIndexed implements Iterable<Boolean> {
             value = version != null ? (boolean) version.get(index) : false;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

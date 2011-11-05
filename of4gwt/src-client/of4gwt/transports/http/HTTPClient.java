@@ -15,18 +15,18 @@ package of4gwt.transports.http;
 import of4gwt.Privileged;
 import of4gwt.Reader;
 import of4gwt.Validator;
-import of4gwt.misc.Bits;
 import of4gwt.misc.Debug;
 import of4gwt.misc.Log;
-import of4gwt.misc.RuntimeIOException;
 import of4gwt.transports.http.CometTransport.HTTPRequestBase;
 import of4gwt.transports.http.CometTransport.HTTPRequestCallback;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.http.client.Response;
-import com.google.gwt.user.client.Timer;
-import com.google.gwt.xhr.client.ReadyStateChangeHandler;
-import com.google.gwt.xhr.client.XMLHttpRequest;
+import com.google.gwt.dom.client.NativeEvent;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyDownEvent;
+import com.google.gwt.user.client.Event;
+import com.google.gwt.user.client.Event.NativePreviewEvent;
+import com.google.gwt.user.client.Event.NativePreviewHandler;
 
 /**
  * Bidirectional communication with server using XMLHttpRequest (Comet). This transport is
@@ -37,15 +37,9 @@ import com.google.gwt.xhr.client.XMLHttpRequest;
  * https domain validation, you can either configure the static content web server as a
  * reverse proxy, or fall back to polling (Check RPCClient).
  */
-public final class HTTPClient extends HTTPConnection {
+public final class HTTPClient extends HTTPClientBase {
 
     private static final String DEFAULT_PATH = "objectfabric";
-
-    private static final int BUFFER_SIZE = Reader.LARGEST_UNSPLITABLE + CometTransport.MAX_CHUNK_SIZE;
-
-    private static final int HEART_BEAT = 55000;
-
-    private final Heartbeat _heartBeat = new Heartbeat();
 
     public HTTPClient() {
         this(GWT.getHostPageBaseURL() + DEFAULT_PATH);
@@ -56,56 +50,81 @@ public final class HTTPClient extends HTTPConnection {
     }
 
     public HTTPClient(String url, Validator validator) {
-        super(url, validator, true);
+        super(url, validator);
+    }
+
+    static {
+        /*
+         * Prevents canceling requests when pressing ESC. (Seems only Firefox & Safari)
+         */
+        Event.addNativePreviewHandler(new NativePreviewHandler() {
+
+            @Override
+            public void onPreviewNativeEvent(NativePreviewEvent e) {
+                if (e.getTypeInt() == Event.getTypeInt(KeyDownEvent.getType().getName())) {
+                    NativeEvent nativeEvent = e.getNativeEvent();
+
+                    if (nativeEvent.getKeyCode() == KeyCodes.KEY_ESCAPE)
+                        nativeEvent.preventDefault();
+                }
+            }
+        });
     }
 
     @Override
     protected HTTPRequestBase createRequest(Object url, boolean serverToClient) {
-        return new HTTPRequest((String) url, serverToClient, _heartBeat);
+        return createRequestStatic(url, serverToClient);
     }
 
-    public static final class HTTPRequest extends Privileged implements HTTPRequestBase, ReadyStateChangeHandler {
+    public static HTTPRequestBase createRequestStatic(Object url, boolean serverToClient) {
+        HTTPRequest request = GWT.create(XMLHttpRequestImpl.class);
+        request.init((String) url, serverToClient);
+        return request;
+    }
 
-        private final String _url;
+    abstract static class HTTPRequest extends Privileged implements HTTPRequestBase {
 
-        private final boolean _serverToClient;
+        /**
+         * One buffer per side as write can be triggered any time during read.
+         */
+        private final byte[] _buffer = new byte[Reader.LARGEST_UNSPLITABLE + CometTransport.MAX_CHUNK_SIZE];
 
-        private final Heartbeat _heartbeat;
+        private String _url;
 
-        private XMLHttpRequest _request;
+        private boolean _serverToClient;
 
         private HTTPRequestCallback _callback;
 
-        private int _offset;
-
-        public HTTPRequest(String url, boolean serverToClient, Heartbeat heartbeat) {
+        public final void init(String url, boolean serverToClient) {
             _url = url;
             _serverToClient = serverToClient;
-            _heartbeat = heartbeat;
-
-            ensureThreadContextBufferLength(BUFFER_SIZE);
         }
 
-        public void close() {
-            if (_request != null) {
-                _request.clearOnReadyStateChange();
-                _request.abort();
-                _request = null;
-            }
+        public final byte[] getBuffer() {
+            return _buffer;
         }
 
-        public byte[] getBuffer() {
-            return getThreadContextBuffer();
+        public final String getURL() {
+            return _url;
         }
 
-        public void setCallback(HTTPRequestCallback value) {
+        public final boolean getServerToClient() {
+            return _serverToClient;
+        }
+
+        public final HTTPRequestCallback getCallback() {
+            return _callback;
+        }
+
+        public final void setCallback(HTTPRequestCallback value) {
             _callback = value;
         }
 
-        public void connect() {
-            if (_heartbeat != null)
-                _heartbeat.reset();
+        public abstract void close();
 
+        public abstract void send(byte[] data, int length);
+
+        public final void connect() {
             close();
 
             int length = _callback.onWrite();
@@ -117,108 +136,12 @@ public final class HTTPClient extends HTTPConnection {
                 _callback.onDone();
             } else {
                 try {
-                    _request = XMLHttpRequest.create();
-                    _request.open("POST", _url);
-
-                    /*
-                     * 'text/plain' type prevents browsers from sending a OPTIONS request
-                     * first for cross-site calls.
-                     */
-                    _request.setRequestHeader("Content-type", "text/plain");
-                    _request.setOnReadyStateChange(this);
-
-                    /*
-                     * Prevents browser from encoding data. This only applies to incoming
-                     * data. POST data is still encoded, so use a bitset trick to have
-                     * only positive bytes (regular ASCII).
-                     */
-                    overrideMimeType(_request, "text/plain; charset=x-user-defined");
-
-                    byte[] buffer = getBuffer();
-                    String data = "" + (char) buffer[CometTransport.FIELD_TYPE];
-                    data += (char) buffer[CometTransport.FIELD_IS_ENCODED];
-                    int encoderBits = 0, encoderIndex = 0;
-
-                    for (int i = data.length(); i < length; i++) {
-                        if (encoderIndex-- == 0) {
-                            for (int t = 6; t >= 0; t--)
-                                encoderBits = Bits.set(encoderBits, 6 - t, i + t < buffer.length && buffer[i + t] < 0);
-
-                            data += (char) encoderBits;
-                            encoderIndex = 6;
-                        }
-
-                        byte b = buffer[i];
-                        data += (char) (b >= 0 ? b : -b - 1);
-                    }
-
-                    _request.send(data);
-                    _offset = 0;
+                    send(getBuffer(), length);
                 } catch (Exception e) {
                     Log.write(e);
                     _callback.onError(e);
                 }
             }
-        }
-
-        private native void overrideMimeType(XMLHttpRequest request, String mimeType) /*-{
-			request.overrideMimeType(mimeType);
-        }-*/;
-
-        public final void onReadyStateChange(XMLHttpRequest request) {
-            if (Debug.ENABLED)
-                Debug.assertion(request == _request);
-
-            switch (request.getReadyState()) {
-                case XMLHttpRequest.LOADING: {
-                    if (request.getStatus() == Response.SC_OK) {
-                        String data = request.getResponseText();
-                        byte[] buffer = getBuffer();
-                        int position = Reader.LARGEST_UNSPLITABLE;
-
-                        for (; _offset < data.length(); _offset++)
-                            buffer[position++] = (byte) data.charAt(_offset);
-
-                        _callback.onRead(buffer, Reader.LARGEST_UNSPLITABLE, position);
-                    } else {
-                        String error = request.getStatusText();
-                        _callback.onError(new RuntimeIOException(error));
-                    }
-
-                    break;
-                }
-                case XMLHttpRequest.DONE: {
-                    int status = request.getStatus();
-
-                    if (status == Response.SC_OK) {
-                        if (_serverToClient)
-                            connect();
-                        else
-                            _callback.onDone();
-                    } else if (status == 0) {
-                        String s = "Status 0. Might be cross domain issue.";
-                        _callback.onError(new RuntimeIOException(s));
-                    } else {
-                        String error = request.getStatusText();
-                        _callback.onError(new RuntimeIOException("" + status + " " + error));
-                    }
-
-                    break;
-                }
-            }
-        }
-    }
-
-    private final class Heartbeat extends Timer {
-
-        public void reset() {
-            cancel();
-            schedule(HEART_BEAT);
-        }
-
-        @Override
-        public void run() {
-            sendHeartbeat();
         }
     }
 }

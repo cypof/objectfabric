@@ -257,7 +257,7 @@ abstract class TransactionPublic extends TransactionPrivate {
         Transaction transaction = null;
 
         if (cache.size() != 0)
-            transaction = cache.remove(cache.size() - 1);
+            transaction = cache.removeLast();
 
         if (transaction == null) {
             transaction = (Transaction) DefaultObjectModelBase.getInstance().createInstance(getTrunk(), DefaultObjectModelBase.COM_OBJECTFABRIC_TRANSACTION_CLASS_ID, null);

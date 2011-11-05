@@ -62,7 +62,6 @@ import com.objectfabric.misc.PlatformFile;
  * optimized for speed. For instance, all sorts of streams are created for every
  * transaction.
  */
-@SuppressWarnings("unchecked")
 final class FileBackend extends Backend {
 
     /**
@@ -101,7 +100,6 @@ final class FileBackend extends Backend {
         _log.close();
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     void recover() {
         if (_log.length() <= 2)

@@ -13,16 +13,12 @@
 package com.objectfabric.transports.http;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ScheduledFuture;
-import java.util.concurrent.ThreadFactory;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import com.objectfabric.Connection;
 import com.objectfabric.Privileged;
 import com.objectfabric.Strings;
-import com.objectfabric.misc.CheckedRunnable;
+import com.objectfabric.misc.Bits;
 import com.objectfabric.misc.ClosedConnectionException;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
@@ -43,26 +39,17 @@ final class HTTPSession extends Privileged implements Filter {
 
     private static final byte[] HEX = new byte[] { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-    // TODO use a global pool
-    private static final ScheduledExecutorService _scheduler;
+    private static final int HEX_LENGTH_FIELD = 6;
 
-    static {
-        _scheduler = Executors.newScheduledThreadPool(1, new ThreadFactory() {
-
-            public Thread newThread(Runnable r) {
-                Thread thread = new Thread(r);
-                thread.setName("HTTPSession Scheduler");
-                thread.setDaemon(true);
-                return thread;
-            }
-        });
-    }
+    private static final int BIN_LENGTH_FIELD = 2;
 
     private final HTTP _http;
 
     private final byte[] _id;
 
     private final boolean _enableCrossOriginResourceSharing;
+
+    private final byte _encoding;
 
     private Filter _next;
 
@@ -102,8 +89,6 @@ final class HTTPSession extends Privileged implements Filter {
 
     private static final FilterState IDLE_DISCONNECTED = new FilterState(null, FilterState.STATE_IDLE);
 
-    private static final FilterState DISPOSE_REQUESTED = new FilterState(null, FilterState.STATE_DISPOSE_REQUESTED);
-
     private static final FilterState DISPOSED = new FilterState(null, FilterState.STATE_DISPOSED);
 
     // Read side
@@ -122,19 +107,11 @@ final class HTTPSession extends Privileged implements Filter {
 
     private int _totalWritten;
 
-    //
-
-    private final Timeout _timeout = new Timeout();
-
-    private final Heartbeat _heartbeat = new Heartbeat();
-
-    public HTTPSession(HTTP http, byte[] id, boolean enableCrossOriginResourceSharing) {
+    public HTTPSession(HTTP http, byte[] id, boolean enableCrossOriginResourceSharing, byte encoding) {
         _http = http;
         _id = id;
         _enableCrossOriginResourceSharing = enableCrossOriginResourceSharing;
-
-        _timeout.reset();
-        _heartbeat.reset();
+        _encoding = encoding;
     }
 
     public byte[] getId() {
@@ -151,6 +128,15 @@ final class HTTPSession extends Privileged implements Filter {
         _next.init(factories, index + 1, clientSide);
         _next.setPrevious(this);
         _next.onReadStarted();
+
+        // Start heartbeat and timeout
+
+        Connection connection = _next.getConnection();
+
+        if (connection != null) {
+            connection.sendHeartbeatEvery(CometTransport.SERVER_HEARTBEAT);
+            connection.enableTimeout(CometTransport.SERVER_TIMEOUT);
+        }
     }
 
     public Filter getNext() {
@@ -168,6 +154,14 @@ final class HTTPSession extends Privileged implements Filter {
             return current.Filter;
 
         return null;
+    }
+
+    public void setPrevious(Filter value) {
+        throw new UnsupportedOperationException();
+    }
+
+    public Connection getConnection() {
+        return _next.getConnection();
     }
 
     public void close() {
@@ -204,7 +198,7 @@ final class HTTPSession extends Privileged implements Filter {
                     break;
                 }
                 case FilterState.STATE_RUNNING: {
-                    if (casReader(current, DISPOSE_REQUESTED))
+                    if (casReader(current, new FilterState(current.Filter, FilterState.STATE_DISPOSE_REQUESTED)))
                         return;
 
                     break;
@@ -219,12 +213,10 @@ final class HTTPSession extends Privileged implements Filter {
     }
 
     private void readClosed() {
-        _timeout.cancel();
         _next.onReadStopped(new ClosedConnectionException());
     }
 
     public boolean readAndReturnIfDone(HTTPFilter filter, ByteBuffer buffer) {
-        _timeout.reset();
         boolean proceed = false;
 
         while (!proceed) {
@@ -239,7 +231,7 @@ final class HTTPSession extends Privileged implements Filter {
                 }
                 case FilterState.STATE_RUNNING:
                 case FilterState.STATE_DISPOSE_REQUESTED:
-                    throw new AssertionError(Strings.CONCURRENT_ACCESS);
+                    throw new RuntimeException(Strings.CONCURRENT_ACCESS);
                 case FilterState.STATE_DISPOSED:
                     return true;
                 default:
@@ -396,7 +388,7 @@ final class HTTPSession extends Privileged implements Filter {
                     break;
                 }
                 case FilterState.STATE_RUNNING: {
-                    if (casWriter(current, DISPOSE_REQUESTED))
+                    if (casWriter(current, new FilterState(current.Filter, FilterState.STATE_DISPOSE_REQUESTED)))
                         return;
 
                     break;
@@ -410,7 +402,6 @@ final class HTTPSession extends Privileged implements Filter {
     }
 
     private void writeClosed() {
-        _heartbeat.reset();
         _next.onWriteStopped(new ClosedConnectionException());
     }
 
@@ -452,14 +443,34 @@ final class HTTPSession extends Privileged implements Filter {
                 }
                 case FilterState.STATE_RUNNING:
                 case FilterState.STATE_DISPOSE_REQUESTED: {
-                    throw new AssertionError(Strings.CONCURRENT_ACCESS);
+                    throw new RuntimeException(Strings.CONCURRENT_ACCESS);
                 }
                 case FilterState.STATE_DISPOSED:
                     return true;
             }
         }
 
-        boolean done = writeImpl(buffer);
+        if (Debug.ENABLED)
+            ThreadAssert.resume(_writer);
+
+        boolean done;
+
+        switch (_encoding) {
+            case CometTransport.ENCODING_NONE:
+                done = writeChunk(buffer);
+                break;
+            case CometTransport.ENCODING_PADDING:
+                done = padChunk(buffer);
+                break;
+            case CometTransport.ENCODING_1_127:
+                done = encodeChunk(buffer);
+                break;
+            default:
+                throw new RuntimeException("");
+        }
+
+        if (Debug.ENABLED)
+            ThreadAssert.suspend(_writer);
 
         for (;;) {
             FilterState current = _writer.get();
@@ -501,25 +512,52 @@ final class HTTPSession extends Privileged implements Filter {
         return result;
     }
 
-    private boolean writeImpl(ByteBuffer buffer) {
-        if (Debug.ENABLED)
-            ThreadAssert.resume(_writer);
+    private boolean writeChunk(ByteBuffer buffer) {
+        final int initial = buffer.position();
+        final int chunkStart = initial + HEX_LENGTH_FIELD;
+        buffer.position(chunkStart);
 
-        final int HEX_LENGTH_FIELD = 6;
-        final int BIN_LENGTH_FIELD = 2;
+        writeUID(buffer);
 
-        if (Debug.ENABLED)
-            Debug.assertion(buffer.remaining() > HEX_LENGTH_FIELD + BIN_LENGTH_FIELD + PlatformAdapter.UID_BYTES_COUNT * 2 + 2);
+        buffer.limit(buffer.limit() - 2); // For new line at end
+        boolean done = getNext().write(buffer, null);
+        buffer.limit(buffer.limit() + 2);
 
+        if (buffer.position() == chunkStart) {
+            /*
+             * Empty.
+             */
+            buffer.position(initial);
+        } else {
+            int chunkEnd = buffer.position();
+            int length = chunkEnd - chunkStart;
+            buffer.position(initial);
+            writeHexLength(buffer, length);
+
+            if (Debug.ENABLED)
+                Debug.assertion(buffer.position() == chunkStart);
+
+            buffer.position(chunkEnd);
+            buffer.put(HTTP.NEW_LINE);
+            _totalWritten += buffer.position();
+
+            if (Debug.COMMUNICATIONS_LOG_HTTP)
+                Log.write(this + ": Written " + length);
+        }
+
+        return done;
+    }
+
+    /**
+     * Pads buffer with zeros to reach minimum length.
+     * {@link CometTransport#MIN_CHUNK_SIZE}.
+     */
+    private boolean padChunk(ByteBuffer buffer) {
         final int initial = buffer.position();
         final int chunkStart = initial + HEX_LENGTH_FIELD;
         buffer.position(chunkStart + BIN_LENGTH_FIELD);
 
-        if (!_wroteIds) {
-            _wroteIds = true;
-            buffer.put(_id);
-            buffer.put(PlatformAdapter.createUID()); // UID seed for GWT
-        }
+        writeUID(buffer);
 
         buffer.limit(buffer.limit() - 2); // For new line at end
         boolean done = getNext().write(buffer, null);
@@ -528,14 +566,12 @@ final class HTTPSession extends Privileged implements Filter {
         int chunkEnd = buffer.position();
         int length = chunkEnd - chunkStart;
 
-        if (buffer.position() == chunkStart + BIN_LENGTH_FIELD) {
+        if (chunkEnd == chunkStart + BIN_LENGTH_FIELD) {
             /*
              * Empty.
              */
             buffer.position(initial);
         } else {
-            _heartbeat.reset();
-
             int padded = length;
 
             if (padded < CometTransport.MIN_CHUNK_SIZE) {
@@ -549,23 +585,7 @@ final class HTTPSession extends Privileged implements Filter {
             }
 
             buffer.position(initial);
-
-            byte hex1 = HEX[(padded >>> 12) & 0xf];
-            byte hex2 = HEX[(padded >>> 8) & 0xf];
-            byte hex3 = HEX[(padded >>> 4) & 0xf];
-            byte hex4 = HEX[(padded >>> 0) & 0xf];
-
-            if (Debug.ENABLED) {
-                String ref = Utils.padLeft(Integer.toHexString(padded), 4, '0');
-                String text = new String(new char[] { (char) hex1, (char) hex2, (char) hex3, (char) hex4 });
-                Debug.assertion(ref.equals(text));
-            }
-
-            buffer.put(hex1);
-            buffer.put(hex2);
-            buffer.put(hex3);
-            buffer.put(hex4);
-            buffer.put(HTTP.NEW_LINE);
+            writeHexLength(buffer, padded);
 
             if (Debug.ENABLED)
                 Debug.assertion(buffer.position() == chunkStart);
@@ -575,14 +595,137 @@ final class HTTPSession extends Privileged implements Filter {
             buffer.position(chunkEnd);
             buffer.put(HTTP.NEW_LINE);
             _totalWritten += buffer.position();
-        }
 
-        if (Debug.ENABLED)
-            ThreadAssert.suspend(_writer);
+            if (Debug.COMMUNICATIONS_LOG_HTTP)
+                Log.write(this + ": Padded " + length + " -> " + (chunkEnd - chunkStart));
+        }
 
         return done;
     }
 
+    /**
+     * {@link CometTransport#ENCODING_1_127}.
+     */
+    private boolean encodeChunk(ByteBuffer buffer) {
+        final int initial = buffer.position();
+        final int chunkStart = initial + HEX_LENGTH_FIELD;
+        buffer.position(chunkStart);
+
+        writeUID(buffer);
+
+        // Reserve space at end of buffer for encoding
+        {
+            int blocks = buffer.remaining() / 8;
+            buffer.limit(chunkStart + blocks * 6);
+        }
+
+        final boolean done = getNext().write(buffer, null);
+        final int chunkEnd = buffer.position();
+
+        if (chunkEnd == chunkStart) {
+            /*
+             * Empty.
+             */
+            buffer.position(initial);
+        } else {
+            int blocks = (chunkEnd - chunkStart) / 6 + 1;
+
+            // TODO try only on first packet
+            blocks = Math.max(blocks, CometTransport.MIN_CHUNK_SIZE / 8);
+
+            int readIndex = chunkStart + blocks * 6;
+            int writeIndex = chunkStart + blocks * 8;
+            final int encodingEnd = writeIndex;
+            buffer.limit(encodingEnd + 2); // For new line at end
+
+            for (;;) {
+                readIndex -= 6;
+                writeIndex -= 8;
+
+                if (readIndex < chunkStart)
+                    break;
+
+                int lz = Bits.set(0, 6), gz = Bits.set(0, 6);
+
+                for (int i = 5; i >= 0; i--) {
+                    boolean pad = readIndex + i >= chunkEnd;
+                    byte value = pad ? 0 : buffer.get(readIndex + i);
+
+                    if (value < 0) {
+                        lz = Bits.set(lz, 5 - i);
+                        value = (byte) (-value - 1);
+                    }
+
+                    if (value > 0)
+                        gz = Bits.set(gz, 5 - i);
+                    else
+                        value = pad ? CometTransport.ENCODING_BYTE_PADDING : CometTransport.ENCODING_BYTE_ZERO;
+
+                    buffer.put(writeIndex + 2 + i, value);
+                }
+
+                buffer.put(writeIndex + 0, (byte) lz);
+                buffer.put(writeIndex + 1, (byte) gz);
+            }
+
+            //
+
+            buffer.position(initial);
+            writeHexLength(buffer, encodingEnd - chunkStart);
+
+            //
+
+            buffer.position(encodingEnd);
+            buffer.put(HTTP.NEW_LINE);
+
+            if (Debug.ENABLED)
+                Debug.assertion(buffer.remaining() == 0);
+
+            _totalWritten += encodingEnd - chunkStart;
+
+            if (Debug.COMMUNICATIONS_LOG_HTTP)
+                Log.write(this + ": Encoded " + (encodingEnd - chunkStart));
+        }
+
+        if (Debug.ENABLED)
+            for (int i = initial; i < buffer.position(); i++)
+                Debug.assertion(buffer.get(i) > 0 && buffer.get(i) <= 127);
+
+        return done;
+    }
+
+    int ref = 1;
+
+    private void writeUID(ByteBuffer buffer) {
+        if (!_wroteIds) {
+            _wroteIds = true;
+            buffer.put(_id);
+            buffer.put(PlatformAdapter.createUID()); // UID seed for GWT
+        }
+    }
+
+    private static void writeHexLength(ByteBuffer buffer, int padded) {
+        byte hex1 = HEX[(padded >>> 12) & 0xf];
+        byte hex2 = HEX[(padded >>> 8) & 0xf];
+        byte hex3 = HEX[(padded >>> 4) & 0xf];
+        byte hex4 = HEX[(padded >>> 0) & 0xf];
+
+        if (Debug.ENABLED) {
+            String ref = Utils.padLeft(Integer.toHexString(padded), 4, '0');
+            String text = new String(new char[] { (char) hex1, (char) hex2, (char) hex3, (char) hex4 });
+            Debug.assertion(ref.equals(text));
+        }
+
+        buffer.put(hex1);
+        buffer.put(hex2);
+        buffer.put(hex3);
+        buffer.put(hex4);
+        buffer.put(HTTP.NEW_LINE);
+    }
+
+    /**
+     * @param buffer
+     */
     public boolean write(ByteBuffer buffer) {
         throw new UnsupportedOperationException();
     }
@@ -604,7 +747,7 @@ final class HTTPSession extends Privileged implements Filter {
                         break;
                     }
                     case FilterState.STATE_RUNNING:
-                        throw new AssertionError(Strings.CONCURRENT_ACCESS);
+                        throw new RuntimeException(Strings.CONCURRENT_ACCESS);
                     case FilterState.STATE_DISPOSE_REQUESTED:
                     case FilterState.STATE_DISPOSED:
                         return;
@@ -637,7 +780,7 @@ final class HTTPSession extends Privileged implements Filter {
                             break;
                         }
                         case FilterState.STATE_RUNNING:
-                            throw new AssertionError(Strings.CONCURRENT_ACCESS);
+                            throw new RuntimeException(Strings.CONCURRENT_ACCESS);
                         case FilterState.STATE_DISPOSE_REQUESTED:
                         case FilterState.STATE_DISPOSED:
                             return;
@@ -648,47 +791,7 @@ final class HTTPSession extends Privileged implements Filter {
         }
     }
 
-    private abstract class Scheduled extends CheckedRunnable {
-
-        private ScheduledFuture<?> _future;
-
-        public final void cancel() {
-            if (_future != null)
-                _future.cancel(false);
-        }
-
-        public final void reset() {
-            cancel();
-
-            if (!Debug.COMMUNICATIONS_DISABLE_TIMEOUTS)
-                _future = _scheduler.schedule(this, CometTransport.SERVER_TIMEOUT, TimeUnit.SECONDS);
-        }
-    }
-
-    private final class Timeout extends Scheduled {
-
-        @Override
-        protected void checkedRun() {
-            close();
-        }
-    }
-
-    private final class Heartbeat extends Scheduled {
-
-        @Override
-        protected void checkedRun() {
-            FilterState writer = _writer.get();
-
-            if (writer.Filter != null)
-                writer.Filter.enqueue(HTTP.HEARTBEAT);
-        }
-    }
-
     // Rest of Filter interface
-
-    public void setPrevious(Filter value) {
-        throw new UnsupportedOperationException();
-    }
 
     public void onReadStarted() {
         throw new UnsupportedOperationException();

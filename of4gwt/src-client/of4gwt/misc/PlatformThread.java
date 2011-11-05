@@ -12,15 +12,11 @@
 
 package of4gwt.misc;
 
-import of4gwt.Strings;
-
 public class PlatformThread {
 
-    public static boolean holdsLock(Object obj) {
-        throw new UnsupportedOperationException();
-    }
-
-    public static void sleep(long millis) {
-        throw new IllegalStateException(Strings.THREAD_BLOCKING_DISALLOWED);
+    /**
+     * @param obj
+     */
+    public static void assertHoldsLock(Object obj) {
     }
 }

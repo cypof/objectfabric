@@ -75,8 +75,8 @@ final class DataPage extends PageHeader {
         BlockView view = block.getView();
         if (view != null && view instanceof DataPage)
             return (DataPage) view;
-        else
-            return new DataPage(block);
+
+        return new DataPage(block);
     }
 
     /** Returns the first rowid's offset */

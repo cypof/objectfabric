@@ -76,6 +76,7 @@ public abstract class Walker extends Extension<Snapshot> {
 
                         snapshot.getVersionMaps()[t].removeWatchers(branch, 1, false, null);
                     }
+
                     return false;
                 }
             }
@@ -151,7 +152,6 @@ public abstract class Walker extends Extension<Snapshot> {
 
     //
 
-    @SuppressWarnings("null")
     protected final void walk(Visitor visitor) {
         for (;;) {
             Transaction branch;
@@ -169,6 +169,11 @@ public abstract class Walker extends Extension<Snapshot> {
                     return;
 
                 for (;;) {
+                    /*
+                     * TODO Create snapshot only if a maximum number is not reached, e.g.
+                     * 8 for all walkers, so that queue is not too large. Otherwise reuse
+                     * the latest snapshot created.
+                     */
                     snapshot = branch.getSharedSnapshot();
 
                     if (getGranularity(branch) == Granularity.ALL)
@@ -299,6 +304,10 @@ public abstract class Walker extends Extension<Snapshot> {
             visitor.flush();
     }
 
+    /**
+     * @param branch
+     * @param connection
+     */
     void onBlocked(Transaction branch, Connection.Version connection) {
     }
 }

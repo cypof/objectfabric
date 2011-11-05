@@ -322,7 +322,7 @@ public class SerializationTestWriter extends of4gwt.SerializationTest.TestWriter
                     break;
                 }
                 case 40: {
-                    writeString("$^%ï¿½ï¿½ï¿½%ï¿½ï¿½%ï¿½ï¿½ï¿½%ï¿½");
+                    writeString("$^%£¨µ%£¨%£¨µ%µ");
 
                     if (interrupted())
                         return;

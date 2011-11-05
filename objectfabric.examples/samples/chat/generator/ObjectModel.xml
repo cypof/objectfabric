@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ObjectModel xsi:noNamespaceSchemaLocation="http://objectfabric.com/schemas/objectfabric-0.8.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<Package name="chat.generated">
+		<Class name="User">
+			<!-- Primitive types can be either boxed or true primitives -->
+			<Field name="name" type="String" />
+
+			<!-- Generic types can be specified using parenthesis instead of <> signs to be compatible with XML -->
+			<Field name="conversations" type="TList(String)" />
+		</Class>
+	</Package>
+</ObjectModel>

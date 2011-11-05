@@ -24,6 +24,7 @@ import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.Log;
 import com.objectfabric.misc.OverrideAssert;
+import com.objectfabric.misc.PlatformFuture;
 import com.objectfabric.misc.PlatformThreadLocal;
 import com.objectfabric.misc.Queue;
 import com.objectfabric.misc.SparseArrayHelper;
@@ -37,7 +38,11 @@ public class Connection extends ConnectionBase {
 
     private static final PlatformThreadLocal<Connection> _current = new PlatformThreadLocal<Connection>();
 
-    // Constructor for object model
+    /**
+     * Constructor for object model
+     * 
+     * @param target
+     */
     Connection(Transaction trunk, Site target) {
         this(trunk);
     }
@@ -72,6 +77,9 @@ public class Connection extends ConnectionBase {
         OverrideAssert.end(this);
     }
 
+    /**
+     * @param e
+     */
     protected void close_(Exception e) {
         OverrideAssert.set(this);
     }
@@ -79,7 +87,7 @@ public class Connection extends ConnectionBase {
     //
 
     /**
-     * Send this object to the remote site. Objects can have one of the types listed on
+     * Sends this object to the remote site. Objects can have one of the types listed on
      * ImmutableClass (E.g. String, int, byte[] etc.), or derive from TObject. Events
      * occurring on TObjects will be replicated between both sites until it is
      * garbage-collected on one of them.
@@ -95,10 +103,14 @@ public class Connection extends ConnectionBase {
     }
 
     /**
-     * Send an empty message to the remote site. Useful if connection can expire.
+     * Sends empty messages to remote site. Useful if connection can expire.
      */
-    public void sendHeartbeat() {
-        _endpoint.sendHeartbeat();
+    public void sendHeartbeatEvery(int millis) {
+        _endpoint.sendHeartbeatEvery(millis);
+    }
+
+    public void enableTimeout(int millis) {
+        _endpoint.enableTimeout(millis);
     }
 
     //
@@ -120,6 +132,9 @@ public class Connection extends ConnectionBase {
     protected void onDialogEstablished() {
     }
 
+    /**
+     * @param object
+     */
     protected void onObject(Object object) {
     }
 
@@ -225,6 +240,9 @@ public class Connection extends ConnectionBase {
         if (Debug.ENABLED)
             Debug.assertion(Helper.getInstance().getNoTransaction());
 
+        if (limit - offset > 0)
+            getEndpoint()._controllerOutWriter.getTimeout().reset();
+
         getEndpoint().read(buffer, offset, limit);
     }
 
@@ -232,7 +250,12 @@ public class Connection extends ConnectionBase {
         if (Debug.ENABLED)
             Debug.assertion(Helper.getInstance().getNoTransaction());
 
-        return getEndpoint().write(buffer, offset, limit);
+        int written = getEndpoint().write(buffer, offset, limit);
+
+        if (written != 0 && written != -1)
+            getEndpoint()._controllerOutWriter.getHeartbeat().reset();
+
+        return written;
     }
 
     static final class Endpoint extends Multiplexer {
@@ -361,14 +384,22 @@ public class Connection extends ConnectionBase {
             _controllerOutWriter.addObjectToSend(object);
         }
 
-        final void sendHeartbeat() {
-            _controllerOutWriter.sendHeartbeat();
+        //
+
+        final void sendHeartbeatEvery(int millis) {
+            _controllerOutWriter.getHeartbeat().start(millis);
+        }
+
+        final void enableTimeout(int millis) {
+            _controllerOutWriter.getTimeout().start(millis);
         }
 
         //
 
         final int getPendingMethodCallCount() {
-            return _callOutWriter.getPendingCalls().size();
+            synchronized (_callOutWriter.getPendingCallsLock()) {
+                return _callOutWriter.getPendingCalls().size();
+            }
         }
 
         final Executor getMethodExecutor() {
@@ -477,6 +508,7 @@ public class Connection extends ConnectionBase {
                 Debug.assertion(getStatus(shared) == Status.CREATED);
 
             Transaction trunk = shared.getTrunk();
+
             Queue<TObject.Version> queue = TObjectMapEntry.get(_pendingSnapshots, trunk);
 
             if (queue == null) {
@@ -521,7 +553,7 @@ public class Connection extends ConnectionBase {
 
         //
 
-        final void onBranchIntercepted(Transaction branch) {
+        final void onBranchIntercepted() {
             _controllerOutWriter.onBranchIntercepted();
             _controllerInWriter.onBranchIntercepted();
             _callOutWriter.onBranchIntercepted();
@@ -530,7 +562,7 @@ public class Connection extends ConnectionBase {
             _propagator.onBranchIntercepted();
         }
 
-        final void onBranchPropagated(Transaction branch) {
+        final void onBranchPropagated() {
             _controllerOutWriter.onBranchPropagated();
             _controllerInWriter.onBranchPropagated();
             _callOutWriter.onBranchPropagated();
@@ -727,6 +759,17 @@ public class Connection extends ConnectionBase {
                 transport.cancel(mayInterruptIfRunning);
 
             return super.cancel(mayInterruptIfRunning);
+        }
+    }
+
+    protected static final class FirstObjectFuture extends PlatformFuture<Object> {
+
+        public FirstObjectFuture() {
+        }
+
+        @Override
+        public void set(Object value) {
+            super.set(value);
         }
     }
 }

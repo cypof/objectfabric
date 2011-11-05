@@ -18,9 +18,6 @@ import java.util.concurrent.Executor;
 import org.junit.Assert;
 import org.junit.Test;
 
-import com.objectfabric.AsyncOptions;
-import com.objectfabric.ListListener;
-import com.objectfabric.TList;
 import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.TransparentExecutor;
 
@@ -36,7 +33,7 @@ public class TListListenerTest extends TestsHelper {
     public void test1() {
         TList<String> list = new TList<String>();
 
-        list.addListener(new ListListener<String>() {
+        list.addListener(new ListListener() {
 
             public void onAdded(int index) {
                 _added.add(index);

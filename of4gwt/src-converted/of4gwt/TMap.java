@@ -39,7 +39,7 @@ import java.util.Set;
 @SuppressWarnings("unchecked")
 public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
 
-    @SuppressWarnings({ "hiding", "static-access" })
+    @SuppressWarnings("hiding")
     public static final TType TYPE = new TType(DefaultObjectModel.getInstance(), DefaultObjectModel.COM_OBJECTFABRIC_TMAP_CLASS_ID);
 
     public TMap() {
@@ -85,7 +85,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
         try {
             entry = getEntry(inner, (K) key, hash);
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return entry != null && !entry.isRemoval();
@@ -112,7 +112,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
                 }
             }
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return result;
@@ -150,7 +150,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
                 size++;
             }
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         if (map.size() != size)
@@ -171,7 +171,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
         try {
             entry = getEntry(inner, (K) key, hash);
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return entry != null && !entry.isRemoval() ? (V) entry.getValue() : null;
@@ -190,7 +190,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
                 h += entry.hashCode();
             }
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return h;
@@ -321,7 +321,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
                     }
                 }
             } finally {
-                Transaction.endRead(outer, inner, TMap.this);
+                Transaction.endRead(outer, inner);
             }
 
             return result;
@@ -411,7 +411,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
             for (K k : this)
                 list.add(k);
 
-            Transaction.endRead(outer, inner, TMap.this);
+            Transaction.endRead(outer, inner);
             Object[] array = new Object[list.size()];
             list.copyToFixed(array);
             return array;
@@ -429,7 +429,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
             for (K k : this)
                 list.add((T) k);
 
-            Transaction.endRead(outer, inner, TMap.this);
+            Transaction.endRead(outer, inner);
             return list.copyToWithResizeAndNullEnd(array);
         }
     }
@@ -488,7 +488,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
                     }
                 }
             } finally {
-                Transaction.endRead(outer, inner, TMap.this);
+                Transaction.endRead(outer, inner);
             }
 
             return result;
@@ -594,7 +594,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
             for (V e : this)
                 list.add(e);
 
-            Transaction.endRead(outer, inner, TMap.this);
+            Transaction.endRead(outer, inner);
             Object[] array = new Object[list.size()];
             list.copyToFixed(array);
             return array;
@@ -612,7 +612,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
             for (V e : this)
                 list.add((T) e);
 
-            Transaction.endRead(outer, inner, TMap.this);
+            Transaction.endRead(outer, inner);
             return list.copyToWithResizeAndNullEnd(array);
         }
     }
@@ -668,7 +668,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
             try {
                 stored = getEntry(inner, key, hash(key));
             } finally {
-                Transaction.endRead(outer, inner, TMap.this);
+                Transaction.endRead(outer, inner);
             }
 
             return stored != null && stored.equals(given);
@@ -687,7 +687,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
                     }
                 }
             } finally {
-                Transaction.endRead(outer, inner, TMap.this);
+                Transaction.endRead(outer, inner);
             }
 
             return result;
@@ -811,7 +811,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
             for (Object o : this)
                 list.add(o);
 
-            Transaction.endRead(outer, inner, TMap.this);
+            Transaction.endRead(outer, inner);
             Object[] array = new Object[list.size()];
             list.copyToFixed(array);
             return array;
@@ -829,7 +829,7 @@ public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {
             for (Object o : this)
                 list.add(o);
 
-            Transaction.endRead(outer, inner, TMap.this);
+            Transaction.endRead(outer, inner);
             return list.copyToWithResizeAndNullEnd(array);
         }
     }

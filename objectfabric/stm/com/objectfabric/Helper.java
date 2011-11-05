@@ -19,7 +19,6 @@ import java.util.Map;
 
 import com.objectfabric.Interception.MultiMapInterception;
 import com.objectfabric.Snapshot.SlowChanging;
-import com.objectfabric.TObject.UserTObject;
 import com.objectfabric.TObject.Version;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.IdentityEqualityWrapper;
@@ -365,20 +364,11 @@ final class Helper {
         _expectedClass.set(value);
     }
 
-    public boolean allowEqualsOrHash(UserTObject object) {
+    public boolean allowEqualsOrHash() {
         Boolean value = _disableEqualsOrHashCheck.get();
 
         if (value != null && value)
             return true;
-
-        // if (value == null || !value) {
-        // if (object instanceof Transaction || object instanceof Session ||
-        // object instanceof Connection)
-        // return true;
-        //
-        // if (object instanceof TKeyed || object instanceof TList)
-        // return true;
-        // }
 
         return false;
     }
@@ -508,6 +498,7 @@ final class Helper {
         ThreadAssert.getOrCreateCurrent().resetCounters();
         Debug.assertion(Debug.ProcessName.length() == 0);
         Debug.assertion(!Debug.AssertNoConflict);
+        Debug.assertion(!ExpectedExceptionThrower.isCounterDisabled());
     }
 
     private void assertIdle(Transaction trunk) {

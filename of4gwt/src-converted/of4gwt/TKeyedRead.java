@@ -55,7 +55,7 @@ final class TKeyedRead extends TKeyedBase2 {
                 TObject.Version write = TransactionSets.getVersionFromSharedVersion(snapshot.getWrites()[i], getUnion());
 
                 if (write != null) {
-                    TKeyedVersion version = (TKeyedVersion) write;
+                    TKeyedBase2 version = (TKeyedBase2) write;
 
                     if (!validAgainst(version))
                         return false;
@@ -66,7 +66,7 @@ final class TKeyedRead extends TKeyedBase2 {
         return true;
     }
 
-    private final boolean validAgainst(TKeyedVersion version) {
+    private final boolean validAgainst(TKeyedBase2 version) {
         if (_fullyRead)
             if (version.getEntries() != null || version.getCleared())
                 return false;

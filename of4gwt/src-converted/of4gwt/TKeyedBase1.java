@@ -16,7 +16,6 @@ import of4gwt.misc.Debug;
 import of4gwt.misc.Log;
 import of4gwt.misc.SparseArrayHelper;
 
-@SuppressWarnings("unchecked")
 class TKeyedBase1 extends TObject.Version {
 
     protected static final int DEFAULT_INITIAL_CAPACITY = 8;

@@ -18,8 +18,8 @@ package of4gwt;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
-abstract class LazyMapBase extends of4gwt.TKeyed {
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
+abstract class LazyMapBase<K> extends of4gwt.TKeyed<K> {
 
     protected LazyMapBase(of4gwt.TObject.Version shared, of4gwt.Transaction trunk) {
         super(shared, trunk);

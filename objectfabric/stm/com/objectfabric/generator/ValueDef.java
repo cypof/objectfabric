@@ -14,6 +14,8 @@ package com.objectfabric.generator;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
+import com.objectfabric.misc.Utils;
+
 /**
  * Base for class fields and method arguments and return values.
  */
@@ -29,6 +31,8 @@ public class ValueDef {
     public String Comment;
 
     private TypeDef _type;
+
+    private String _constant;
 
     public ValueDef() {
     }
@@ -51,20 +55,10 @@ public class ValueDef {
     }
 
     String getNameAsConstant() {
-        StringBuffer sb = new StringBuffer(Name.length());
-        char chars[] = Name.toCharArray();
+        if (_constant == null)
+            _constant = Utils.getNameAsConstant(Name);
 
-        for (int x = 0; x < chars.length; x++) {
-            char c = chars[x];
-
-            if (Character.isUpperCase(c))
-                if (sb.length() > 0)
-                    sb.append('_');
-
-            sb.append(Character.toUpperCase(c));
-        }
-
-        return sb.toString();
+        return _constant;
     }
 
     boolean isReadOnly() {

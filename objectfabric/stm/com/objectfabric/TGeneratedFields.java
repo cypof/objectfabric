@@ -40,7 +40,7 @@ public abstract class TGeneratedFields extends TIndexed implements Iterable<Obje
 
     public abstract String getFieldName(int index);
 
-    public abstract java.lang.Class getFieldClass(int index);
+    public abstract TType getFieldType(int index);
 
     public abstract Iterator<Object> iterator();
 }

@@ -18,14 +18,12 @@ import java.net.UnknownHostException;
 import java.nio.channels.SocketChannel;
 import java.util.Collections;
 import java.util.Set;
-import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.objectfabric.Connection;
 import com.objectfabric.Privileged;
 import com.objectfabric.Site;
 import com.objectfabric.Strings;
-import com.objectfabric.Validator;
 import com.objectfabric.misc.CheckedRunnable;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
@@ -42,7 +40,7 @@ import com.objectfabric.transports.socket.SocketConnection.PhysicalConnection;
 /**
  * NIO based socket server. Add filters for TLS or HTTP support.
  */
-public class SocketServer<C extends SocketConnection> extends Privileged implements Server<C> {
+public class SocketServer extends Server<SocketServer.Session> {
 
     private final InetAddress _host;
 
@@ -52,13 +50,7 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
 
     private final List<FilterFactory> _filters = new List<FilterFactory>();
 
-    private final PlatformConcurrentMap<C, C> _sessions = new PlatformConcurrentMap<C, C>();
-
-    private Validator _validator;
-
-    private Callback _callback;
-
-    private Executor _callbackExecutor;
+    private final PlatformConcurrentMap<Session, Session> _sessions = new PlatformConcurrentMap<Session, Session>();
 
     public SocketServer(int port) {
         this((InetAddress) null, port);
@@ -74,8 +66,6 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
 
         // First factory corresponds to physical connection
         _filters.add(null);
-
-        _callbackExecutor = getDefaultAsyncOptions().getExecutor();
     }
 
     public final InetAddress getHost() {
@@ -88,48 +78,11 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
 
     //
 
-    public final Validator getValidator() {
-        return _validator;
-    }
-
-    public final void setValidator(Validator value) {
-        if (isStarted())
-            throw new RuntimeException(Strings.ALREADY_STARTED);
-
-        _validator = value;
-    }
-
-    //
-
     public void addFilter(FilterFactory filter) {
         if (isStarted())
             throw new RuntimeException(Strings.ALREADY_STARTED);
 
         _filters.add(filter);
-    }
-
-    //
-
-    public final Callback getCallback() {
-        return _callback;
-    }
-
-    public final void setCallback(Callback value) {
-        if (isStarted())
-            throw new RuntimeException(Strings.ALREADY_STARTED);
-
-        _callback = value;
-    }
-
-    public final Executor getCallbackExecutor() {
-        return _callbackExecutor;
-    }
-
-    public final void setCallbackExecutor(Executor value) {
-        if (isStarted())
-            throw new RuntimeException(Strings.ALREADY_STARTED);
-
-        _callbackExecutor = value;
     }
 
     //
@@ -176,6 +129,7 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
         }
     }
 
+    @Override
     public boolean isStarted() {
         NIOListener listener = _nioListener.get();
         return listener != null;
@@ -211,7 +165,7 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
                     assertIdle((Privileged) filter);
     }
 
-    public Set<C> getSessions() {
+    public Set<Session> getSessions() {
         return Collections.unmodifiableSet(_sessions.keySet());
     }
 
@@ -221,12 +175,16 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
      * and notify user callback.
      * <nl>
      * This method is called directly on the NIO thread, not on AsyncOptions's executor.
+     * 
+     * @param channel
      */
     protected void onConnection(SocketChannel channel) {
     }
 
     /**
      * Override this method to create your own sessions.
+     * <nl>
+     * This method is called directly on the NIO thread, not on AsyncOptions's executor.
      */
     protected Session createSession() {
         return new Session(this);
@@ -250,7 +208,6 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
             _server.onConnection(getSocketChannel());
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         protected void onDialogEstablished() {
             super.onDialogEstablished();
@@ -265,11 +222,12 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
 
             _server.getCallbackExecutor().execute(new CheckedRunnable() {
 
+                @SuppressWarnings("unchecked")
                 @Override
                 protected void checkedRun() {
                     if (_server.getCallback() != null) {
                         try {
-                            _server.getCallback().onConnection(Session.this);
+                            ((Callback) _server.getCallback()).onConnection(Session.this);
                         } catch (Exception e) {
                             PlatformAdapter.logUserCodeException(e);
                         }
@@ -278,18 +236,18 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
             });
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         protected void onObject(final Object object) {
             super.onObject(object);
 
             _server.getCallbackExecutor().execute(new CheckedRunnable() {
 
+                @SuppressWarnings("unchecked")
                 @Override
                 protected void checkedRun() {
                     if (_server.getCallback() != null) {
                         try {
-                            _server.getCallback().onReceived(Session.this, object);
+                            ((Callback) _server.getCallback()).onReceived(Session.this, object);
                         } catch (Exception e) {
                             PlatformAdapter.logUserCodeException(e);
                         }
@@ -298,7 +256,6 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
             });
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         protected void onWriteStopped(final Exception e) {
             super.onWriteStopped(e);
@@ -313,11 +270,12 @@ public class SocketServer<C extends SocketConnection> extends Privileged impleme
 
             _server.getCallbackExecutor().execute(new CheckedRunnable() {
 
+                @SuppressWarnings("unchecked")
                 @Override
                 protected void checkedRun() {
                     if (_server.getCallback() != null) {
                         try {
-                            _server.getCallback().onDisconnection(Session.this, e);
+                            ((Callback) _server.getCallback()).onDisconnection(Session.this, e);
                         } catch (Exception user) {
                             PlatformAdapter.logUserCodeException(user);
                         }

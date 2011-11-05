@@ -21,7 +21,7 @@ package com.objectfabric;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { 2, 72, 68, 90, -92, -76, -96, -87, -79, -13, -80, 19, 70, 106, 112, 36 };
+    private static final byte[] UID = { -92, -99, 116, 47, 13, -33, 68, 49, 96, -98, -116, 94, -73, 57, 13, -48 };
 
     private static volatile DefaultObjectModel _instance;
 
@@ -77,33 +77,27 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
         return "0.8";
     }
 
-    public static final int CLASS_COUNT = 6;
+    public static final int CLASS_COUNT = 5;
 
     public static final int COM_OBJECTFABRIC_CONNECTION_CLASS_ID = 0;
 
-    public static final int COM_OBJECTFABRIC_INDEX_CLASS_ID = 1;
+    public static final int COM_OBJECTFABRIC_LAZYMAP_CLASS_ID = 1;
 
-    public static final int COM_OBJECTFABRIC_LAZYMAP_CLASS_ID = 2;
+    public static final int COM_OBJECTFABRIC_SESSION_CLASS_ID = 2;
 
-    public static final int COM_OBJECTFABRIC_SESSION_CLASS_ID = 3;
+    public static final int COM_OBJECTFABRIC_SITE_CLASS_ID = 3;
 
-    public static final int COM_OBJECTFABRIC_SITE_CLASS_ID = 4;
+    public static final int COM_OBJECTFABRIC_TRANSACTION_CLASS_ID = 4;
 
-    public static final int COM_OBJECTFABRIC_TRANSACTION_CLASS_ID = 5;
+    public static final int METHOD_COUNT = 1;
 
-    public static final int METHOD_COUNT = 2;
-
-    public static final int COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID = 6;
-
-    public static final int COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID = 7;
+    public static final int COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID = 5;
 
     @Override
     protected java.lang.Class getClass(int classId, com.objectfabric.TType[] genericParameters) {
         switch (classId) {
             case COM_OBJECTFABRIC_CONNECTION_CLASS_ID:
                 return com.objectfabric.Connection.class;
-            case COM_OBJECTFABRIC_INDEX_CLASS_ID:
-                return com.objectfabric.Index.class;
             case COM_OBJECTFABRIC_LAZYMAP_CLASS_ID:
                 return com.objectfabric.LazyMap.class;
             case COM_OBJECTFABRIC_SESSION_CLASS_ID:
@@ -114,8 +108,6 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
                 return com.objectfabric.Transaction.class;
             case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID:
                 return Method0.class;
-            case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID:
-                return Method1.class;
         }
 
         return super.getClass(classId, genericParameters);
@@ -126,8 +118,6 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
         switch (classId) {
             case COM_OBJECTFABRIC_CONNECTION_CLASS_ID:
                 return new com.objectfabric.Connection(trunk, null);
-            case COM_OBJECTFABRIC_INDEX_CLASS_ID:
-                return new com.objectfabric.Index(trunk);
             case COM_OBJECTFABRIC_LAZYMAP_CLASS_ID:
                 return new com.objectfabric.LazyMap(trunk);
             case COM_OBJECTFABRIC_SESSION_CLASS_ID:
@@ -138,8 +128,6 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
                 return new com.objectfabric.Transaction(trunk, null, 0, null, null, null);
             case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID:
                 return new Method0(trunk);
-            case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID:
-                return new Method1(trunk);
         }
 
         return super.createInstance(trunk, classId, genericParameters);
@@ -175,19 +163,19 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
 
         public static final java.lang.String KEY_NAME = "key";
 
-        public static final java.lang.Class KEY_CLASS = java.lang.Object.class;
+        public static final com.objectfabric.TType KEY_TYPE = com.objectfabric.TType.OBJECT;
 
         public static final int RETURN_OBJECTFABRIC_INDEX = 1;
 
         public static final java.lang.String RETURN_OBJECTFABRIC_NAME = "return_objectfabric";
 
-        public static final java.lang.Class RETURN_OBJECTFABRIC_CLASS = java.lang.Object.class;
+        public static final com.objectfabric.TType RETURN_OBJECTFABRIC_TYPE = com.objectfabric.TType.OBJECT;
 
         public static final int ERROR_OBJECTFABRIC_INDEX = 2;
 
         public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
 
-        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
+        public static final com.objectfabric.TType ERROR_OBJECTFABRIC_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
         public static final int FIELD_COUNT = 3;
 
@@ -216,19 +204,19 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
         }
 
         @Override
-        public java.lang.Class getFieldClass(int index) {
-            return getFieldClassStatic(index);
+        public  com.objectfabric.TType getFieldType(int index) {
+            return getFieldTypeStatic(index);
         }
 
         @SuppressWarnings("static-access")
-        public static java.lang.Class getFieldClassStatic(int index) {
+        public static com.objectfabric.TType getFieldTypeStatic(int index) {
             switch (index) {
                 case KEY_INDEX:
-                    return KEY_CLASS;
+                    return KEY_TYPE;
                 case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_CLASS;
+                    return RETURN_OBJECTFABRIC_TYPE;
                 case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_CLASS;
+                    return ERROR_OBJECTFABRIC_TYPE;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -368,227 +356,6 @@ abstract class DefaultObjectModelBase extends com.objectfabric.ObjectModel {
             @Override
             public int getClassId() {
                 return com.objectfabric.DefaultObjectModelBase.COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID;
-            }
-
-            @SuppressWarnings("static-access")
-            @Override
-            public com.objectfabric.ObjectModel getObjectModel() {
-                return com.objectfabric.DefaultObjectModel.getInstance();
-            }
-        }
-    }
-
-    public static class Method1 extends com.objectfabric.TGeneratedFields32 implements com.objectfabric.TObject.UserTObject.Method {
-
-        public static final Method1 INSTANCE = new Method1(com.objectfabric.Site.getLocal().getTrunk());
-
-        public Method1(com.objectfabric.Transaction trunk) {
-            super(new Version(null, FIELD_COUNT), trunk);
-        }
-
-        public String getName() {
-            return "fetch";
-        }
-
-        public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(com.objectfabric.DefaultObjectModel.getInstance(), com.objectfabric.DefaultObjectModelBase.COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID);
-
-        public static final int REF_INDEX = 0;
-
-        public static final java.lang.String REF_NAME = "ref";
-
-        public static final java.lang.Class REF_CLASS = byte[].class;
-
-        public static final int RETURN_OBJECTFABRIC_INDEX = 1;
-
-        public static final java.lang.String RETURN_OBJECTFABRIC_NAME = "return_objectfabric";
-
-        public static final java.lang.Class RETURN_OBJECTFABRIC_CLASS = com.objectfabric.TObject.class;
-
-        public static final int ERROR_OBJECTFABRIC_INDEX = 2;
-
-        public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
-
-        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
-
-        public static final int FIELD_COUNT = 3;
-
-        @Override
-        public int getFieldCount() {
-            return FIELD_COUNT;
-        }
-
-        @Override
-        public java.lang.String getFieldName(int index) {
-            return getFieldNameStatic(index);
-        }
-
-        @SuppressWarnings("static-access")
-        public static java.lang.String getFieldNameStatic(int index) {
-            switch (index) {
-                case REF_INDEX:
-                    return REF_NAME;
-                case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_NAME;
-                case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_NAME;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-        @Override
-        public java.lang.Class getFieldClass(int index) {
-            return getFieldClassStatic(index);
-        }
-
-        @SuppressWarnings("static-access")
-        public static java.lang.Class getFieldClassStatic(int index) {
-            switch (index) {
-                case REF_INDEX:
-                    return REF_CLASS;
-                case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_CLASS;
-                case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_CLASS;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-        public static class Version extends com.objectfabric.TGeneratedFields32.Version {
-
-            public byte[] _ref;
-
-            public com.objectfabric.TObject _return_objectfabric;
-
-            public java.lang.String _error_objectfabric;
-
-            public Version(com.objectfabric.TGeneratedFields32.Version shared, int length) {
-                super(shared, length);
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version merge(com.objectfabric.TObject.Version target, com.objectfabric.TObject.Version next, int flags) {
-                Method1.Version source = (Method1.Version) next;
-                Method1.Version merged = (Method1.Version) super.merge(target, next, flags);
-
-                if (source.hasBits()) {
-                    if (source.getBit(REF_INDEX))
-                        merged._ref = source._ref;
-
-                    if (source.getBit(RETURN_OBJECTFABRIC_INDEX))
-                        merged._return_objectfabric = mergeTObject(merged._return_objectfabric, source._return_objectfabric);
-
-                    if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
-                        merged._error_objectfabric = source._error_objectfabric;
-                }
-
-                return merged;
-            }
-
-            @Override
-            public void writeWrite(com.objectfabric.Writer writer, int index) {
-                if (writer.interrupted())
-                    writer.resume();
-
-                switch (index) {
-                    case REF_INDEX: {
-                        writer.writeBinary(_ref);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case RETURN_OBJECTFABRIC_INDEX: {
-                        writer.writeTObject(_return_objectfabric);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case ERROR_OBJECTFABRIC_INDEX: {
-                        writer.writeString(_error_objectfabric);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    default: {
-                        super.writeWrite(writer, index);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void readWrite(com.objectfabric.Reader reader, int index) {
-                if (reader.interrupted())
-                    reader.resume();
-
-                switch (index) {
-                    case REF_INDEX: {
-                        _ref = reader.readBinary();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case RETURN_OBJECTFABRIC_INDEX: {
-                        _return_objectfabric = reader.readTObject();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case ERROR_OBJECTFABRIC_INDEX: {
-                        _error_objectfabric = reader.readString();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    default: {
-                        super.readWrite(reader, index);
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version createRead() {
-                return null;
-            }
-
-            @Override
-            public com.objectfabric.TObject.Version createVersion() {
-                return new Method1.Version(this, FIELD_COUNT);
-            }
-
-            @Override
-            public int getClassId() {
-                return com.objectfabric.DefaultObjectModelBase.COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID;
             }
 
             @SuppressWarnings("static-access")

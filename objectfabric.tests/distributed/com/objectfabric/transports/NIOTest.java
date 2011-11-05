@@ -22,6 +22,7 @@ import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.Log;
 import com.objectfabric.misc.NIOConnection;
 import com.objectfabric.misc.NIOListener;
+import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.Queue;
 import com.objectfabric.misc.SeparateClassLoader;
 
@@ -67,7 +68,7 @@ public class NIOTest extends TestsHelper {
 
         server.stop();
 
-        Debug.ProcessName = "";
+        PlatformAdapter.reset();
     }
 
     private static final class Session extends NIOConnection {
@@ -93,7 +94,7 @@ public class NIOTest extends TestsHelper {
                 _queue.add(copy);
             }
 
-            requestWrite();
+            requestRun();
         }
 
         @Override

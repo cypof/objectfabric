@@ -145,7 +145,7 @@ public final class ImmutableClass {
         all.add(BIG_INTEGER = new ImmutableClass(BIG_INTEGER_INDEX, false, false, false, "BigInteger", "java.math.BigInteger", "System.Numerics.BigInteger?"));
         all.add(DECIMAL = new ImmutableClass(DECIMAL_INDEX, false, false, false, "Decimal", "java.math.BigDecimal", "decimal?"));
         all.add(BINARY = new ImmutableClass(BINARY_INDEX, false, false, false, "Binary", "byte[]", "byte[]"));
-        ALL = (java.util.List) Collections.unmodifiableList(Arrays.asList(all.toArray()));
+        ALL = (List) Collections.unmodifiableList(Arrays.asList(all.toArray()));
 
         if (Debug.ENABLED) {
             for (int i = 0; i < all.size(); i++)
@@ -161,6 +161,8 @@ public final class ImmutableClass {
 
     private final String _name, _java, _csharp;
 
+    private final TType _type;
+
     private ImmutableClass(int ordinal, boolean primitive, boolean boxed, boolean fixedLength, String name, String java, String csharp) {
         _ordinal = ordinal;
         _primitive = primitive;
@@ -169,6 +171,8 @@ public final class ImmutableClass {
         _name = name;
         _java = java;
         _csharp = csharp;
+
+        _type = new TType(this);
     }
 
     public int ordinal() {
@@ -201,6 +205,10 @@ public final class ImmutableClass {
 
     public String getCSharp() {
         return _csharp;
+    }
+
+    public TType getType() {
+        return _type;
     }
 
     public ImmutableClass getBoxed() {

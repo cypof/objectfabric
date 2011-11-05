@@ -72,6 +72,9 @@ class TIndexedNRead extends TObject.Version {
         return index;
     }
 
+    /**
+     * @param old
+     */
     public void reindexed(Bits.Entry[] old) {
     }
 
@@ -131,7 +134,7 @@ class TIndexedNRead extends TObject.Version {
             for (;;) {
                 boolean result;
 
-                if ((flags & MERGE_FLAG_BY_COPY) != 0)
+                if ((flags & MERGE_FLAG_COPY_ARRAY_ELEMENTS) != 0)
                     result = Bits.mergeByCopy(merged.getBits(), source.getBits());
                 else
                     result = Bits.mergeInPlace(merged.getBits(), source.getBits());
@@ -144,8 +147,8 @@ class TIndexedNRead extends TObject.Version {
                     Debug.assertion((flags & MERGE_FLAG_CLONE) == 0);
                 }
 
-                if (merged == target && ((flags & (MERGE_FLAG_PRIVATE | MERGE_FLAG_BY_COPY)) == 0))
-                    merged = (TIndexedNRead) cloneThis((flags & MERGE_FLAG_READS) != 0);
+                if (merged == target && ((flags & (MERGE_FLAG_PRIVATE | MERGE_FLAG_COPY_ARRAY_ELEMENTS)) == 0))
+                    merged = (TIndexedNRead) cloneThis((flags & MERGE_FLAG_READS) != 0, false);
 
                 merged.reindex();
             }
@@ -156,7 +159,7 @@ class TIndexedNRead extends TObject.Version {
         if (getBits() == null && source.getBits() != null) {
             Bits.Entry[] bits = source.getBits();
 
-            if ((flags & MERGE_FLAG_BY_COPY) != 0) {
+            if ((flags & MERGE_FLAG_COPY_ARRAYS) != 0) {
                 Bits.Entry[] temp = PlatformAdapter.createBitsArray(bits.length);
                 PlatformAdapter.arraycopy(bits, 0, temp, 0, temp.length);
                 bits = temp;

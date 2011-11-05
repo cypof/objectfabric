@@ -18,7 +18,7 @@ package com.objectfabric.generated;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 public class LimitN_min extends com.objectfabric.TGeneratedFieldsN {
 
     public LimitN_min() {
@@ -4665,1543 +4665,1543 @@ public class LimitN_min extends com.objectfabric.TGeneratedFieldsN {
 
     public static final java.lang.String INT0_NAME = "int0";
 
-    public static final java.lang.Class INT0_CLASS = int.class;
+    public static final com.objectfabric.TType INT0_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT1_INDEX = 1;
 
     public static final java.lang.String INT1_NAME = "int1";
 
-    public static final java.lang.Class INT1_CLASS = int.class;
+    public static final com.objectfabric.TType INT1_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT2_INDEX = 2;
 
     public static final java.lang.String INT2_NAME = "int2";
 
-    public static final java.lang.Class INT2_CLASS = int.class;
+    public static final com.objectfabric.TType INT2_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT3_INDEX = 3;
 
     public static final java.lang.String INT3_NAME = "int3";
 
-    public static final java.lang.Class INT3_CLASS = int.class;
+    public static final com.objectfabric.TType INT3_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT4_INDEX = 4;
 
     public static final java.lang.String INT4_NAME = "int4";
 
-    public static final java.lang.Class INT4_CLASS = int.class;
+    public static final com.objectfabric.TType INT4_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT5_INDEX = 5;
 
     public static final java.lang.String INT5_NAME = "int5";
 
-    public static final java.lang.Class INT5_CLASS = int.class;
+    public static final com.objectfabric.TType INT5_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT6_INDEX = 6;
 
     public static final java.lang.String INT6_NAME = "int6";
 
-    public static final java.lang.Class INT6_CLASS = int.class;
+    public static final com.objectfabric.TType INT6_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT7_INDEX = 7;
 
     public static final java.lang.String INT7_NAME = "int7";
 
-    public static final java.lang.Class INT7_CLASS = int.class;
+    public static final com.objectfabric.TType INT7_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT8_INDEX = 8;
 
     public static final java.lang.String INT8_NAME = "int8";
 
-    public static final java.lang.Class INT8_CLASS = int.class;
+    public static final com.objectfabric.TType INT8_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT9_INDEX = 9;
 
     public static final java.lang.String INT9_NAME = "int9";
 
-    public static final java.lang.Class INT9_CLASS = int.class;
+    public static final com.objectfabric.TType INT9_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT10_INDEX = 10;
 
     public static final java.lang.String INT10_NAME = "int10";
 
-    public static final java.lang.Class INT10_CLASS = int.class;
+    public static final com.objectfabric.TType INT10_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT11_INDEX = 11;
 
     public static final java.lang.String INT11_NAME = "int11";
 
-    public static final java.lang.Class INT11_CLASS = int.class;
+    public static final com.objectfabric.TType INT11_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT12_INDEX = 12;
 
     public static final java.lang.String INT12_NAME = "int12";
 
-    public static final java.lang.Class INT12_CLASS = int.class;
+    public static final com.objectfabric.TType INT12_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT13_INDEX = 13;
 
     public static final java.lang.String INT13_NAME = "int13";
 
-    public static final java.lang.Class INT13_CLASS = int.class;
+    public static final com.objectfabric.TType INT13_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT14_INDEX = 14;
 
     public static final java.lang.String INT14_NAME = "int14";
 
-    public static final java.lang.Class INT14_CLASS = int.class;
+    public static final com.objectfabric.TType INT14_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT15_INDEX = 15;
 
     public static final java.lang.String INT15_NAME = "int15";
 
-    public static final java.lang.Class INT15_CLASS = int.class;
+    public static final com.objectfabric.TType INT15_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT16_INDEX = 16;
 
     public static final java.lang.String INT16_NAME = "int16";
 
-    public static final java.lang.Class INT16_CLASS = int.class;
+    public static final com.objectfabric.TType INT16_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT17_INDEX = 17;
 
     public static final java.lang.String INT17_NAME = "int17";
 
-    public static final java.lang.Class INT17_CLASS = int.class;
+    public static final com.objectfabric.TType INT17_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT18_INDEX = 18;
 
     public static final java.lang.String INT18_NAME = "int18";
 
-    public static final java.lang.Class INT18_CLASS = int.class;
+    public static final com.objectfabric.TType INT18_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT19_INDEX = 19;
 
     public static final java.lang.String INT19_NAME = "int19";
 
-    public static final java.lang.Class INT19_CLASS = int.class;
+    public static final com.objectfabric.TType INT19_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT20_INDEX = 20;
 
     public static final java.lang.String INT20_NAME = "int20";
 
-    public static final java.lang.Class INT20_CLASS = int.class;
+    public static final com.objectfabric.TType INT20_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT21_INDEX = 21;
 
     public static final java.lang.String INT21_NAME = "int21";
 
-    public static final java.lang.Class INT21_CLASS = int.class;
+    public static final com.objectfabric.TType INT21_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT22_INDEX = 22;
 
     public static final java.lang.String INT22_NAME = "int22";
 
-    public static final java.lang.Class INT22_CLASS = int.class;
+    public static final com.objectfabric.TType INT22_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT23_INDEX = 23;
 
     public static final java.lang.String INT23_NAME = "int23";
 
-    public static final java.lang.Class INT23_CLASS = int.class;
+    public static final com.objectfabric.TType INT23_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT24_INDEX = 24;
 
     public static final java.lang.String INT24_NAME = "int24";
 
-    public static final java.lang.Class INT24_CLASS = int.class;
+    public static final com.objectfabric.TType INT24_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT25_INDEX = 25;
 
     public static final java.lang.String INT25_NAME = "int25";
 
-    public static final java.lang.Class INT25_CLASS = int.class;
+    public static final com.objectfabric.TType INT25_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT26_INDEX = 26;
 
     public static final java.lang.String INT26_NAME = "int26";
 
-    public static final java.lang.Class INT26_CLASS = int.class;
+    public static final com.objectfabric.TType INT26_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT27_INDEX = 27;
 
     public static final java.lang.String INT27_NAME = "int27";
 
-    public static final java.lang.Class INT27_CLASS = int.class;
+    public static final com.objectfabric.TType INT27_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT28_INDEX = 28;
 
     public static final java.lang.String INT28_NAME = "int28";
 
-    public static final java.lang.Class INT28_CLASS = int.class;
+    public static final com.objectfabric.TType INT28_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT29_INDEX = 29;
 
     public static final java.lang.String INT29_NAME = "int29";
 
-    public static final java.lang.Class INT29_CLASS = int.class;
+    public static final com.objectfabric.TType INT29_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT30_INDEX = 30;
 
     public static final java.lang.String INT30_NAME = "int30";
 
-    public static final java.lang.Class INT30_CLASS = int.class;
+    public static final com.objectfabric.TType INT30_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT31_INDEX = 31;
 
     public static final java.lang.String INT31_NAME = "int31";
 
-    public static final java.lang.Class INT31_CLASS = int.class;
+    public static final com.objectfabric.TType INT31_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT32_INDEX = 32;
 
     public static final java.lang.String INT32_NAME = "int32";
 
-    public static final java.lang.Class INT32_CLASS = int.class;
+    public static final com.objectfabric.TType INT32_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT33_INDEX = 33;
 
     public static final java.lang.String INT33_NAME = "int33";
 
-    public static final java.lang.Class INT33_CLASS = int.class;
+    public static final com.objectfabric.TType INT33_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT34_INDEX = 34;
 
     public static final java.lang.String INT34_NAME = "int34";
 
-    public static final java.lang.Class INT34_CLASS = int.class;
+    public static final com.objectfabric.TType INT34_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT35_INDEX = 35;
 
     public static final java.lang.String INT35_NAME = "int35";
 
-    public static final java.lang.Class INT35_CLASS = int.class;
+    public static final com.objectfabric.TType INT35_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT36_INDEX = 36;
 
     public static final java.lang.String INT36_NAME = "int36";
 
-    public static final java.lang.Class INT36_CLASS = int.class;
+    public static final com.objectfabric.TType INT36_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT37_INDEX = 37;
 
     public static final java.lang.String INT37_NAME = "int37";
 
-    public static final java.lang.Class INT37_CLASS = int.class;
+    public static final com.objectfabric.TType INT37_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT38_INDEX = 38;
 
     public static final java.lang.String INT38_NAME = "int38";
 
-    public static final java.lang.Class INT38_CLASS = int.class;
+    public static final com.objectfabric.TType INT38_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT39_INDEX = 39;
 
     public static final java.lang.String INT39_NAME = "int39";
 
-    public static final java.lang.Class INT39_CLASS = int.class;
+    public static final com.objectfabric.TType INT39_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT40_INDEX = 40;
 
     public static final java.lang.String INT40_NAME = "int40";
 
-    public static final java.lang.Class INT40_CLASS = int.class;
+    public static final com.objectfabric.TType INT40_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT41_INDEX = 41;
 
     public static final java.lang.String INT41_NAME = "int41";
 
-    public static final java.lang.Class INT41_CLASS = int.class;
+    public static final com.objectfabric.TType INT41_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT42_INDEX = 42;
 
     public static final java.lang.String INT42_NAME = "int42";
 
-    public static final java.lang.Class INT42_CLASS = int.class;
+    public static final com.objectfabric.TType INT42_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT43_INDEX = 43;
 
     public static final java.lang.String INT43_NAME = "int43";
 
-    public static final java.lang.Class INT43_CLASS = int.class;
+    public static final com.objectfabric.TType INT43_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT44_INDEX = 44;
 
     public static final java.lang.String INT44_NAME = "int44";
 
-    public static final java.lang.Class INT44_CLASS = int.class;
+    public static final com.objectfabric.TType INT44_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT45_INDEX = 45;
 
     public static final java.lang.String INT45_NAME = "int45";
 
-    public static final java.lang.Class INT45_CLASS = int.class;
+    public static final com.objectfabric.TType INT45_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT46_INDEX = 46;
 
     public static final java.lang.String INT46_NAME = "int46";
 
-    public static final java.lang.Class INT46_CLASS = int.class;
+    public static final com.objectfabric.TType INT46_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT47_INDEX = 47;
 
     public static final java.lang.String INT47_NAME = "int47";
 
-    public static final java.lang.Class INT47_CLASS = int.class;
+    public static final com.objectfabric.TType INT47_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT48_INDEX = 48;
 
     public static final java.lang.String INT48_NAME = "int48";
 
-    public static final java.lang.Class INT48_CLASS = int.class;
+    public static final com.objectfabric.TType INT48_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT49_INDEX = 49;
 
     public static final java.lang.String INT49_NAME = "int49";
 
-    public static final java.lang.Class INT49_CLASS = int.class;
+    public static final com.objectfabric.TType INT49_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT50_INDEX = 50;
 
     public static final java.lang.String INT50_NAME = "int50";
 
-    public static final java.lang.Class INT50_CLASS = int.class;
+    public static final com.objectfabric.TType INT50_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT51_INDEX = 51;
 
     public static final java.lang.String INT51_NAME = "int51";
 
-    public static final java.lang.Class INT51_CLASS = int.class;
+    public static final com.objectfabric.TType INT51_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT52_INDEX = 52;
 
     public static final java.lang.String INT52_NAME = "int52";
 
-    public static final java.lang.Class INT52_CLASS = int.class;
+    public static final com.objectfabric.TType INT52_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT53_INDEX = 53;
 
     public static final java.lang.String INT53_NAME = "int53";
 
-    public static final java.lang.Class INT53_CLASS = int.class;
+    public static final com.objectfabric.TType INT53_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT54_INDEX = 54;
 
     public static final java.lang.String INT54_NAME = "int54";
 
-    public static final java.lang.Class INT54_CLASS = int.class;
+    public static final com.objectfabric.TType INT54_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT55_INDEX = 55;
 
     public static final java.lang.String INT55_NAME = "int55";
 
-    public static final java.lang.Class INT55_CLASS = int.class;
+    public static final com.objectfabric.TType INT55_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT56_INDEX = 56;
 
     public static final java.lang.String INT56_NAME = "int56";
 
-    public static final java.lang.Class INT56_CLASS = int.class;
+    public static final com.objectfabric.TType INT56_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT57_INDEX = 57;
 
     public static final java.lang.String INT57_NAME = "int57";
 
-    public static final java.lang.Class INT57_CLASS = int.class;
+    public static final com.objectfabric.TType INT57_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT58_INDEX = 58;
 
     public static final java.lang.String INT58_NAME = "int58";
 
-    public static final java.lang.Class INT58_CLASS = int.class;
+    public static final com.objectfabric.TType INT58_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT59_INDEX = 59;
 
     public static final java.lang.String INT59_NAME = "int59";
 
-    public static final java.lang.Class INT59_CLASS = int.class;
+    public static final com.objectfabric.TType INT59_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT60_INDEX = 60;
 
     public static final java.lang.String INT60_NAME = "int60";
 
-    public static final java.lang.Class INT60_CLASS = int.class;
+    public static final com.objectfabric.TType INT60_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT61_INDEX = 61;
 
     public static final java.lang.String INT61_NAME = "int61";
 
-    public static final java.lang.Class INT61_CLASS = int.class;
+    public static final com.objectfabric.TType INT61_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT62_INDEX = 62;
 
     public static final java.lang.String INT62_NAME = "int62";
 
-    public static final java.lang.Class INT62_CLASS = int.class;
+    public static final com.objectfabric.TType INT62_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT63_INDEX = 63;
 
     public static final java.lang.String INT63_NAME = "int63";
 
-    public static final java.lang.Class INT63_CLASS = int.class;
+    public static final com.objectfabric.TType INT63_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT64_INDEX = 64;
 
     public static final java.lang.String INT64_NAME = "int64";
 
-    public static final java.lang.Class INT64_CLASS = int.class;
+    public static final com.objectfabric.TType INT64_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT65_INDEX = 65;
 
     public static final java.lang.String INT65_NAME = "int65";
 
-    public static final java.lang.Class INT65_CLASS = int.class;
+    public static final com.objectfabric.TType INT65_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT66_INDEX = 66;
 
     public static final java.lang.String INT66_NAME = "int66";
 
-    public static final java.lang.Class INT66_CLASS = int.class;
+    public static final com.objectfabric.TType INT66_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT67_INDEX = 67;
 
     public static final java.lang.String INT67_NAME = "int67";
 
-    public static final java.lang.Class INT67_CLASS = int.class;
+    public static final com.objectfabric.TType INT67_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT68_INDEX = 68;
 
     public static final java.lang.String INT68_NAME = "int68";
 
-    public static final java.lang.Class INT68_CLASS = int.class;
+    public static final com.objectfabric.TType INT68_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT69_INDEX = 69;
 
     public static final java.lang.String INT69_NAME = "int69";
 
-    public static final java.lang.Class INT69_CLASS = int.class;
+    public static final com.objectfabric.TType INT69_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT70_INDEX = 70;
 
     public static final java.lang.String INT70_NAME = "int70";
 
-    public static final java.lang.Class INT70_CLASS = int.class;
+    public static final com.objectfabric.TType INT70_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT71_INDEX = 71;
 
     public static final java.lang.String INT71_NAME = "int71";
 
-    public static final java.lang.Class INT71_CLASS = int.class;
+    public static final com.objectfabric.TType INT71_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT72_INDEX = 72;
 
     public static final java.lang.String INT72_NAME = "int72";
 
-    public static final java.lang.Class INT72_CLASS = int.class;
+    public static final com.objectfabric.TType INT72_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT73_INDEX = 73;
 
     public static final java.lang.String INT73_NAME = "int73";
 
-    public static final java.lang.Class INT73_CLASS = int.class;
+    public static final com.objectfabric.TType INT73_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT74_INDEX = 74;
 
     public static final java.lang.String INT74_NAME = "int74";
 
-    public static final java.lang.Class INT74_CLASS = int.class;
+    public static final com.objectfabric.TType INT74_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT75_INDEX = 75;
 
     public static final java.lang.String INT75_NAME = "int75";
 
-    public static final java.lang.Class INT75_CLASS = int.class;
+    public static final com.objectfabric.TType INT75_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT76_INDEX = 76;
 
     public static final java.lang.String INT76_NAME = "int76";
 
-    public static final java.lang.Class INT76_CLASS = int.class;
+    public static final com.objectfabric.TType INT76_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT77_INDEX = 77;
 
     public static final java.lang.String INT77_NAME = "int77";
 
-    public static final java.lang.Class INT77_CLASS = int.class;
+    public static final com.objectfabric.TType INT77_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT78_INDEX = 78;
 
     public static final java.lang.String INT78_NAME = "int78";
 
-    public static final java.lang.Class INT78_CLASS = int.class;
+    public static final com.objectfabric.TType INT78_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT79_INDEX = 79;
 
     public static final java.lang.String INT79_NAME = "int79";
 
-    public static final java.lang.Class INT79_CLASS = int.class;
+    public static final com.objectfabric.TType INT79_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT80_INDEX = 80;
 
     public static final java.lang.String INT80_NAME = "int80";
 
-    public static final java.lang.Class INT80_CLASS = int.class;
+    public static final com.objectfabric.TType INT80_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT81_INDEX = 81;
 
     public static final java.lang.String INT81_NAME = "int81";
 
-    public static final java.lang.Class INT81_CLASS = int.class;
+    public static final com.objectfabric.TType INT81_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT82_INDEX = 82;
 
     public static final java.lang.String INT82_NAME = "int82";
 
-    public static final java.lang.Class INT82_CLASS = int.class;
+    public static final com.objectfabric.TType INT82_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT83_INDEX = 83;
 
     public static final java.lang.String INT83_NAME = "int83";
 
-    public static final java.lang.Class INT83_CLASS = int.class;
+    public static final com.objectfabric.TType INT83_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT84_INDEX = 84;
 
     public static final java.lang.String INT84_NAME = "int84";
 
-    public static final java.lang.Class INT84_CLASS = int.class;
+    public static final com.objectfabric.TType INT84_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT85_INDEX = 85;
 
     public static final java.lang.String INT85_NAME = "int85";
 
-    public static final java.lang.Class INT85_CLASS = int.class;
+    public static final com.objectfabric.TType INT85_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT86_INDEX = 86;
 
     public static final java.lang.String INT86_NAME = "int86";
 
-    public static final java.lang.Class INT86_CLASS = int.class;
+    public static final com.objectfabric.TType INT86_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT87_INDEX = 87;
 
     public static final java.lang.String INT87_NAME = "int87";
 
-    public static final java.lang.Class INT87_CLASS = int.class;
+    public static final com.objectfabric.TType INT87_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT88_INDEX = 88;
 
     public static final java.lang.String INT88_NAME = "int88";
 
-    public static final java.lang.Class INT88_CLASS = int.class;
+    public static final com.objectfabric.TType INT88_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT89_INDEX = 89;
 
     public static final java.lang.String INT89_NAME = "int89";
 
-    public static final java.lang.Class INT89_CLASS = int.class;
+    public static final com.objectfabric.TType INT89_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT90_INDEX = 90;
 
     public static final java.lang.String INT90_NAME = "int90";
 
-    public static final java.lang.Class INT90_CLASS = int.class;
+    public static final com.objectfabric.TType INT90_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT91_INDEX = 91;
 
     public static final java.lang.String INT91_NAME = "int91";
 
-    public static final java.lang.Class INT91_CLASS = int.class;
+    public static final com.objectfabric.TType INT91_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT92_INDEX = 92;
 
     public static final java.lang.String INT92_NAME = "int92";
 
-    public static final java.lang.Class INT92_CLASS = int.class;
+    public static final com.objectfabric.TType INT92_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT93_INDEX = 93;
 
     public static final java.lang.String INT93_NAME = "int93";
 
-    public static final java.lang.Class INT93_CLASS = int.class;
+    public static final com.objectfabric.TType INT93_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT94_INDEX = 94;
 
     public static final java.lang.String INT94_NAME = "int94";
 
-    public static final java.lang.Class INT94_CLASS = int.class;
+    public static final com.objectfabric.TType INT94_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT95_INDEX = 95;
 
     public static final java.lang.String INT95_NAME = "int95";
 
-    public static final java.lang.Class INT95_CLASS = int.class;
+    public static final com.objectfabric.TType INT95_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT96_INDEX = 96;
 
     public static final java.lang.String INT96_NAME = "int96";
 
-    public static final java.lang.Class INT96_CLASS = int.class;
+    public static final com.objectfabric.TType INT96_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT97_INDEX = 97;
 
     public static final java.lang.String INT97_NAME = "int97";
 
-    public static final java.lang.Class INT97_CLASS = int.class;
+    public static final com.objectfabric.TType INT97_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT98_INDEX = 98;
 
     public static final java.lang.String INT98_NAME = "int98";
 
-    public static final java.lang.Class INT98_CLASS = int.class;
+    public static final com.objectfabric.TType INT98_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT99_INDEX = 99;
 
     public static final java.lang.String INT99_NAME = "int99";
 
-    public static final java.lang.Class INT99_CLASS = int.class;
+    public static final com.objectfabric.TType INT99_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT100_INDEX = 100;
 
     public static final java.lang.String INT100_NAME = "int100";
 
-    public static final java.lang.Class INT100_CLASS = int.class;
+    public static final com.objectfabric.TType INT100_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT101_INDEX = 101;
 
     public static final java.lang.String INT101_NAME = "int101";
 
-    public static final java.lang.Class INT101_CLASS = int.class;
+    public static final com.objectfabric.TType INT101_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT102_INDEX = 102;
 
     public static final java.lang.String INT102_NAME = "int102";
 
-    public static final java.lang.Class INT102_CLASS = int.class;
+    public static final com.objectfabric.TType INT102_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT103_INDEX = 103;
 
     public static final java.lang.String INT103_NAME = "int103";
 
-    public static final java.lang.Class INT103_CLASS = int.class;
+    public static final com.objectfabric.TType INT103_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT104_INDEX = 104;
 
     public static final java.lang.String INT104_NAME = "int104";
 
-    public static final java.lang.Class INT104_CLASS = int.class;
+    public static final com.objectfabric.TType INT104_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT105_INDEX = 105;
 
     public static final java.lang.String INT105_NAME = "int105";
 
-    public static final java.lang.Class INT105_CLASS = int.class;
+    public static final com.objectfabric.TType INT105_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT106_INDEX = 106;
 
     public static final java.lang.String INT106_NAME = "int106";
 
-    public static final java.lang.Class INT106_CLASS = int.class;
+    public static final com.objectfabric.TType INT106_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT107_INDEX = 107;
 
     public static final java.lang.String INT107_NAME = "int107";
 
-    public static final java.lang.Class INT107_CLASS = int.class;
+    public static final com.objectfabric.TType INT107_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT108_INDEX = 108;
 
     public static final java.lang.String INT108_NAME = "int108";
 
-    public static final java.lang.Class INT108_CLASS = int.class;
+    public static final com.objectfabric.TType INT108_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT109_INDEX = 109;
 
     public static final java.lang.String INT109_NAME = "int109";
 
-    public static final java.lang.Class INT109_CLASS = int.class;
+    public static final com.objectfabric.TType INT109_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT110_INDEX = 110;
 
     public static final java.lang.String INT110_NAME = "int110";
 
-    public static final java.lang.Class INT110_CLASS = int.class;
+    public static final com.objectfabric.TType INT110_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT111_INDEX = 111;
 
     public static final java.lang.String INT111_NAME = "int111";
 
-    public static final java.lang.Class INT111_CLASS = int.class;
+    public static final com.objectfabric.TType INT111_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT112_INDEX = 112;
 
     public static final java.lang.String INT112_NAME = "int112";
 
-    public static final java.lang.Class INT112_CLASS = int.class;
+    public static final com.objectfabric.TType INT112_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT113_INDEX = 113;
 
     public static final java.lang.String INT113_NAME = "int113";
 
-    public static final java.lang.Class INT113_CLASS = int.class;
+    public static final com.objectfabric.TType INT113_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT114_INDEX = 114;
 
     public static final java.lang.String INT114_NAME = "int114";
 
-    public static final java.lang.Class INT114_CLASS = int.class;
+    public static final com.objectfabric.TType INT114_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT115_INDEX = 115;
 
     public static final java.lang.String INT115_NAME = "int115";
 
-    public static final java.lang.Class INT115_CLASS = int.class;
+    public static final com.objectfabric.TType INT115_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT116_INDEX = 116;
 
     public static final java.lang.String INT116_NAME = "int116";
 
-    public static final java.lang.Class INT116_CLASS = int.class;
+    public static final com.objectfabric.TType INT116_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT117_INDEX = 117;
 
     public static final java.lang.String INT117_NAME = "int117";
 
-    public static final java.lang.Class INT117_CLASS = int.class;
+    public static final com.objectfabric.TType INT117_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT118_INDEX = 118;
 
     public static final java.lang.String INT118_NAME = "int118";
 
-    public static final java.lang.Class INT118_CLASS = int.class;
+    public static final com.objectfabric.TType INT118_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT119_INDEX = 119;
 
     public static final java.lang.String INT119_NAME = "int119";
 
-    public static final java.lang.Class INT119_CLASS = int.class;
+    public static final com.objectfabric.TType INT119_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT120_INDEX = 120;
 
     public static final java.lang.String INT120_NAME = "int120";
 
-    public static final java.lang.Class INT120_CLASS = int.class;
+    public static final com.objectfabric.TType INT120_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT121_INDEX = 121;
 
     public static final java.lang.String INT121_NAME = "int121";
 
-    public static final java.lang.Class INT121_CLASS = int.class;
+    public static final com.objectfabric.TType INT121_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT122_INDEX = 122;
 
     public static final java.lang.String INT122_NAME = "int122";
 
-    public static final java.lang.Class INT122_CLASS = int.class;
+    public static final com.objectfabric.TType INT122_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT123_INDEX = 123;
 
     public static final java.lang.String INT123_NAME = "int123";
 
-    public static final java.lang.Class INT123_CLASS = int.class;
+    public static final com.objectfabric.TType INT123_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT124_INDEX = 124;
 
     public static final java.lang.String INT124_NAME = "int124";
 
-    public static final java.lang.Class INT124_CLASS = int.class;
+    public static final com.objectfabric.TType INT124_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT125_INDEX = 125;
 
     public static final java.lang.String INT125_NAME = "int125";
 
-    public static final java.lang.Class INT125_CLASS = int.class;
+    public static final com.objectfabric.TType INT125_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT126_INDEX = 126;
 
     public static final java.lang.String INT126_NAME = "int126";
 
-    public static final java.lang.Class INT126_CLASS = int.class;
+    public static final com.objectfabric.TType INT126_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT127_INDEX = 127;
 
     public static final java.lang.String INT127_NAME = "int127";
 
-    public static final java.lang.Class INT127_CLASS = int.class;
+    public static final com.objectfabric.TType INT127_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT128_INDEX = 128;
 
     public static final java.lang.String INT128_NAME = "int128";
 
-    public static final java.lang.Class INT128_CLASS = int.class;
+    public static final com.objectfabric.TType INT128_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT129_INDEX = 129;
 
     public static final java.lang.String INT129_NAME = "int129";
 
-    public static final java.lang.Class INT129_CLASS = int.class;
+    public static final com.objectfabric.TType INT129_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT130_INDEX = 130;
 
     public static final java.lang.String INT130_NAME = "int130";
 
-    public static final java.lang.Class INT130_CLASS = int.class;
+    public static final com.objectfabric.TType INT130_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT131_INDEX = 131;
 
     public static final java.lang.String INT131_NAME = "int131";
 
-    public static final java.lang.Class INT131_CLASS = int.class;
+    public static final com.objectfabric.TType INT131_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT132_INDEX = 132;
 
     public static final java.lang.String INT132_NAME = "int132";
 
-    public static final java.lang.Class INT132_CLASS = int.class;
+    public static final com.objectfabric.TType INT132_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT133_INDEX = 133;
 
     public static final java.lang.String INT133_NAME = "int133";
 
-    public static final java.lang.Class INT133_CLASS = int.class;
+    public static final com.objectfabric.TType INT133_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT134_INDEX = 134;
 
     public static final java.lang.String INT134_NAME = "int134";
 
-    public static final java.lang.Class INT134_CLASS = int.class;
+    public static final com.objectfabric.TType INT134_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT135_INDEX = 135;
 
     public static final java.lang.String INT135_NAME = "int135";
 
-    public static final java.lang.Class INT135_CLASS = int.class;
+    public static final com.objectfabric.TType INT135_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT136_INDEX = 136;
 
     public static final java.lang.String INT136_NAME = "int136";
 
-    public static final java.lang.Class INT136_CLASS = int.class;
+    public static final com.objectfabric.TType INT136_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT137_INDEX = 137;
 
     public static final java.lang.String INT137_NAME = "int137";
 
-    public static final java.lang.Class INT137_CLASS = int.class;
+    public static final com.objectfabric.TType INT137_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT138_INDEX = 138;
 
     public static final java.lang.String INT138_NAME = "int138";
 
-    public static final java.lang.Class INT138_CLASS = int.class;
+    public static final com.objectfabric.TType INT138_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT139_INDEX = 139;
 
     public static final java.lang.String INT139_NAME = "int139";
 
-    public static final java.lang.Class INT139_CLASS = int.class;
+    public static final com.objectfabric.TType INT139_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT140_INDEX = 140;
 
     public static final java.lang.String INT140_NAME = "int140";
 
-    public static final java.lang.Class INT140_CLASS = int.class;
+    public static final com.objectfabric.TType INT140_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT141_INDEX = 141;
 
     public static final java.lang.String INT141_NAME = "int141";
 
-    public static final java.lang.Class INT141_CLASS = int.class;
+    public static final com.objectfabric.TType INT141_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT142_INDEX = 142;
 
     public static final java.lang.String INT142_NAME = "int142";
 
-    public static final java.lang.Class INT142_CLASS = int.class;
+    public static final com.objectfabric.TType INT142_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT143_INDEX = 143;
 
     public static final java.lang.String INT143_NAME = "int143";
 
-    public static final java.lang.Class INT143_CLASS = int.class;
+    public static final com.objectfabric.TType INT143_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT144_INDEX = 144;
 
     public static final java.lang.String INT144_NAME = "int144";
 
-    public static final java.lang.Class INT144_CLASS = int.class;
+    public static final com.objectfabric.TType INT144_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT145_INDEX = 145;
 
     public static final java.lang.String INT145_NAME = "int145";
 
-    public static final java.lang.Class INT145_CLASS = int.class;
+    public static final com.objectfabric.TType INT145_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT146_INDEX = 146;
 
     public static final java.lang.String INT146_NAME = "int146";
 
-    public static final java.lang.Class INT146_CLASS = int.class;
+    public static final com.objectfabric.TType INT146_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT147_INDEX = 147;
 
     public static final java.lang.String INT147_NAME = "int147";
 
-    public static final java.lang.Class INT147_CLASS = int.class;
+    public static final com.objectfabric.TType INT147_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT148_INDEX = 148;
 
     public static final java.lang.String INT148_NAME = "int148";
 
-    public static final java.lang.Class INT148_CLASS = int.class;
+    public static final com.objectfabric.TType INT148_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT149_INDEX = 149;
 
     public static final java.lang.String INT149_NAME = "int149";
 
-    public static final java.lang.Class INT149_CLASS = int.class;
+    public static final com.objectfabric.TType INT149_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT150_INDEX = 150;
 
     public static final java.lang.String INT150_NAME = "int150";
 
-    public static final java.lang.Class INT150_CLASS = int.class;
+    public static final com.objectfabric.TType INT150_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT151_INDEX = 151;
 
     public static final java.lang.String INT151_NAME = "int151";
 
-    public static final java.lang.Class INT151_CLASS = int.class;
+    public static final com.objectfabric.TType INT151_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT152_INDEX = 152;
 
     public static final java.lang.String INT152_NAME = "int152";
 
-    public static final java.lang.Class INT152_CLASS = int.class;
+    public static final com.objectfabric.TType INT152_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT153_INDEX = 153;
 
     public static final java.lang.String INT153_NAME = "int153";
 
-    public static final java.lang.Class INT153_CLASS = int.class;
+    public static final com.objectfabric.TType INT153_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT154_INDEX = 154;
 
     public static final java.lang.String INT154_NAME = "int154";
 
-    public static final java.lang.Class INT154_CLASS = int.class;
+    public static final com.objectfabric.TType INT154_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT155_INDEX = 155;
 
     public static final java.lang.String INT155_NAME = "int155";
 
-    public static final java.lang.Class INT155_CLASS = int.class;
+    public static final com.objectfabric.TType INT155_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT156_INDEX = 156;
 
     public static final java.lang.String INT156_NAME = "int156";
 
-    public static final java.lang.Class INT156_CLASS = int.class;
+    public static final com.objectfabric.TType INT156_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT157_INDEX = 157;
 
     public static final java.lang.String INT157_NAME = "int157";
 
-    public static final java.lang.Class INT157_CLASS = int.class;
+    public static final com.objectfabric.TType INT157_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT158_INDEX = 158;
 
     public static final java.lang.String INT158_NAME = "int158";
 
-    public static final java.lang.Class INT158_CLASS = int.class;
+    public static final com.objectfabric.TType INT158_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT159_INDEX = 159;
 
     public static final java.lang.String INT159_NAME = "int159";
 
-    public static final java.lang.Class INT159_CLASS = int.class;
+    public static final com.objectfabric.TType INT159_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT160_INDEX = 160;
 
     public static final java.lang.String INT160_NAME = "int160";
 
-    public static final java.lang.Class INT160_CLASS = int.class;
+    public static final com.objectfabric.TType INT160_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT161_INDEX = 161;
 
     public static final java.lang.String INT161_NAME = "int161";
 
-    public static final java.lang.Class INT161_CLASS = int.class;
+    public static final com.objectfabric.TType INT161_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT162_INDEX = 162;
 
     public static final java.lang.String INT162_NAME = "int162";
 
-    public static final java.lang.Class INT162_CLASS = int.class;
+    public static final com.objectfabric.TType INT162_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT163_INDEX = 163;
 
     public static final java.lang.String INT163_NAME = "int163";
 
-    public static final java.lang.Class INT163_CLASS = int.class;
+    public static final com.objectfabric.TType INT163_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT164_INDEX = 164;
 
     public static final java.lang.String INT164_NAME = "int164";
 
-    public static final java.lang.Class INT164_CLASS = int.class;
+    public static final com.objectfabric.TType INT164_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT165_INDEX = 165;
 
     public static final java.lang.String INT165_NAME = "int165";
 
-    public static final java.lang.Class INT165_CLASS = int.class;
+    public static final com.objectfabric.TType INT165_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT166_INDEX = 166;
 
     public static final java.lang.String INT166_NAME = "int166";
 
-    public static final java.lang.Class INT166_CLASS = int.class;
+    public static final com.objectfabric.TType INT166_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT167_INDEX = 167;
 
     public static final java.lang.String INT167_NAME = "int167";
 
-    public static final java.lang.Class INT167_CLASS = int.class;
+    public static final com.objectfabric.TType INT167_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT168_INDEX = 168;
 
     public static final java.lang.String INT168_NAME = "int168";
 
-    public static final java.lang.Class INT168_CLASS = int.class;
+    public static final com.objectfabric.TType INT168_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT169_INDEX = 169;
 
     public static final java.lang.String INT169_NAME = "int169";
 
-    public static final java.lang.Class INT169_CLASS = int.class;
+    public static final com.objectfabric.TType INT169_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT170_INDEX = 170;
 
     public static final java.lang.String INT170_NAME = "int170";
 
-    public static final java.lang.Class INT170_CLASS = int.class;
+    public static final com.objectfabric.TType INT170_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT171_INDEX = 171;
 
     public static final java.lang.String INT171_NAME = "int171";
 
-    public static final java.lang.Class INT171_CLASS = int.class;
+    public static final com.objectfabric.TType INT171_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT172_INDEX = 172;
 
     public static final java.lang.String INT172_NAME = "int172";
 
-    public static final java.lang.Class INT172_CLASS = int.class;
+    public static final com.objectfabric.TType INT172_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT173_INDEX = 173;
 
     public static final java.lang.String INT173_NAME = "int173";
 
-    public static final java.lang.Class INT173_CLASS = int.class;
+    public static final com.objectfabric.TType INT173_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT174_INDEX = 174;
 
     public static final java.lang.String INT174_NAME = "int174";
 
-    public static final java.lang.Class INT174_CLASS = int.class;
+    public static final com.objectfabric.TType INT174_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT175_INDEX = 175;
 
     public static final java.lang.String INT175_NAME = "int175";
 
-    public static final java.lang.Class INT175_CLASS = int.class;
+    public static final com.objectfabric.TType INT175_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT176_INDEX = 176;
 
     public static final java.lang.String INT176_NAME = "int176";
 
-    public static final java.lang.Class INT176_CLASS = int.class;
+    public static final com.objectfabric.TType INT176_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT177_INDEX = 177;
 
     public static final java.lang.String INT177_NAME = "int177";
 
-    public static final java.lang.Class INT177_CLASS = int.class;
+    public static final com.objectfabric.TType INT177_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT178_INDEX = 178;
 
     public static final java.lang.String INT178_NAME = "int178";
 
-    public static final java.lang.Class INT178_CLASS = int.class;
+    public static final com.objectfabric.TType INT178_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT179_INDEX = 179;
 
     public static final java.lang.String INT179_NAME = "int179";
 
-    public static final java.lang.Class INT179_CLASS = int.class;
+    public static final com.objectfabric.TType INT179_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT180_INDEX = 180;
 
     public static final java.lang.String INT180_NAME = "int180";
 
-    public static final java.lang.Class INT180_CLASS = int.class;
+    public static final com.objectfabric.TType INT180_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT181_INDEX = 181;
 
     public static final java.lang.String INT181_NAME = "int181";
 
-    public static final java.lang.Class INT181_CLASS = int.class;
+    public static final com.objectfabric.TType INT181_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT182_INDEX = 182;
 
     public static final java.lang.String INT182_NAME = "int182";
 
-    public static final java.lang.Class INT182_CLASS = int.class;
+    public static final com.objectfabric.TType INT182_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT183_INDEX = 183;
 
     public static final java.lang.String INT183_NAME = "int183";
 
-    public static final java.lang.Class INT183_CLASS = int.class;
+    public static final com.objectfabric.TType INT183_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT184_INDEX = 184;
 
     public static final java.lang.String INT184_NAME = "int184";
 
-    public static final java.lang.Class INT184_CLASS = int.class;
+    public static final com.objectfabric.TType INT184_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT185_INDEX = 185;
 
     public static final java.lang.String INT185_NAME = "int185";
 
-    public static final java.lang.Class INT185_CLASS = int.class;
+    public static final com.objectfabric.TType INT185_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT186_INDEX = 186;
 
     public static final java.lang.String INT186_NAME = "int186";
 
-    public static final java.lang.Class INT186_CLASS = int.class;
+    public static final com.objectfabric.TType INT186_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT187_INDEX = 187;
 
     public static final java.lang.String INT187_NAME = "int187";
 
-    public static final java.lang.Class INT187_CLASS = int.class;
+    public static final com.objectfabric.TType INT187_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT188_INDEX = 188;
 
     public static final java.lang.String INT188_NAME = "int188";
 
-    public static final java.lang.Class INT188_CLASS = int.class;
+    public static final com.objectfabric.TType INT188_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT189_INDEX = 189;
 
     public static final java.lang.String INT189_NAME = "int189";
 
-    public static final java.lang.Class INT189_CLASS = int.class;
+    public static final com.objectfabric.TType INT189_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT190_INDEX = 190;
 
     public static final java.lang.String INT190_NAME = "int190";
 
-    public static final java.lang.Class INT190_CLASS = int.class;
+    public static final com.objectfabric.TType INT190_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT191_INDEX = 191;
 
     public static final java.lang.String INT191_NAME = "int191";
 
-    public static final java.lang.Class INT191_CLASS = int.class;
+    public static final com.objectfabric.TType INT191_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT192_INDEX = 192;
 
     public static final java.lang.String INT192_NAME = "int192";
 
-    public static final java.lang.Class INT192_CLASS = int.class;
+    public static final com.objectfabric.TType INT192_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT193_INDEX = 193;
 
     public static final java.lang.String INT193_NAME = "int193";
 
-    public static final java.lang.Class INT193_CLASS = int.class;
+    public static final com.objectfabric.TType INT193_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT194_INDEX = 194;
 
     public static final java.lang.String INT194_NAME = "int194";
 
-    public static final java.lang.Class INT194_CLASS = int.class;
+    public static final com.objectfabric.TType INT194_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT195_INDEX = 195;
 
     public static final java.lang.String INT195_NAME = "int195";
 
-    public static final java.lang.Class INT195_CLASS = int.class;
+    public static final com.objectfabric.TType INT195_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT196_INDEX = 196;
 
     public static final java.lang.String INT196_NAME = "int196";
 
-    public static final java.lang.Class INT196_CLASS = int.class;
+    public static final com.objectfabric.TType INT196_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT197_INDEX = 197;
 
     public static final java.lang.String INT197_NAME = "int197";
 
-    public static final java.lang.Class INT197_CLASS = int.class;
+    public static final com.objectfabric.TType INT197_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT198_INDEX = 198;
 
     public static final java.lang.String INT198_NAME = "int198";
 
-    public static final java.lang.Class INT198_CLASS = int.class;
+    public static final com.objectfabric.TType INT198_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT199_INDEX = 199;
 
     public static final java.lang.String INT199_NAME = "int199";
 
-    public static final java.lang.Class INT199_CLASS = int.class;
+    public static final com.objectfabric.TType INT199_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT200_INDEX = 200;
 
     public static final java.lang.String INT200_NAME = "int200";
 
-    public static final java.lang.Class INT200_CLASS = int.class;
+    public static final com.objectfabric.TType INT200_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT201_INDEX = 201;
 
     public static final java.lang.String INT201_NAME = "int201";
 
-    public static final java.lang.Class INT201_CLASS = int.class;
+    public static final com.objectfabric.TType INT201_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT202_INDEX = 202;
 
     public static final java.lang.String INT202_NAME = "int202";
 
-    public static final java.lang.Class INT202_CLASS = int.class;
+    public static final com.objectfabric.TType INT202_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT203_INDEX = 203;
 
     public static final java.lang.String INT203_NAME = "int203";
 
-    public static final java.lang.Class INT203_CLASS = int.class;
+    public static final com.objectfabric.TType INT203_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT204_INDEX = 204;
 
     public static final java.lang.String INT204_NAME = "int204";
 
-    public static final java.lang.Class INT204_CLASS = int.class;
+    public static final com.objectfabric.TType INT204_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT205_INDEX = 205;
 
     public static final java.lang.String INT205_NAME = "int205";
 
-    public static final java.lang.Class INT205_CLASS = int.class;
+    public static final com.objectfabric.TType INT205_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT206_INDEX = 206;
 
     public static final java.lang.String INT206_NAME = "int206";
 
-    public static final java.lang.Class INT206_CLASS = int.class;
+    public static final com.objectfabric.TType INT206_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT207_INDEX = 207;
 
     public static final java.lang.String INT207_NAME = "int207";
 
-    public static final java.lang.Class INT207_CLASS = int.class;
+    public static final com.objectfabric.TType INT207_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT208_INDEX = 208;
 
     public static final java.lang.String INT208_NAME = "int208";
 
-    public static final java.lang.Class INT208_CLASS = int.class;
+    public static final com.objectfabric.TType INT208_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT209_INDEX = 209;
 
     public static final java.lang.String INT209_NAME = "int209";
 
-    public static final java.lang.Class INT209_CLASS = int.class;
+    public static final com.objectfabric.TType INT209_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT210_INDEX = 210;
 
     public static final java.lang.String INT210_NAME = "int210";
 
-    public static final java.lang.Class INT210_CLASS = int.class;
+    public static final com.objectfabric.TType INT210_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT211_INDEX = 211;
 
     public static final java.lang.String INT211_NAME = "int211";
 
-    public static final java.lang.Class INT211_CLASS = int.class;
+    public static final com.objectfabric.TType INT211_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT212_INDEX = 212;
 
     public static final java.lang.String INT212_NAME = "int212";
 
-    public static final java.lang.Class INT212_CLASS = int.class;
+    public static final com.objectfabric.TType INT212_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT213_INDEX = 213;
 
     public static final java.lang.String INT213_NAME = "int213";
 
-    public static final java.lang.Class INT213_CLASS = int.class;
+    public static final com.objectfabric.TType INT213_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT214_INDEX = 214;
 
     public static final java.lang.String INT214_NAME = "int214";
 
-    public static final java.lang.Class INT214_CLASS = int.class;
+    public static final com.objectfabric.TType INT214_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT215_INDEX = 215;
 
     public static final java.lang.String INT215_NAME = "int215";
 
-    public static final java.lang.Class INT215_CLASS = int.class;
+    public static final com.objectfabric.TType INT215_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT216_INDEX = 216;
 
     public static final java.lang.String INT216_NAME = "int216";
 
-    public static final java.lang.Class INT216_CLASS = int.class;
+    public static final com.objectfabric.TType INT216_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT217_INDEX = 217;
 
     public static final java.lang.String INT217_NAME = "int217";
 
-    public static final java.lang.Class INT217_CLASS = int.class;
+    public static final com.objectfabric.TType INT217_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT218_INDEX = 218;
 
     public static final java.lang.String INT218_NAME = "int218";
 
-    public static final java.lang.Class INT218_CLASS = int.class;
+    public static final com.objectfabric.TType INT218_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT219_INDEX = 219;
 
     public static final java.lang.String INT219_NAME = "int219";
 
-    public static final java.lang.Class INT219_CLASS = int.class;
+    public static final com.objectfabric.TType INT219_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT220_INDEX = 220;
 
     public static final java.lang.String INT220_NAME = "int220";
 
-    public static final java.lang.Class INT220_CLASS = int.class;
+    public static final com.objectfabric.TType INT220_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT221_INDEX = 221;
 
     public static final java.lang.String INT221_NAME = "int221";
 
-    public static final java.lang.Class INT221_CLASS = int.class;
+    public static final com.objectfabric.TType INT221_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT222_INDEX = 222;
 
     public static final java.lang.String INT222_NAME = "int222";
 
-    public static final java.lang.Class INT222_CLASS = int.class;
+    public static final com.objectfabric.TType INT222_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT223_INDEX = 223;
 
     public static final java.lang.String INT223_NAME = "int223";
 
-    public static final java.lang.Class INT223_CLASS = int.class;
+    public static final com.objectfabric.TType INT223_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT224_INDEX = 224;
 
     public static final java.lang.String INT224_NAME = "int224";
 
-    public static final java.lang.Class INT224_CLASS = int.class;
+    public static final com.objectfabric.TType INT224_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT225_INDEX = 225;
 
     public static final java.lang.String INT225_NAME = "int225";
 
-    public static final java.lang.Class INT225_CLASS = int.class;
+    public static final com.objectfabric.TType INT225_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT226_INDEX = 226;
 
     public static final java.lang.String INT226_NAME = "int226";
 
-    public static final java.lang.Class INT226_CLASS = int.class;
+    public static final com.objectfabric.TType INT226_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT227_INDEX = 227;
 
     public static final java.lang.String INT227_NAME = "int227";
 
-    public static final java.lang.Class INT227_CLASS = int.class;
+    public static final com.objectfabric.TType INT227_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT228_INDEX = 228;
 
     public static final java.lang.String INT228_NAME = "int228";
 
-    public static final java.lang.Class INT228_CLASS = int.class;
+    public static final com.objectfabric.TType INT228_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT229_INDEX = 229;
 
     public static final java.lang.String INT229_NAME = "int229";
 
-    public static final java.lang.Class INT229_CLASS = int.class;
+    public static final com.objectfabric.TType INT229_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT230_INDEX = 230;
 
     public static final java.lang.String INT230_NAME = "int230";
 
-    public static final java.lang.Class INT230_CLASS = int.class;
+    public static final com.objectfabric.TType INT230_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT231_INDEX = 231;
 
     public static final java.lang.String INT231_NAME = "int231";
 
-    public static final java.lang.Class INT231_CLASS = int.class;
+    public static final com.objectfabric.TType INT231_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT232_INDEX = 232;
 
     public static final java.lang.String INT232_NAME = "int232";
 
-    public static final java.lang.Class INT232_CLASS = int.class;
+    public static final com.objectfabric.TType INT232_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT233_INDEX = 233;
 
     public static final java.lang.String INT233_NAME = "int233";
 
-    public static final java.lang.Class INT233_CLASS = int.class;
+    public static final com.objectfabric.TType INT233_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT234_INDEX = 234;
 
     public static final java.lang.String INT234_NAME = "int234";
 
-    public static final java.lang.Class INT234_CLASS = int.class;
+    public static final com.objectfabric.TType INT234_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT235_INDEX = 235;
 
     public static final java.lang.String INT235_NAME = "int235";
 
-    public static final java.lang.Class INT235_CLASS = int.class;
+    public static final com.objectfabric.TType INT235_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT236_INDEX = 236;
 
     public static final java.lang.String INT236_NAME = "int236";
 
-    public static final java.lang.Class INT236_CLASS = int.class;
+    public static final com.objectfabric.TType INT236_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT237_INDEX = 237;
 
     public static final java.lang.String INT237_NAME = "int237";
 
-    public static final java.lang.Class INT237_CLASS = int.class;
+    public static final com.objectfabric.TType INT237_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT238_INDEX = 238;
 
     public static final java.lang.String INT238_NAME = "int238";
 
-    public static final java.lang.Class INT238_CLASS = int.class;
+    public static final com.objectfabric.TType INT238_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT239_INDEX = 239;
 
     public static final java.lang.String INT239_NAME = "int239";
 
-    public static final java.lang.Class INT239_CLASS = int.class;
+    public static final com.objectfabric.TType INT239_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT240_INDEX = 240;
 
     public static final java.lang.String INT240_NAME = "int240";
 
-    public static final java.lang.Class INT240_CLASS = int.class;
+    public static final com.objectfabric.TType INT240_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT241_INDEX = 241;
 
     public static final java.lang.String INT241_NAME = "int241";
 
-    public static final java.lang.Class INT241_CLASS = int.class;
+    public static final com.objectfabric.TType INT241_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT242_INDEX = 242;
 
     public static final java.lang.String INT242_NAME = "int242";
 
-    public static final java.lang.Class INT242_CLASS = int.class;
+    public static final com.objectfabric.TType INT242_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT243_INDEX = 243;
 
     public static final java.lang.String INT243_NAME = "int243";
 
-    public static final java.lang.Class INT243_CLASS = int.class;
+    public static final com.objectfabric.TType INT243_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT244_INDEX = 244;
 
     public static final java.lang.String INT244_NAME = "int244";
 
-    public static final java.lang.Class INT244_CLASS = int.class;
+    public static final com.objectfabric.TType INT244_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT245_INDEX = 245;
 
     public static final java.lang.String INT245_NAME = "int245";
 
-    public static final java.lang.Class INT245_CLASS = int.class;
+    public static final com.objectfabric.TType INT245_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT246_INDEX = 246;
 
     public static final java.lang.String INT246_NAME = "int246";
 
-    public static final java.lang.Class INT246_CLASS = int.class;
+    public static final com.objectfabric.TType INT246_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT247_INDEX = 247;
 
     public static final java.lang.String INT247_NAME = "int247";
 
-    public static final java.lang.Class INT247_CLASS = int.class;
+    public static final com.objectfabric.TType INT247_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT248_INDEX = 248;
 
     public static final java.lang.String INT248_NAME = "int248";
 
-    public static final java.lang.Class INT248_CLASS = int.class;
+    public static final com.objectfabric.TType INT248_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT249_INDEX = 249;
 
     public static final java.lang.String INT249_NAME = "int249";
 
-    public static final java.lang.Class INT249_CLASS = int.class;
+    public static final com.objectfabric.TType INT249_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT250_INDEX = 250;
 
     public static final java.lang.String INT250_NAME = "int250";
 
-    public static final java.lang.Class INT250_CLASS = int.class;
+    public static final com.objectfabric.TType INT250_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT251_INDEX = 251;
 
     public static final java.lang.String INT251_NAME = "int251";
 
-    public static final java.lang.Class INT251_CLASS = int.class;
+    public static final com.objectfabric.TType INT251_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT252_INDEX = 252;
 
     public static final java.lang.String INT252_NAME = "int252";
 
-    public static final java.lang.Class INT252_CLASS = int.class;
+    public static final com.objectfabric.TType INT252_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT253_INDEX = 253;
 
     public static final java.lang.String INT253_NAME = "int253";
 
-    public static final java.lang.Class INT253_CLASS = int.class;
+    public static final com.objectfabric.TType INT253_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT254_INDEX = 254;
 
     public static final java.lang.String INT254_NAME = "int254";
 
-    public static final java.lang.Class INT254_CLASS = int.class;
+    public static final com.objectfabric.TType INT254_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT255_INDEX = 255;
 
     public static final java.lang.String INT255_NAME = "int255";
 
-    public static final java.lang.Class INT255_CLASS = int.class;
+    public static final com.objectfabric.TType INT255_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT256_INDEX = 256;
 
     public static final java.lang.String INT256_NAME = "int256";
 
-    public static final java.lang.Class INT256_CLASS = int.class;
+    public static final com.objectfabric.TType INT256_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int FIELD_COUNT = 257;
 
@@ -6738,527 +6738,527 @@ public class LimitN_min extends com.objectfabric.TGeneratedFieldsN {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case INT0_INDEX:
-                return INT0_CLASS;
+                return INT0_TYPE;
             case INT1_INDEX:
-                return INT1_CLASS;
+                return INT1_TYPE;
             case INT2_INDEX:
-                return INT2_CLASS;
+                return INT2_TYPE;
             case INT3_INDEX:
-                return INT3_CLASS;
+                return INT3_TYPE;
             case INT4_INDEX:
-                return INT4_CLASS;
+                return INT4_TYPE;
             case INT5_INDEX:
-                return INT5_CLASS;
+                return INT5_TYPE;
             case INT6_INDEX:
-                return INT6_CLASS;
+                return INT6_TYPE;
             case INT7_INDEX:
-                return INT7_CLASS;
+                return INT7_TYPE;
             case INT8_INDEX:
-                return INT8_CLASS;
+                return INT8_TYPE;
             case INT9_INDEX:
-                return INT9_CLASS;
+                return INT9_TYPE;
             case INT10_INDEX:
-                return INT10_CLASS;
+                return INT10_TYPE;
             case INT11_INDEX:
-                return INT11_CLASS;
+                return INT11_TYPE;
             case INT12_INDEX:
-                return INT12_CLASS;
+                return INT12_TYPE;
             case INT13_INDEX:
-                return INT13_CLASS;
+                return INT13_TYPE;
             case INT14_INDEX:
-                return INT14_CLASS;
+                return INT14_TYPE;
             case INT15_INDEX:
-                return INT15_CLASS;
+                return INT15_TYPE;
             case INT16_INDEX:
-                return INT16_CLASS;
+                return INT16_TYPE;
             case INT17_INDEX:
-                return INT17_CLASS;
+                return INT17_TYPE;
             case INT18_INDEX:
-                return INT18_CLASS;
+                return INT18_TYPE;
             case INT19_INDEX:
-                return INT19_CLASS;
+                return INT19_TYPE;
             case INT20_INDEX:
-                return INT20_CLASS;
+                return INT20_TYPE;
             case INT21_INDEX:
-                return INT21_CLASS;
+                return INT21_TYPE;
             case INT22_INDEX:
-                return INT22_CLASS;
+                return INT22_TYPE;
             case INT23_INDEX:
-                return INT23_CLASS;
+                return INT23_TYPE;
             case INT24_INDEX:
-                return INT24_CLASS;
+                return INT24_TYPE;
             case INT25_INDEX:
-                return INT25_CLASS;
+                return INT25_TYPE;
             case INT26_INDEX:
-                return INT26_CLASS;
+                return INT26_TYPE;
             case INT27_INDEX:
-                return INT27_CLASS;
+                return INT27_TYPE;
             case INT28_INDEX:
-                return INT28_CLASS;
+                return INT28_TYPE;
             case INT29_INDEX:
-                return INT29_CLASS;
+                return INT29_TYPE;
             case INT30_INDEX:
-                return INT30_CLASS;
+                return INT30_TYPE;
             case INT31_INDEX:
-                return INT31_CLASS;
+                return INT31_TYPE;
             case INT32_INDEX:
-                return INT32_CLASS;
+                return INT32_TYPE;
             case INT33_INDEX:
-                return INT33_CLASS;
+                return INT33_TYPE;
             case INT34_INDEX:
-                return INT34_CLASS;
+                return INT34_TYPE;
             case INT35_INDEX:
-                return INT35_CLASS;
+                return INT35_TYPE;
             case INT36_INDEX:
-                return INT36_CLASS;
+                return INT36_TYPE;
             case INT37_INDEX:
-                return INT37_CLASS;
+                return INT37_TYPE;
             case INT38_INDEX:
-                return INT38_CLASS;
+                return INT38_TYPE;
             case INT39_INDEX:
-                return INT39_CLASS;
+                return INT39_TYPE;
             case INT40_INDEX:
-                return INT40_CLASS;
+                return INT40_TYPE;
             case INT41_INDEX:
-                return INT41_CLASS;
+                return INT41_TYPE;
             case INT42_INDEX:
-                return INT42_CLASS;
+                return INT42_TYPE;
             case INT43_INDEX:
-                return INT43_CLASS;
+                return INT43_TYPE;
             case INT44_INDEX:
-                return INT44_CLASS;
+                return INT44_TYPE;
             case INT45_INDEX:
-                return INT45_CLASS;
+                return INT45_TYPE;
             case INT46_INDEX:
-                return INT46_CLASS;
+                return INT46_TYPE;
             case INT47_INDEX:
-                return INT47_CLASS;
+                return INT47_TYPE;
             case INT48_INDEX:
-                return INT48_CLASS;
+                return INT48_TYPE;
             case INT49_INDEX:
-                return INT49_CLASS;
+                return INT49_TYPE;
             case INT50_INDEX:
-                return INT50_CLASS;
+                return INT50_TYPE;
             case INT51_INDEX:
-                return INT51_CLASS;
+                return INT51_TYPE;
             case INT52_INDEX:
-                return INT52_CLASS;
+                return INT52_TYPE;
             case INT53_INDEX:
-                return INT53_CLASS;
+                return INT53_TYPE;
             case INT54_INDEX:
-                return INT54_CLASS;
+                return INT54_TYPE;
             case INT55_INDEX:
-                return INT55_CLASS;
+                return INT55_TYPE;
             case INT56_INDEX:
-                return INT56_CLASS;
+                return INT56_TYPE;
             case INT57_INDEX:
-                return INT57_CLASS;
+                return INT57_TYPE;
             case INT58_INDEX:
-                return INT58_CLASS;
+                return INT58_TYPE;
             case INT59_INDEX:
-                return INT59_CLASS;
+                return INT59_TYPE;
             case INT60_INDEX:
-                return INT60_CLASS;
+                return INT60_TYPE;
             case INT61_INDEX:
-                return INT61_CLASS;
+                return INT61_TYPE;
             case INT62_INDEX:
-                return INT62_CLASS;
+                return INT62_TYPE;
             case INT63_INDEX:
-                return INT63_CLASS;
+                return INT63_TYPE;
             case INT64_INDEX:
-                return INT64_CLASS;
+                return INT64_TYPE;
             case INT65_INDEX:
-                return INT65_CLASS;
+                return INT65_TYPE;
             case INT66_INDEX:
-                return INT66_CLASS;
+                return INT66_TYPE;
             case INT67_INDEX:
-                return INT67_CLASS;
+                return INT67_TYPE;
             case INT68_INDEX:
-                return INT68_CLASS;
+                return INT68_TYPE;
             case INT69_INDEX:
-                return INT69_CLASS;
+                return INT69_TYPE;
             case INT70_INDEX:
-                return INT70_CLASS;
+                return INT70_TYPE;
             case INT71_INDEX:
-                return INT71_CLASS;
+                return INT71_TYPE;
             case INT72_INDEX:
-                return INT72_CLASS;
+                return INT72_TYPE;
             case INT73_INDEX:
-                return INT73_CLASS;
+                return INT73_TYPE;
             case INT74_INDEX:
-                return INT74_CLASS;
+                return INT74_TYPE;
             case INT75_INDEX:
-                return INT75_CLASS;
+                return INT75_TYPE;
             case INT76_INDEX:
-                return INT76_CLASS;
+                return INT76_TYPE;
             case INT77_INDEX:
-                return INT77_CLASS;
+                return INT77_TYPE;
             case INT78_INDEX:
-                return INT78_CLASS;
+                return INT78_TYPE;
             case INT79_INDEX:
-                return INT79_CLASS;
+                return INT79_TYPE;
             case INT80_INDEX:
-                return INT80_CLASS;
+                return INT80_TYPE;
             case INT81_INDEX:
-                return INT81_CLASS;
+                return INT81_TYPE;
             case INT82_INDEX:
-                return INT82_CLASS;
+                return INT82_TYPE;
             case INT83_INDEX:
-                return INT83_CLASS;
+                return INT83_TYPE;
             case INT84_INDEX:
-                return INT84_CLASS;
+                return INT84_TYPE;
             case INT85_INDEX:
-                return INT85_CLASS;
+                return INT85_TYPE;
             case INT86_INDEX:
-                return INT86_CLASS;
+                return INT86_TYPE;
             case INT87_INDEX:
-                return INT87_CLASS;
+                return INT87_TYPE;
             case INT88_INDEX:
-                return INT88_CLASS;
+                return INT88_TYPE;
             case INT89_INDEX:
-                return INT89_CLASS;
+                return INT89_TYPE;
             case INT90_INDEX:
-                return INT90_CLASS;
+                return INT90_TYPE;
             case INT91_INDEX:
-                return INT91_CLASS;
+                return INT91_TYPE;
             case INT92_INDEX:
-                return INT92_CLASS;
+                return INT92_TYPE;
             case INT93_INDEX:
-                return INT93_CLASS;
+                return INT93_TYPE;
             case INT94_INDEX:
-                return INT94_CLASS;
+                return INT94_TYPE;
             case INT95_INDEX:
-                return INT95_CLASS;
+                return INT95_TYPE;
             case INT96_INDEX:
-                return INT96_CLASS;
+                return INT96_TYPE;
             case INT97_INDEX:
-                return INT97_CLASS;
+                return INT97_TYPE;
             case INT98_INDEX:
-                return INT98_CLASS;
+                return INT98_TYPE;
             case INT99_INDEX:
-                return INT99_CLASS;
+                return INT99_TYPE;
             case INT100_INDEX:
-                return INT100_CLASS;
+                return INT100_TYPE;
             case INT101_INDEX:
-                return INT101_CLASS;
+                return INT101_TYPE;
             case INT102_INDEX:
-                return INT102_CLASS;
+                return INT102_TYPE;
             case INT103_INDEX:
-                return INT103_CLASS;
+                return INT103_TYPE;
             case INT104_INDEX:
-                return INT104_CLASS;
+                return INT104_TYPE;
             case INT105_INDEX:
-                return INT105_CLASS;
+                return INT105_TYPE;
             case INT106_INDEX:
-                return INT106_CLASS;
+                return INT106_TYPE;
             case INT107_INDEX:
-                return INT107_CLASS;
+                return INT107_TYPE;
             case INT108_INDEX:
-                return INT108_CLASS;
+                return INT108_TYPE;
             case INT109_INDEX:
-                return INT109_CLASS;
+                return INT109_TYPE;
             case INT110_INDEX:
-                return INT110_CLASS;
+                return INT110_TYPE;
             case INT111_INDEX:
-                return INT111_CLASS;
+                return INT111_TYPE;
             case INT112_INDEX:
-                return INT112_CLASS;
+                return INT112_TYPE;
             case INT113_INDEX:
-                return INT113_CLASS;
+                return INT113_TYPE;
             case INT114_INDEX:
-                return INT114_CLASS;
+                return INT114_TYPE;
             case INT115_INDEX:
-                return INT115_CLASS;
+                return INT115_TYPE;
             case INT116_INDEX:
-                return INT116_CLASS;
+                return INT116_TYPE;
             case INT117_INDEX:
-                return INT117_CLASS;
+                return INT117_TYPE;
             case INT118_INDEX:
-                return INT118_CLASS;
+                return INT118_TYPE;
             case INT119_INDEX:
-                return INT119_CLASS;
+                return INT119_TYPE;
             case INT120_INDEX:
-                return INT120_CLASS;
+                return INT120_TYPE;
             case INT121_INDEX:
-                return INT121_CLASS;
+                return INT121_TYPE;
             case INT122_INDEX:
-                return INT122_CLASS;
+                return INT122_TYPE;
             case INT123_INDEX:
-                return INT123_CLASS;
+                return INT123_TYPE;
             case INT124_INDEX:
-                return INT124_CLASS;
+                return INT124_TYPE;
             case INT125_INDEX:
-                return INT125_CLASS;
+                return INT125_TYPE;
             case INT126_INDEX:
-                return INT126_CLASS;
+                return INT126_TYPE;
             case INT127_INDEX:
-                return INT127_CLASS;
+                return INT127_TYPE;
             case INT128_INDEX:
-                return INT128_CLASS;
+                return INT128_TYPE;
             case INT129_INDEX:
-                return INT129_CLASS;
+                return INT129_TYPE;
             case INT130_INDEX:
-                return INT130_CLASS;
+                return INT130_TYPE;
             case INT131_INDEX:
-                return INT131_CLASS;
+                return INT131_TYPE;
             case INT132_INDEX:
-                return INT132_CLASS;
+                return INT132_TYPE;
             case INT133_INDEX:
-                return INT133_CLASS;
+                return INT133_TYPE;
             case INT134_INDEX:
-                return INT134_CLASS;
+                return INT134_TYPE;
             case INT135_INDEX:
-                return INT135_CLASS;
+                return INT135_TYPE;
             case INT136_INDEX:
-                return INT136_CLASS;
+                return INT136_TYPE;
             case INT137_INDEX:
-                return INT137_CLASS;
+                return INT137_TYPE;
             case INT138_INDEX:
-                return INT138_CLASS;
+                return INT138_TYPE;
             case INT139_INDEX:
-                return INT139_CLASS;
+                return INT139_TYPE;
             case INT140_INDEX:
-                return INT140_CLASS;
+                return INT140_TYPE;
             case INT141_INDEX:
-                return INT141_CLASS;
+                return INT141_TYPE;
             case INT142_INDEX:
-                return INT142_CLASS;
+                return INT142_TYPE;
             case INT143_INDEX:
-                return INT143_CLASS;
+                return INT143_TYPE;
             case INT144_INDEX:
-                return INT144_CLASS;
+                return INT144_TYPE;
             case INT145_INDEX:
-                return INT145_CLASS;
+                return INT145_TYPE;
             case INT146_INDEX:
-                return INT146_CLASS;
+                return INT146_TYPE;
             case INT147_INDEX:
-                return INT147_CLASS;
+                return INT147_TYPE;
             case INT148_INDEX:
-                return INT148_CLASS;
+                return INT148_TYPE;
             case INT149_INDEX:
-                return INT149_CLASS;
+                return INT149_TYPE;
             case INT150_INDEX:
-                return INT150_CLASS;
+                return INT150_TYPE;
             case INT151_INDEX:
-                return INT151_CLASS;
+                return INT151_TYPE;
             case INT152_INDEX:
-                return INT152_CLASS;
+                return INT152_TYPE;
             case INT153_INDEX:
-                return INT153_CLASS;
+                return INT153_TYPE;
             case INT154_INDEX:
-                return INT154_CLASS;
+                return INT154_TYPE;
             case INT155_INDEX:
-                return INT155_CLASS;
+                return INT155_TYPE;
             case INT156_INDEX:
-                return INT156_CLASS;
+                return INT156_TYPE;
             case INT157_INDEX:
-                return INT157_CLASS;
+                return INT157_TYPE;
             case INT158_INDEX:
-                return INT158_CLASS;
+                return INT158_TYPE;
             case INT159_INDEX:
-                return INT159_CLASS;
+                return INT159_TYPE;
             case INT160_INDEX:
-                return INT160_CLASS;
+                return INT160_TYPE;
             case INT161_INDEX:
-                return INT161_CLASS;
+                return INT161_TYPE;
             case INT162_INDEX:
-                return INT162_CLASS;
+                return INT162_TYPE;
             case INT163_INDEX:
-                return INT163_CLASS;
+                return INT163_TYPE;
             case INT164_INDEX:
-                return INT164_CLASS;
+                return INT164_TYPE;
             case INT165_INDEX:
-                return INT165_CLASS;
+                return INT165_TYPE;
             case INT166_INDEX:
-                return INT166_CLASS;
+                return INT166_TYPE;
             case INT167_INDEX:
-                return INT167_CLASS;
+                return INT167_TYPE;
             case INT168_INDEX:
-                return INT168_CLASS;
+                return INT168_TYPE;
             case INT169_INDEX:
-                return INT169_CLASS;
+                return INT169_TYPE;
             case INT170_INDEX:
-                return INT170_CLASS;
+                return INT170_TYPE;
             case INT171_INDEX:
-                return INT171_CLASS;
+                return INT171_TYPE;
             case INT172_INDEX:
-                return INT172_CLASS;
+                return INT172_TYPE;
             case INT173_INDEX:
-                return INT173_CLASS;
+                return INT173_TYPE;
             case INT174_INDEX:
-                return INT174_CLASS;
+                return INT174_TYPE;
             case INT175_INDEX:
-                return INT175_CLASS;
+                return INT175_TYPE;
             case INT176_INDEX:
-                return INT176_CLASS;
+                return INT176_TYPE;
             case INT177_INDEX:
-                return INT177_CLASS;
+                return INT177_TYPE;
             case INT178_INDEX:
-                return INT178_CLASS;
+                return INT178_TYPE;
             case INT179_INDEX:
-                return INT179_CLASS;
+                return INT179_TYPE;
             case INT180_INDEX:
-                return INT180_CLASS;
+                return INT180_TYPE;
             case INT181_INDEX:
-                return INT181_CLASS;
+                return INT181_TYPE;
             case INT182_INDEX:
-                return INT182_CLASS;
+                return INT182_TYPE;
             case INT183_INDEX:
-                return INT183_CLASS;
+                return INT183_TYPE;
             case INT184_INDEX:
-                return INT184_CLASS;
+                return INT184_TYPE;
             case INT185_INDEX:
-                return INT185_CLASS;
+                return INT185_TYPE;
             case INT186_INDEX:
-                return INT186_CLASS;
+                return INT186_TYPE;
             case INT187_INDEX:
-                return INT187_CLASS;
+                return INT187_TYPE;
             case INT188_INDEX:
-                return INT188_CLASS;
+                return INT188_TYPE;
             case INT189_INDEX:
-                return INT189_CLASS;
+                return INT189_TYPE;
             case INT190_INDEX:
-                return INT190_CLASS;
+                return INT190_TYPE;
             case INT191_INDEX:
-                return INT191_CLASS;
+                return INT191_TYPE;
             case INT192_INDEX:
-                return INT192_CLASS;
+                return INT192_TYPE;
             case INT193_INDEX:
-                return INT193_CLASS;
+                return INT193_TYPE;
             case INT194_INDEX:
-                return INT194_CLASS;
+                return INT194_TYPE;
             case INT195_INDEX:
-                return INT195_CLASS;
+                return INT195_TYPE;
             case INT196_INDEX:
-                return INT196_CLASS;
+                return INT196_TYPE;
             case INT197_INDEX:
-                return INT197_CLASS;
+                return INT197_TYPE;
             case INT198_INDEX:
-                return INT198_CLASS;
+                return INT198_TYPE;
             case INT199_INDEX:
-                return INT199_CLASS;
+                return INT199_TYPE;
             case INT200_INDEX:
-                return INT200_CLASS;
+                return INT200_TYPE;
             case INT201_INDEX:
-                return INT201_CLASS;
+                return INT201_TYPE;
             case INT202_INDEX:
-                return INT202_CLASS;
+                return INT202_TYPE;
             case INT203_INDEX:
-                return INT203_CLASS;
+                return INT203_TYPE;
             case INT204_INDEX:
-                return INT204_CLASS;
+                return INT204_TYPE;
             case INT205_INDEX:
-                return INT205_CLASS;
+                return INT205_TYPE;
             case INT206_INDEX:
-                return INT206_CLASS;
+                return INT206_TYPE;
             case INT207_INDEX:
-                return INT207_CLASS;
+                return INT207_TYPE;
             case INT208_INDEX:
-                return INT208_CLASS;
+                return INT208_TYPE;
             case INT209_INDEX:
-                return INT209_CLASS;
+                return INT209_TYPE;
             case INT210_INDEX:
-                return INT210_CLASS;
+                return INT210_TYPE;
             case INT211_INDEX:
-                return INT211_CLASS;
+                return INT211_TYPE;
             case INT212_INDEX:
-                return INT212_CLASS;
+                return INT212_TYPE;
             case INT213_INDEX:
-                return INT213_CLASS;
+                return INT213_TYPE;
             case INT214_INDEX:
-                return INT214_CLASS;
+                return INT214_TYPE;
             case INT215_INDEX:
-                return INT215_CLASS;
+                return INT215_TYPE;
             case INT216_INDEX:
-                return INT216_CLASS;
+                return INT216_TYPE;
             case INT217_INDEX:
-                return INT217_CLASS;
+                return INT217_TYPE;
             case INT218_INDEX:
-                return INT218_CLASS;
+                return INT218_TYPE;
             case INT219_INDEX:
-                return INT219_CLASS;
+                return INT219_TYPE;
             case INT220_INDEX:
-                return INT220_CLASS;
+                return INT220_TYPE;
             case INT221_INDEX:
-                return INT221_CLASS;
+                return INT221_TYPE;
             case INT222_INDEX:
-                return INT222_CLASS;
+                return INT222_TYPE;
             case INT223_INDEX:
-                return INT223_CLASS;
+                return INT223_TYPE;
             case INT224_INDEX:
-                return INT224_CLASS;
+                return INT224_TYPE;
             case INT225_INDEX:
-                return INT225_CLASS;
+                return INT225_TYPE;
             case INT226_INDEX:
-                return INT226_CLASS;
+                return INT226_TYPE;
             case INT227_INDEX:
-                return INT227_CLASS;
+                return INT227_TYPE;
             case INT228_INDEX:
-                return INT228_CLASS;
+                return INT228_TYPE;
             case INT229_INDEX:
-                return INT229_CLASS;
+                return INT229_TYPE;
             case INT230_INDEX:
-                return INT230_CLASS;
+                return INT230_TYPE;
             case INT231_INDEX:
-                return INT231_CLASS;
+                return INT231_TYPE;
             case INT232_INDEX:
-                return INT232_CLASS;
+                return INT232_TYPE;
             case INT233_INDEX:
-                return INT233_CLASS;
+                return INT233_TYPE;
             case INT234_INDEX:
-                return INT234_CLASS;
+                return INT234_TYPE;
             case INT235_INDEX:
-                return INT235_CLASS;
+                return INT235_TYPE;
             case INT236_INDEX:
-                return INT236_CLASS;
+                return INT236_TYPE;
             case INT237_INDEX:
-                return INT237_CLASS;
+                return INT237_TYPE;
             case INT238_INDEX:
-                return INT238_CLASS;
+                return INT238_TYPE;
             case INT239_INDEX:
-                return INT239_CLASS;
+                return INT239_TYPE;
             case INT240_INDEX:
-                return INT240_CLASS;
+                return INT240_TYPE;
             case INT241_INDEX:
-                return INT241_CLASS;
+                return INT241_TYPE;
             case INT242_INDEX:
-                return INT242_CLASS;
+                return INT242_TYPE;
             case INT243_INDEX:
-                return INT243_CLASS;
+                return INT243_TYPE;
             case INT244_INDEX:
-                return INT244_CLASS;
+                return INT244_TYPE;
             case INT245_INDEX:
-                return INT245_CLASS;
+                return INT245_TYPE;
             case INT246_INDEX:
-                return INT246_CLASS;
+                return INT246_TYPE;
             case INT247_INDEX:
-                return INT247_CLASS;
+                return INT247_TYPE;
             case INT248_INDEX:
-                return INT248_CLASS;
+                return INT248_TYPE;
             case INT249_INDEX:
-                return INT249_CLASS;
+                return INT249_TYPE;
             case INT250_INDEX:
-                return INT250_CLASS;
+                return INT250_TYPE;
             case INT251_INDEX:
-                return INT251_CLASS;
+                return INT251_TYPE;
             case INT252_INDEX:
-                return INT252_CLASS;
+                return INT252_TYPE;
             case INT253_INDEX:
-                return INT253_CLASS;
+                return INT253_TYPE;
             case INT254_INDEX:
-                return INT254_CLASS;
+                return INT254_TYPE;
             case INT255_INDEX:
-                return INT255_CLASS;
+                return INT255_TYPE;
             case INT256_INDEX:
-                return INT256_CLASS;
+                return INT256_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

@@ -14,7 +14,6 @@ package com.objectfabric;
 
 import com.objectfabric.TObject.Descriptor;
 import com.objectfabric.TObject.DescriptorForUID;
-import com.objectfabric.TObject.UserTObject;
 import com.objectfabric.TObject.Version;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
@@ -178,16 +177,7 @@ abstract class TObjectWriter extends ImmutableWriter {
                 id = 0;
             } else {
                 flags = FLAG_TOBJECT;
-                Descriptor descriptor = null;
-
-                if (shared.getUnion() instanceof Descriptor)
-                    descriptor = (Descriptor) shared.getUnion();
-                else {
-                    UserTObject object = shared.getReference().get();
-                    Transaction trunk = object != null ? object.getTrunk() : Transaction.getDefaultTrunk();
-                    descriptor = trunk.assignId(shared);
-                }
-
+                Descriptor descriptor = shared.getOrCreateDescriptor();
                 id = descriptor.getId();
                 Version session = descriptor.getSession().getSharedVersion_objectfabric();
 
@@ -397,10 +387,9 @@ abstract class TObjectWriter extends ImmutableWriter {
 
     private static final int UID_CLASS_ID = 4;
 
-    @SuppressWarnings({ "fallthrough", "null" })
+    @SuppressWarnings("fallthrough")
     private final void writeTObjectWithUID(Version shared, byte[] uid, UIDCache cache) {
         if (Debug.ENABLED) {
-            Debug.assertion(shared != null && uid != null);
             Debug.assertion(shared.isShared());
             Debug.assertion(shared.getUnion() instanceof DescriptorForUID);
             // Debug.assertion(TObject.getObjectWithUID(uid) != null);

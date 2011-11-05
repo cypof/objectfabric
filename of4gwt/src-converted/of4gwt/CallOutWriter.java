@@ -12,13 +12,14 @@
 
 package of4gwt;
 
+import java.util.HashMap;
 import of4gwt.misc.Executor;
 
 import of4gwt.Connection.Endpoint;
 import of4gwt.TObject.Version;
 import of4gwt.misc.Debug;
 import of4gwt.misc.PlatformAdapter;
-import of4gwt.misc.PlatformConcurrentMap;
+import of4gwt.misc.PlatformThread;
 import of4gwt.misc.ThreadAssert;
 import of4gwt.misc.ThreadAssert.AllowSharedRead;
 import of4gwt.misc.ThreadAssert.SingleThreaded;
@@ -33,7 +34,9 @@ final class CallOutWriter extends DistributedWriter implements Executor {
     // TODO COMMAND_CANCEL -> cancel the future on other site
 
     @AllowSharedRead
-    private final PlatformConcurrentMap<Transaction, MethodCall> _pendingCalls = new PlatformConcurrentMap<Transaction, MethodCall>();
+    private final HashMap<Transaction, MethodCall> _pendingCalls = new HashMap<Transaction, MethodCall>();
+
+    private Exception _closingException;
 
     public CallOutWriter(Endpoint endpoint) {
         super(endpoint);
@@ -41,18 +44,29 @@ final class CallOutWriter extends DistributedWriter implements Executor {
         setNextCommand(COMMAND_WRITE);
     }
 
-    public final PlatformConcurrentMap<Transaction, MethodCall> getPendingCalls() {
+    public final Object getPendingCallsLock() {
         return _pendingCalls;
+    }
+
+    public final HashMap<Transaction, MethodCall> getPendingCalls() {
+        if (Debug.ENABLED)
+            PlatformThread.assertHoldsLock(_pendingCalls);
+
+        return _pendingCalls;
+    }
+
+    public final void setClosingException(Exception value) {
+        if (Debug.ENABLED) {
+            Debug.assertion(_closingException == null && value != null);
+            PlatformThread.assertHoldsLock(_pendingCalls);
+        }
+
+        _closingException = value;
     }
 
     //
 
     public void execute(Runnable runnable) {
-        int count = _pendingCalls.size();
-
-        if (count >= OverloadHandler.getInstance().getPendingCallsThreshold())
-            OverloadHandler.getInstance().onPendingCallsThresholdReached(getEndpoint().getConnection());
-
         final MethodCall call = (MethodCall) runnable;
         Transaction transaction = call.getTransaction();
 
@@ -61,26 +75,41 @@ final class CallOutWriter extends DistributedWriter implements Executor {
             call.setFakeTransaction(transaction);
         }
 
-        if (Debug.ENABLED) {
-            Helper.getInstance().disableEqualsOrHashCheck();
-            Debug.assertion(!_pendingCalls.containsKey(transaction));
+        int count;
+
+        synchronized (_pendingCalls) {
+            if (_closingException != null)
+                call.setException(_closingException, true);
+            else {
+                if (Debug.ENABLED) {
+                    Helper.getInstance().disableEqualsOrHashCheck();
+                    Debug.assertion(!_pendingCalls.containsKey(transaction));
+                }
+
+                _pendingCalls.put(transaction, call);
+
+                if (Debug.ENABLED)
+                    Helper.getInstance().enableEqualsOrHashCheck();
+            }
+
+            count = _pendingCalls.size();
         }
 
-        _pendingCalls.put(transaction, call);
+        if (count >= OverloadHandler.getInstance().getPendingCallsThreshold())
+            OverloadHandler.getInstance().onPendingCallsThresholdReached(getEndpoint().getConnection());
 
-        if (Debug.ENABLED)
-            Helper.getInstance().enableEqualsOrHashCheck();
+        if (_closingException == null) {
+            getEndpoint().enqueueOnWriterThread(new Command() {
 
-        getEndpoint().enqueueOnWriterThread(new Command() {
+                public MultiplexerWriter getWriter() {
+                    return CallOutWriter.this;
+                }
 
-            public MultiplexerWriter getWriter() {
-                return CallOutWriter.this;
-            }
-
-            public void run() {
-                writeCall(call);
-            }
-        });
+                public void run() {
+                    writeCall(call);
+                }
+            });
+        }
     }
 
     private enum WriteCallStep {

@@ -342,7 +342,7 @@ public class SerializationTestReader extends of4gwt.SerializationTest.TestReader
                     if (interrupted())
                         return;
 
-                    of4gwt.misc.Debug.assertAlways(value.equals("$^%ï¿½ï¿½ï¿½%ï¿½ï¿½%ï¿½ï¿½ï¿½%ï¿½"));
+                    of4gwt.misc.Debug.assertAlways(value.equals("$^%£¨µ%£¨%£¨µ%µ"));
                     break;
                 }
                 case 41: {

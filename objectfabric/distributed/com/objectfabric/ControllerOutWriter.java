@@ -12,10 +12,14 @@
 
 package com.objectfabric;
 
+import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import com.objectfabric.Connection.Endpoint;
+import com.objectfabric.misc.CheckedRunnable;
 import com.objectfabric.misc.Debug;
+import com.objectfabric.misc.Log;
+import com.objectfabric.misc.PlatformThreadPool;
 import com.objectfabric.misc.ThreadAssert.SingleThreaded;
 
 @SingleThreaded
@@ -33,8 +37,20 @@ final class ControllerOutWriter extends DistributedWriter {
 
     private final AtomicInteger _pendingSends = new AtomicInteger();
 
+    private final Heartbeat _heartbeat = new Heartbeat();
+
+    private final Timeout _timeout = new Timeout();
+
     public ControllerOutWriter(Endpoint endpoint) {
         super(endpoint);
+    }
+
+    public Heartbeat getHeartbeat() {
+        return _heartbeat;
+    }
+
+    public Timeout getTimeout() {
+        return _timeout;
     }
 
     @Override
@@ -165,17 +181,58 @@ final class ControllerOutWriter extends DistributedWriter {
             _pendingSends.decrementAndGet();
     }
 
-    public void sendHeartbeat() {
-        getEndpoint().enqueueOnWriterThread(new Command() {
+    public abstract class Scheduled extends CheckedRunnable {
 
-            public MultiplexerWriter getWriter() {
-                return ControllerOutWriter.this;
-            }
+        private int _millis;
 
-            public void run() {
-                writeCommand(COMMAND_HEARTBEAT);
+        private Future _future;
+
+        public void start(int value) {
+            _millis = value;
+
+            if (Debug.ENABLED)
+                Debug.assertion(_future == null);
+
+            _future = PlatformThreadPool.schedule(this, _millis * 1000);
+        }
+
+        public final void reset() {
+            if (_future != null) {
+                _future.cancel(false);
+                _future = PlatformThreadPool.schedule(this, _millis * 1000);
             }
-        });
+        }
+    }
+
+    public final class Heartbeat extends Scheduled {
+
+        @Override
+        protected void checkedRun() {
+            getEndpoint().enqueueOnWriterThread(new Command() {
+
+                public MultiplexerWriter getWriter() {
+                    return ControllerOutWriter.this;
+                }
+
+                public void run() {
+                    writeCommand(COMMAND_HEARTBEAT);
+
+                    if (Debug.COMMUNICATIONS_LOG_TIMEOUTS)
+                        Log.write(getEndpoint().getConnection() + ": Heartbeat");
+                }
+            });
+        }
+    }
+
+    public final class Timeout extends Scheduled {
+
+        @Override
+        protected void checkedRun() {
+            if (Debug.COMMUNICATIONS_LOG_TIMEOUTS)
+                Log.write(getEndpoint().getConnection() + ": Timeout");
+
+            getEndpoint().getConnection().close();
+        }
     }
 
     // Debug

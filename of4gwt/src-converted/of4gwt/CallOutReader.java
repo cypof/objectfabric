@@ -14,7 +14,6 @@ package of4gwt;
 
 import of4gwt.Connection.Endpoint;
 import of4gwt.misc.Debug;
-import of4gwt.misc.PlatformConcurrentMap;
 import of4gwt.misc.Queue;
 import of4gwt.misc.ThreadAssert;
 import of4gwt.misc.ThreadAssert.SingleThreaded;
@@ -22,29 +21,40 @@ import of4gwt.misc.ThreadAssert.SingleThreaded;
 @SingleThreaded
 final class CallOutReader extends DistributedReader {
 
-    private final PlatformConcurrentMap<Transaction, MethodCall> _pendingCalls;
+    private final CallOutWriter _writer;
 
     private final Queue<MethodCall> _callbacks = new Queue<MethodCall>();
 
     public CallOutReader(Endpoint endpoint, CallOutWriter writer) {
         super(endpoint);
 
-        _pendingCalls = writer.getPendingCalls();
+        _writer = writer;
     }
 
     @Override
     protected void onStopped(Exception e) {
         super.onStopped(e);
 
-        for (MethodCall call : _pendingCalls.values()) {
-            if (Debug.ENABLED)
-                Helper.getInstance().setNoTransaction(false);
+        MethodCall[] calls;
 
-            call.setException(e);
-
-            if (Debug.ENABLED)
-                Helper.getInstance().setNoTransaction(true);
+        synchronized (_writer.getPendingCallsLock()) {
+            _writer.setClosingException(e);
+            calls = new MethodCall[_writer.getPendingCalls().size()];
+            _writer.getPendingCalls().values().toArray(calls);
+            _writer.getPendingCalls().clear();
         }
+
+        if (Debug.ENABLED)
+            Helper.getInstance().setNoTransaction(false);
+
+        for (MethodCall call : calls)
+            call.setException(e, true);
+
+        for (int i = 0; i < _callbacks.size(); i++)
+            _callbacks.get(i).setException(e, true);
+
+        if (Debug.ENABLED)
+            Helper.getInstance().setNoTransaction(true);
     }
 
     private enum Steps {
@@ -108,7 +118,11 @@ final class CallOutReader extends DistributedReader {
         if (Debug.ENABLED)
             Helper.getInstance().disableEqualsOrHashCheck();
 
-        MethodCall call = _pendingCalls.remove(transaction);
+        MethodCall call;
+
+        synchronized (_writer.getPendingCallsLock()) {
+            call = _writer.getPendingCalls().remove(transaction);
+        }
 
         if (Debug.ENABLED) {
             Helper.getInstance().enableEqualsOrHashCheck();
@@ -157,13 +171,6 @@ final class CallOutReader extends DistributedReader {
     }
 
     // Debug
-
-    @Override
-    protected void assertIdle() {
-        super.assertIdle();
-
-        Debug.assertion(_pendingCalls.size() == 0);
-    }
 
     @Override
     protected String getCommandString(byte command) {

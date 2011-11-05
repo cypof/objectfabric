@@ -85,7 +85,7 @@ public class TArrayByte extends TIndexed implements Iterable<Byte> {
             value = version != null ? (byte) version.get(index) : ((byte) 0);
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayByte extends TIndexed implements Iterable<Byte> {
             value = version != null ? (byte) version.get(index) : ((byte) 0);
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

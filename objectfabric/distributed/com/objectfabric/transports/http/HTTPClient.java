@@ -37,16 +37,14 @@ import com.objectfabric.transports.http.CometTransport.HTTPRequestCallback;
  * Bidirectional communication with server over HTTP (Comet). This transport is designed
  * to connect to an ObjectFabric SocketServer with an HTTP filter.
  */
-public final class HTTPClient extends HTTPConnection implements Client {
-
-    // TODO: send heartbeat
+public final class HTTPClient extends HTTPClientBase implements Client {
 
     public HTTPClient(URL url) {
         this(url, null);
     }
 
     public HTTPClient(URL url, Validator validator) {
-        super(url, validator, false);
+        super(url, validator);
     }
 
     @Override
@@ -60,7 +58,7 @@ public final class HTTPClient extends HTTPConnection implements Client {
 
         private final boolean _serverToClient;
 
-        private final byte[] _buffer = new byte[8192];
+        private final byte[] _buffer = new byte[32000];
 
         private HTTPRequestCallback _callback;
 
@@ -119,8 +117,11 @@ public final class HTTPClient extends HTTPConnection implements Client {
                             if (length == 0) {
                                 if (Debug.ENABLED)
                                     Debug.assertion(!_serverToClient);
-                            } else
+                            } else {
+                                _buffer[CometTransport.FIELD_REQUEST_ENCODING] = CometTransport.ENCODING_NONE;
+                                _buffer[CometTransport.FIELD_RESPONSE_ENCODING] = CometTransport.ENCODING_NONE;
                                 call(length);
+                            }
 
                             if (_serverToClient) {
                                 // Comet connection never exits

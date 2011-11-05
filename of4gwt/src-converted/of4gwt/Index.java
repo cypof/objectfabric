@@ -13,48 +13,19 @@
 package of4gwt;
 
 /**
- * Indexing/Querying for stores. Private class as this is still work in progress.
+ * ObjectFabric attempts to answer the problem of querying objects by separating storage
+ * and indexing/querying. A store can be used by itself, with no querying capability, and
+ * keep objects e.g. in a highly efficient binary format. As an application is developed,
+ * indexes can then be created to retrieve objects using various algorithms, e.g. full
+ * text search, SQL on ad-hoc tables, hash maps or any other method.
+ * <nl>
+ * Indexes can be built, destroyed and rebuilt independently of stores, so they do not
+ * need to be durable, and can contain only data involved in queries. E.g. if startup time
+ * is not an issue, an SQL-based index could be based on an in-memory database rebuilt at
+ * each startup.
+ * <nl>
+ * Warning: This is a work in progress.
  */
-class Index extends IndexBase {
-
-    public static abstract class Insert {
-
-        public final TObject Object;
-
-        private byte[] _data;
-
-        private Insert _next;
-
-        public Insert(TObject object) {
-            Object = object;
-        }
-
-        public final Insert getNext() {
-            return _next;
-        }
-
-        public final void setNext(Insert value) {
-            _next = value;
-        }
-
-        public final byte[] getData() {
-            return _data;
-        }
-
-        public final void setData(byte[] value) {
-            _data = value;
-        }
-
-        public abstract void begin();
-
-        public abstract void commit();
-
-        public abstract void onSuccess();
-
-        public abstract void onFailure(Exception e);
-    }
-
-    protected Index(Transaction trunk) {
-        super(new IndexBase.Version(null, FIELD_COUNT), trunk);
-    }
+public class Index extends Schedulable {
+    // TODO put shared stuff between full text and SQL indexes
 }

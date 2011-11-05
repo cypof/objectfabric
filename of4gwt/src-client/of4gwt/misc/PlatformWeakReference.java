@@ -21,6 +21,9 @@ public class PlatformWeakReference<T> {
 
     private final T _t;
 
+    /**
+     * @param _
+     */
     public PlatformWeakReference(T t, Object _) {
         _t = t;
     }

@@ -12,7 +12,7 @@
 
 package of4gwt.misc;
 
-import of4gwt.misc.TransparentExecutor;
+import com.google.gwt.user.client.Timer;
 
 /**
  * Platform classes allow other implementations to be used for ports like GWT and .NET.
@@ -26,5 +26,42 @@ public final class PlatformThreadPool {
 
     public static final Executor getInstance() {
         return TransparentExecutor.getInstance();
+    }
+
+    public static Future schedule(final Runnable command, int ms) {
+        TimerFuture timer = new TimerFuture() {
+
+            @Override
+            public void run() {
+                command.run();
+            }
+        };
+
+        timer.schedule(ms);
+        return timer;
+    }
+
+    private static abstract class TimerFuture extends Timer implements Future {
+
+        @Override
+        public boolean cancel(boolean mayInterruptIfRunning) {
+            super.cancel();
+            return true;
+        }
+
+        @Override
+        public boolean isCancelled() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean isDone() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public Object get() throws InterruptedException, ExecutionException {
+            throw new UnsupportedOperationException();
+        }
     }
 }

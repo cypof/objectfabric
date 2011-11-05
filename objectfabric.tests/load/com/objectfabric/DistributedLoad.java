@@ -16,7 +16,6 @@ package com.objectfabric;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import com.objectfabric.tests.Distributed;
 
 @Ignore
 public class DistributedLoad {

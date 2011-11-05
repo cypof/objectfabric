@@ -118,11 +118,11 @@ final class BPage {
 
         if (height == 0) {
             return getValue(key);
-        } else {
-            int index = findChildren(key);
-            BPage child = childBPage(index);
-            return child.get(height, key);
         }
+
+        int index = findChildren(key);
+        BPage child = childBPage(index);
+        return child.get(height, key);
     }
 
     void walk(int height, Walker walker) {
@@ -536,14 +536,14 @@ final class BPage {
                 if (value2[i] >= 0) {
                     // value1 is negative => greater (because MSB is 1)
                     return 1;
-                } else {
-                    // both negative
-                    if (value1[i] < value2[i])
-                        return -1;
-
-                    if (value1[i] > value2[i])
-                        return 1;
                 }
+
+                // both negative
+                if (value1[i] < value2[i])
+                    return -1;
+
+                if (value1[i] > value2[i])
+                    return 1;
             }
         }
 

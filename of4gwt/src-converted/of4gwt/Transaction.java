@@ -35,7 +35,7 @@ import of4gwt.misc.WritableFuture;
 public final class Transaction extends TransactionPublic implements SystemClass {
 
     /**
-     * Result of a transaction's commit.
+     * Result of a transaction commit.
      */
     public enum CommitStatus {
 
@@ -236,13 +236,24 @@ public final class Transaction extends TransactionPublic implements SystemClass 
 
     private final Store _store;
 
-    private volatile Session _currentSession; // TODO Thread local sessions?
+    // TODO Thread local sessions?
+    // TODO Store between runs to lower ids sparsity
+    private volatile Session _currentSession;
 
     
 
     // !! Add new fields to reset()
 
-    // Constructor for generated object model
+    /**
+     * Constructor for generated object model
+     * 
+     * @param trunk
+     * @param parentImpl
+     * @param type
+     * @param conflictDetection
+     * @param consistency
+     * @param granularity
+     */
     protected Transaction(Transaction trunk, Transaction parentImpl, int type, ConflictDetection conflictDetection, Consistency consistency, Granularity granularity) {
         this(trunk, null);
     }
@@ -525,7 +536,6 @@ public final class Transaction extends TransactionPublic implements SystemClass 
     /*
      * TODO: use this form for all internal switches?
      */
-    @SuppressWarnings("null")
     static final void setCurrentUnsafe(Transaction transaction) {
         if (Debug.ENABLED) {
             Debug.assertion(transaction == null || !transaction.isPublic());
@@ -603,7 +613,7 @@ public final class Transaction extends TransactionPublic implements SystemClass 
             startFromPublic(transaction, snapshot);
         } else {
             transaction = startFromPrivate(flags);
-            flags |= getFlags() & ~FLAG_COMMITTED;
+            flags |= getFlags() & ~(FLAG_COMMITTED | FLAG_REMOTE | FLAG_REMOTE_METHOD_CALL);
         }
 
         transaction.setFlags(flags);
@@ -835,7 +845,7 @@ public final class Transaction extends TransactionPublic implements SystemClass 
      * default trunk.
      */
     public static final Future<CommitStatus> runAsync(Runnable runnable, int flags, AsyncCallback<CommitStatus> callback, AsyncOptions options) {
-        return runAsync(runnable, getDefaultTrunk(), flags, callback);
+        return runAsync(runnable, getDefaultTrunk(), flags, callback, options);
     }
 
     /**
@@ -851,7 +861,7 @@ public final class Transaction extends TransactionPublic implements SystemClass 
      * default trunk and flags.
      */
     public static final Future<CommitStatus> runAsync(Runnable runnable, Executor executor, AsyncCallback<CommitStatus> callback, AsyncOptions options) {
-        return runAsync(runnable, getDefaultTrunk(), DEFAULT_FLAGS, executor, callback);
+        return runAsync(runnable, getDefaultTrunk(), DEFAULT_FLAGS, executor, callback, options);
     }
 
     /**
@@ -867,7 +877,7 @@ public final class Transaction extends TransactionPublic implements SystemClass 
      * multiple times in case of conflicts) on ObjectFabric's default thread pool.
      */
     public static final Future<CommitStatus> runAsync(Runnable runnable, Transaction parent, int flags, AsyncCallback<CommitStatus> callback, AsyncOptions options) {
-        return runAsync(runnable, parent, flags, PlatformThreadPool.getInstance(), callback);
+        return runAsync(runnable, parent, flags, PlatformThreadPool.getInstance(), callback, options);
     }
 
     /**
@@ -906,7 +916,7 @@ public final class Transaction extends TransactionPublic implements SystemClass 
         return outer;
     }
 
-    static final void endRead(Transaction outer, Transaction inner, UserTObject object) {
+    static final void endRead(Transaction outer, Transaction inner) {
         if (inner != outer) {
             ThreadContext context = ThreadContext.getCurrent();
             context.endAccess(inner, false);
@@ -982,7 +992,6 @@ public final class Transaction extends TransactionPublic implements SystemClass 
 
     // Trunk specific
 
-    @SuppressWarnings("null")
     final Descriptor assignId(TObject.Version shared) {
         if (Debug.ENABLED) {
             Debug.assertion(getTrunk() == this);
@@ -1021,9 +1030,12 @@ public final class Transaction extends TransactionPublic implements SystemClass 
                 }
             }
 
-            if (Debug.ENABLED)
-                if (shared.getUID() == null)
-                    Debug.assertion(descriptor.getSession().getSharedVersion(descriptor.getId()) == shared);
+            if (Debug.ENABLED) {
+                if (descriptor == null)
+                    throw new RuntimeException();
+
+                Debug.assertion(descriptor.getSession().getSharedVersion(descriptor.getId()) == shared);
+            }
         }
 
         return descriptor;
@@ -1058,10 +1070,34 @@ public final class Transaction extends TransactionPublic implements SystemClass 
             }
         }
 
-        if (imports == null) {
-            TObject.Version[][] temp = new TObject.Version[1][];
-            temp[TransactionSets.IMPORTS_INDEX] = versions;
+        TObject.Version[] result;
 
+        if (imports == null)
+            result = versions;
+        else {
+            result = imports;
+
+            for (int i = versions.length - 1; i >= 0; i--) {
+                if (versions[i] != null) {
+                    if (Debug.ENABLED) {
+                        if (TransactionSets.getVersionFromSharedVersion(imports, versions[i]) != null) {
+                            Debug.assertion(versions[i].getShared().getObjectModel() == DefaultObjectModel.getInstance());
+                            Debug.assertion(versions[i].getShared().getClassId() == DefaultObjectModelBase.COM_OBJECTFABRIC_LAZYMAP_CLASS_ID);
+                        }
+                    }
+
+                    /*
+                     * Merge == true for lazy objects which are loaded in several parts in
+                     * same private transaction.
+                     */
+                    result = TransactionSets.putForShared(result, versions[i], versions[i].getUnion(), true);
+                }
+            }
+        }
+
+        if (getPrivateSnapshotVersions() == null) {
+            TObject.Version[][] temp = new TObject.Version[1][];
+            temp[TransactionSets.IMPORTS_INDEX] = result;
             Transaction current = this;
 
             for (;;) {
@@ -1072,26 +1108,15 @@ public final class Transaction extends TransactionPublic implements SystemClass 
                     break;
             }
         } else {
-            for (int i = versions.length - 1; i >= 0; i--) {
-                if (versions[i] != null) {
-                    /*
-                     * Allow merge for lazy objects which are loaded in several parts in
-                     * same private transaction.
-                     */
-                    TObject.Version[] temp = TransactionSets.putForShared(imports, versions[i], versions[i].getUnion(), true);
+            if (result != imports) {
+                Transaction current = this;
 
-                    if (temp != imports) {
-                        imports = temp;
-                        Transaction current = this;
+                for (;;) {
+                    current.getPrivateSnapshotVersions()[TransactionSets.IMPORTS_INDEX] = result;
+                    current = current.getParent();
 
-                        for (;;) {
-                            current.getPrivateSnapshotVersions()[TransactionSets.IMPORTS_INDEX] = imports;
-                            current = current.getParent();
-
-                            if (current.isPublic())
-                                break;
-                        }
-                    }
+                    if (current.isPublic())
+                        break;
                 }
             }
         }
@@ -1122,7 +1147,6 @@ public final class Transaction extends TransactionPublic implements SystemClass 
         }
 
         @Override
-        @SuppressWarnings({ "unchecked", "static-access" })
         public void readWrite(of4gwt.Reader reader, int index) {
             super.readWrite(reader, index);
 

@@ -15,26 +15,23 @@ package com.objectfabric.transports.polling;
 import java.io.Serializable;
 
 import com.objectfabric.Connection;
-import com.objectfabric.Privileged;
 import com.objectfabric.Site;
-import com.objectfabric.Validator;
+import com.objectfabric.misc.CheckedRunnable;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.NIOManager;
+import com.objectfabric.misc.PlatformAdapter;
+import com.objectfabric.misc.PlatformThreadLocal;
+import com.objectfabric.transports.Server;
 
 /**
  * Bidirectional communication using polling. This transport can be used for polling over
  * a servlet in case the Comet transport cannot be used.
  */
-public class PollingServer extends Privileged {
+public class PollingServer<C extends PollingServer.PollingSession> extends Server<C> {
 
-    private Validator _validator;
-
-    public final Validator getValidator() {
-        return _validator;
-    }
-
-    public final void setValidator(Validator value) {
-        _validator = value;
+    @Override
+    public boolean isStarted() {
+        return false;
     }
 
     /*
@@ -45,8 +42,10 @@ public class PollingServer extends Privileged {
 
         private final PollingServer _server;
 
+        private final PlatformThreadLocal<byte[]> _buffer = new PlatformThreadLocal<byte[]>();
+
         public PollingSession(PollingServer server) {
-            super(Site.getLocal().getTrunk(), Site.getLocal(), server._validator);
+            super(Site.getLocal().getTrunk(), Site.getLocal(), server.getValidator());
 
             _server = server;
 
@@ -84,8 +83,10 @@ public class PollingServer extends Privileged {
 
             read(data, 0, data.length);
 
-            ensureThreadContextBufferLength(NIOManager.SOCKET_BUFFER_SIZE);
-            byte[] buffer = getThreadContextBuffer();
+            byte[] buffer = _buffer.get();
+
+            if (buffer == null)
+                _buffer.set(buffer = new byte[NIOManager.SOCKET_BUFFER_SIZE]);
 
             int written = write(buffer, 0, buffer.length);
 
@@ -98,6 +99,66 @@ public class PollingServer extends Privileged {
             byte[] result = new byte[written];
             System.arraycopy(buffer, 0, result, 0, written);
             return result;
+        }
+
+        @Override
+        protected void onDialogEstablished() {
+            super.onDialogEstablished();
+
+            _server.getCallbackExecutor().execute(new CheckedRunnable() {
+
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void checkedRun() {
+                    if (_server.getCallback() != null) {
+                        try {
+                            _server.getCallback().onConnection(PollingSession.this);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
+                        }
+                    }
+                }
+            });
+        }
+
+        @Override
+        protected void onObject(final Object object) {
+            super.onObject(object);
+
+            _server.getCallbackExecutor().execute(new CheckedRunnable() {
+
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void checkedRun() {
+                    if (_server.getCallback() != null) {
+                        try {
+                            _server.getCallback().onReceived(PollingSession.this, object);
+                        } catch (Exception e) {
+                            PlatformAdapter.logUserCodeException(e);
+                        }
+                    }
+                }
+            });
+        }
+
+        @Override
+        protected void onWriteStopped(final Exception e) {
+            super.onWriteStopped(e);
+
+            _server.getCallbackExecutor().execute(new CheckedRunnable() {
+
+                @SuppressWarnings("unchecked")
+                @Override
+                protected void checkedRun() {
+                    if (_server.getCallback() != null) {
+                        try {
+                            _server.getCallback().onDisconnection(PollingSession.this, e);
+                        } catch (Exception user) {
+                            PlatformAdapter.logUserCodeException(user);
+                        }
+                    }
+                }
+            });
         }
     }
 }

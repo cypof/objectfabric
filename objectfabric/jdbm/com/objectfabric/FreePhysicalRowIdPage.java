@@ -95,8 +95,8 @@ final class FreePhysicalRowIdPage extends PageHeader {
 
         if (view != null && view instanceof FreePhysicalRowIdPage)
             return (FreePhysicalRowIdPage) view;
-        else
-            return new FreePhysicalRowIdPage(block);
+
+        return new FreePhysicalRowIdPage(block);
     }
 
     /** Returns the number of free rowids */

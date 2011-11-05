@@ -54,6 +54,10 @@ public abstract class Target {
         return generator.run(uid, visitor);
     }
 
+    /**
+     * @param generator
+     * @param file
+     */
     void onWritingFile(Generator generator, FileGenerator file) {
     }
 

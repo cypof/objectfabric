@@ -14,7 +14,10 @@ package of4gwt;
 
 import of4gwt.CallInReader.Call;
 import of4gwt.Connection.Endpoint;
+import of4gwt.Connection.Endpoint.Status;
+import of4gwt.TObject.Version;
 import of4gwt.misc.Debug;
+import of4gwt.misc.List;
 import of4gwt.misc.ThreadAssert;
 import of4gwt.misc.ThreadAssert.SingleThreaded;
 
@@ -25,6 +28,8 @@ final class CallInWriter extends DistributedWriter {
 
     public static final byte COMMAND_CALLBACK_EXECUTE = MAX_COMMAND_ID + 2;
 
+    private final List<Version> _transactionVersions = new List<Version>();
+
     public CallInWriter(Endpoint endpoint) {
         super(endpoint);
 
@@ -32,12 +37,12 @@ final class CallInWriter extends DistributedWriter {
     }
 
     private enum WriteCallbackStep {
-        WRITES, METHOD_VERSION, TRANSACTION, COMMAND
+        METHOD_VERSION, WRITES, TRANSACTION, COMMAND
     }
 
     @SuppressWarnings("fallthrough")
     public void writeCallback(Call call) {
-        WriteCallbackStep step = WriteCallbackStep.WRITES;
+        WriteCallbackStep step = WriteCallbackStep.METHOD_VERSION;
 
         if (interrupted())
             step = (WriteCallbackStep) resume();
@@ -54,30 +59,39 @@ final class CallInWriter extends DistributedWriter {
         }
 
         switch (step) {
-            case WRITES: {
+            case METHOD_VERSION: {
                 setVisitingGatheredVersions(false);
 
-                if (call.getTransaction() != null) {
-                    if (call.getTransaction().getWrites() != null) {
-                        writeVersions(this, call.getTransaction().getWrites());
-
-                        if (interrupted()) {
-                            interrupt(WriteCallbackStep.WRITES);
-                            return;
-                        }
-                    }
-
-                    TransactionManager.abort(call.getTransaction());
-                }
-
-                // Otherwise fake transaction created for call will be GCed
-            }
-            case METHOD_VERSION: {
                 call.getMethodVersion().visit(this);
 
                 if (interrupted()) {
                     interrupt(WriteCallbackStep.METHOD_VERSION);
                     return;
+                }
+
+                if (call.getTransaction() != null) {
+                    Version[] writes = call.getTransaction().getWrites();
+
+                    if (writes != null)
+                        for (int i = 0; i < writes.length; i++)
+                            if (writes[i] != null)
+                                _transactionVersions.add(writes[i]);
+                }
+            }
+            case WRITES: {
+                /*
+                 * Also send private updates that could have been done on shared objects
+                 * by transaction to maintain consistency between sides.
+                 */
+                if (call.getTransaction() != null && call.getTransaction().getWrites() != null) {
+                    writeVersions();
+
+                    if (interrupted()) {
+                        interrupt(WriteCallbackStep.WRITES);
+                        return;
+                    }
+
+                    TransactionManager.abort(call.getTransaction());
                 }
 
                 setVisitingGatheredVersions(true);
@@ -111,20 +125,40 @@ final class CallInWriter extends DistributedWriter {
         });
     }
 
-    private static final void writeVersions(Writer writer, TObject.Version[] versions) {
-        int index = 0;
+    /**
+     * Only sends versions if shared with remote site. Loops to make sure we don't miss
+     * versions that became shared during process.
+     */
+    private final void writeVersions() {
+        Version version = null;
 
-        if (writer.interrupted())
-            index = writer.resumeInt();
+        if (interrupted())
+            version = (Version) resume();
 
-        for (; index < versions.length; index++) {
-            if (versions[index] != null) {
-                versions[index].visit(writer);
+        for (;;) {
+            if (version == null) {
+                for (int i = _transactionVersions.size() - 1; i >= 0; i--) {
+                    Version shared = _transactionVersions.get(i).getShared();
+                    Status status = getEndpoint().getStatus(shared);
+                    boolean known = status == Status.SNAPSHOTTED || status == Status.CREATED;
 
-                if (writer.interrupted()) {
-                    writer.interruptInt(index);
-                    return;
+                    if (known) {
+                        version = _transactionVersions.remove(i);
+                        break;
+                    }
                 }
+
+                if (version == null) {
+                    _transactionVersions.clear();
+                    break;
+                }
+            }
+
+            version.visit(this);
+
+            if (interrupted()) {
+                interrupt(version);
+                return;
             }
         }
     }

@@ -33,7 +33,6 @@ final class ControllerInWriter extends DistributedWriter {
      * No need to snapshot objects for first connection. Data will be sent when with each
      * channel.
      */
-    @SuppressWarnings({ "fallthrough" })
     public void writeLocalSite() {
         if (Debug.ENABLED) {
             Debug.assertion(getBranch() == Site.getLocal().getTrunk());

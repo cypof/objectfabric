@@ -10,7 +10,7 @@ package com.objectfabric.vm.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class MethodsObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -78, -95, 108, 43, 66, 97, 124, 51, 108, 12, -49, 119, -124, -37, 97, -40 };
+    private static final byte[] UID = { -123, -80, -127, -28, 34, 104, -46, 7, 8, -111, -24, -78, -95, -18, -33, -101 };
 
     private static volatile MethodsObjectModel _instance;
 
@@ -144,25 +144,25 @@ public class MethodsObjectModel extends com.objectfabric.ObjectModel {
 
         public static final java.lang.String SQL_NAME = "sql";
 
-        public static final java.lang.Class SQL_CLASS = java.lang.String.class;
+        public static final com.objectfabric.TType SQL_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
         public static final int EG_INDEX = 1;
 
         public static final java.lang.String EG_NAME = "eg";
 
-        public static final java.lang.Class EG_CLASS = com.objectfabric.vm.generated.SimpleMethod.class;
+        public static final com.objectfabric.TType EG_TYPE = com.objectfabric.vm.generated.SimpleMethod.TYPE;
 
         public static final int RETURN_OBJECTFABRIC_INDEX = 2;
 
         public static final java.lang.String RETURN_OBJECTFABRIC_NAME = "return_objectfabric";
 
-        public static final java.lang.Class RETURN_OBJECTFABRIC_CLASS = java.lang.String.class;
+        public static final com.objectfabric.TType RETURN_OBJECTFABRIC_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
         public static final int ERROR_OBJECTFABRIC_INDEX = 3;
 
         public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
 
-        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
+        public static final com.objectfabric.TType ERROR_OBJECTFABRIC_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
         public static final int FIELD_COUNT = 4;
 
@@ -193,21 +193,21 @@ public class MethodsObjectModel extends com.objectfabric.ObjectModel {
         }
 
         @Override
-        public java.lang.Class getFieldClass(int index) {
-            return getFieldClassStatic(index);
+        public  com.objectfabric.TType getFieldType(int index) {
+            return getFieldTypeStatic(index);
         }
 
         @SuppressWarnings("static-access")
-        public static java.lang.Class getFieldClassStatic(int index) {
+        public static com.objectfabric.TType getFieldTypeStatic(int index) {
             switch (index) {
                 case SQL_INDEX:
-                    return SQL_CLASS;
+                    return SQL_TYPE;
                 case EG_INDEX:
-                    return EG_CLASS;
+                    return EG_TYPE;
                 case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_CLASS;
+                    return RETURN_OBJECTFABRIC_TYPE;
                 case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_CLASS;
+                    return ERROR_OBJECTFABRIC_TYPE;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -398,13 +398,13 @@ public class MethodsObjectModel extends com.objectfabric.ObjectModel {
 
         public static final java.lang.String STATE_NAME = "state";
 
-        public static final java.lang.Class STATE_CLASS = int.class;
+        public static final com.objectfabric.TType STATE_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
         public static final int ERROR_OBJECTFABRIC_INDEX = 1;
 
         public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
 
-        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
+        public static final com.objectfabric.TType ERROR_OBJECTFABRIC_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
         public static final int FIELD_COUNT = 2;
 
@@ -431,17 +431,17 @@ public class MethodsObjectModel extends com.objectfabric.ObjectModel {
         }
 
         @Override
-        public java.lang.Class getFieldClass(int index) {
-            return getFieldClassStatic(index);
+        public  com.objectfabric.TType getFieldType(int index) {
+            return getFieldTypeStatic(index);
         }
 
         @SuppressWarnings("static-access")
-        public static java.lang.Class getFieldClassStatic(int index) {
+        public static com.objectfabric.TType getFieldTypeStatic(int index) {
             switch (index) {
                 case STATE_INDEX:
-                    return STATE_CLASS;
+                    return STATE_TYPE;
                 case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_CLASS;
+                    return ERROR_OBJECTFABRIC_TYPE;
                 default:
                     throw new IllegalArgumentException();
             }

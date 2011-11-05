@@ -16,7 +16,6 @@ import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.Log;
 import com.objectfabric.misc.SparseArrayHelper;
 
-@SuppressWarnings("unchecked")
 class TKeyedBase1 extends TObject.Version {
 
     protected static final int DEFAULT_INITIAL_CAPACITY = 8;

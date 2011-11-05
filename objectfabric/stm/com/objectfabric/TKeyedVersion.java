@@ -102,7 +102,7 @@ final class TKeyedVersion extends TKeyedBase2 {
         if (Debug.ENABLED)
             Debug.assertion(sizeValid());
 
-        TKeyedVersion result = (TKeyedVersion) cloneThis(false);
+        TKeyedVersion result = (TKeyedVersion) cloneThis(false, false);
         result.setVerifySizeDeltaOnCommit();
         result.updateFromSnapshot(newSnapshot, mapIndex, true);
         return result;

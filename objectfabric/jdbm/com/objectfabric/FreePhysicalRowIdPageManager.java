@@ -102,10 +102,10 @@ final class FreePhysicalRowIdPageManager {
                 }
 
                 return retval;
-            } else {
-                // no luck, go to next page
-                _file.release(curs.getCurrent(), false);
             }
+
+            // no luck, go to next page
+            _file.release(curs.getCurrent(), false);
         }
 
         return null;

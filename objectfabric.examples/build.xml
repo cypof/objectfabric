@@ -1,41 +1,31 @@
 <project name="objectfabric.examples">
-	<target name="jar" description="Create jar">
-		<mkdir dir="bin" />
-		<delete file="bin/objectfabric.examples.jar" failonerror="false" />
-		<jar destfile="bin/objectfabric.examples.jar" level="9">
-			<fileset dir="classes" includes="**/*.class" excludes="" />
-		</jar>
-		<delete file="bin/objectfabric.examples-src.jar" failonerror="false" />
-		<jar destfile="bin/objectfabric.examples-src.jar">
-			<fileset dir="src" />
-		</jar>
+	<!--
+		You can deploy and start examples on an EC2 instance. Specify the files and main class
+		of your application, public DNS and private key for the EC2 instance and the ant tasks
+		from project 'objectfabric.ec2' will deploy and start your application.
+	-->
+	<property name="public dns" value="ec2-184-72-160-7.compute-1.amazonaws.com" />
+	<property name="private key" value="${basedir}/../../.ssh/ec2.pem" />
+	<property name="main class" value="part01.helloworld.Server" />
+
+	<!--
+		Copies required class and jar files to objectfabric.ec2/deployed. By default, class
+		path will be "classes:jars" where jars are the list of jar files in folder 'deployed'.
+	-->
+	<target name="get files">
+		<sync todir="../objectfabric.ec2/deployed/lib">
+			<fileset dir="../objectfabric/bin" includes="objectfabric.jar" />
+			<!-- Other jars will automatically be added to class path -->
+			<!-- fileset dir="my jar folder" includes="my jar file" / -->
+		</sync>
+		<sync todir="../objectfabric.ec2/deployed/classes">
+			<fileset dir="classes" includes="part01/helloworld/Server*" />
+		</sync>
 	</target>
 
 	<!--
-		Uses project objectfabric.deploy.amazon to deploy examples to a EC2 instance. You need
-		to specify the files and main class of your application, url and key for the EC2 instance
-		and the ant tasks will deploy and start your application.
+		WARNING: Task "open command line and debug port" must be run once to add EC2 instance to
+		known_hosts. Until this is done, other tasks like "deploy" might not work. 
 	-->
-	<property name="instance public dns" value="ec2-107-20-96-210.compute-1.amazonaws.com" />
-	<property name="private key" value="${basedir}/../../.ec2/amazon.pem" />
-
-	<target name="get files">
-		<sync todir="../objectfabric.examples.amazon/deployed/lib">
-			<fileset dir="../objectfabric/bin" includes="objectfabric.jar" />
-		</sync>
-		<sync todir="../objectfabric.examples.amazon/deployed/classes">
-			<fileset dir="classes" includes="part01/helloworld/Server*" />
-		</sync>
-		<copy todir="../objectfabric.examples.amazon/deployed/">
-			<fileset dir="../objectfabric.examples.amazon" includes="start.sh" />
-			<filterchain>
-				<replacestring from="#myMainClass#" to="part01.helloworld.Server" />
-			</filterchain>
-		</copy>
-	</target>
-
-	<import file="../objectfabric.deploy.amazon/build.xml" />
-
-	<target name="deploy and start" depends="killall java (Windows), amazon.deploy and start (Windows)">
-	</target>
+	<import file="../objectfabric.ec2/build.xml" />
 </project>

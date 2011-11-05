@@ -272,7 +272,9 @@ public abstract class ExtendedTester {
         ArrayList<Thread> list = new ArrayList<Thread>();
 
         for (int t = 0; t < threads; t++) {
-            Thread thread = new Thread("Thread " + t) {
+            String process = Debug.ProcessName.length() > 0 ? Debug.ProcessName + " " : "";
+
+            Thread thread = new Thread(process + "Thread " + t) {
 
                 @Override
                 public void run() {

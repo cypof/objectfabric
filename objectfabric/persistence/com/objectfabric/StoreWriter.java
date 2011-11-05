@@ -193,15 +193,17 @@ final class StoreWriter extends Writer {
                 Debug.assertion(id == DefaultObjectModel.COM_OBJECTFABRIC_TMAP_CLASS_ID || id == DefaultObjectModel.COM_OBJECTFABRIC_TSET_CLASS_ID || id == DefaultObjectModelBase.COM_OBJECTFABRIC_LAZYMAP_CLASS_ID);
             }
         } else {
-            if (shared.getUnion() instanceof Descriptor) {
-                Descriptor descriptor = (Descriptor) shared.getUnion();
-                Session session = descriptor.getSession();
-                byte[] uid = session.getSharedVersion_objectfabric().getUID();
-                storeBuffer(shared, session, uid, descriptor.getId() & 0xff);
-            } else {
-                // UID object has to be a session, models do not have fields
+            byte[] uid = shared.getUID();
+
+            if (uid != null) {
+                // UID object has to be a session, object models do not have fields
                 Session session = (Session) shared.getReference().get();
-                storeBuffer(shared, session, shared.getUID(), Session.UID_OBJECT_ID & 0xff);
+                storeBuffer(shared, session, uid, Session.UID_OBJECT_ID & 0xff);
+            } else {
+                Descriptor descriptor = shared.getOrCreateDescriptor();
+                Session session = descriptor.getSession();
+                uid = session.getSharedVersion_objectfabric().getUID();
+                storeBuffer(shared, session, uid, descriptor.getId() & 0xff);
             }
         }
     }
@@ -355,21 +357,33 @@ final class StoreWriter extends Writer {
                 write(entries[i].getKeyDirect());
                 byte[] key = new byte[getOffset()];
                 PlatformAdapter.arraycopy(getBuffer(), 0, key, 0, key.length);
-                write(entries[i].getValueDirect());
-                long id = _store.getRecordManager().insert(getBuffer(), 0, getOffset());
-                long previous = tree.put(key, id);
 
-                if (previous != 0)
-                    _store.getRecordManager().delete(previous);
+                if (entries[i].isRemoval()) {
+                    // TODO hack! should be called once
+                    if (tree.fetch(key) != Record.NOT_STORED) {
+                        long id = tree.remove(key);
+                        _store.getRecordManager().delete(id);
+                    }
+                } else {
+                    write(entries[i].getValueDirect());
+                    long id = _store.getRecordManager().insert(getBuffer(), 0, getOffset());
+                    long previous = tree.put(key, id);
 
-                // TODO bench with in-place updates, or create tree.putOrUpdate method?
-                // long record = tree.fetch(key);
-                //
-                // if (record == Record.NOT_STORED) {
-                // record = _store.getRecordManager().insert(getBuffer(), 0, getOffset());
-                // tree.put(key, record);
-                // } else
-                // _store.getRecordManager().update(record, getBuffer(), 0, getOffset());
+                    if (previous != 0)
+                        _store.getRecordManager().delete(previous);
+
+                    // TODO bench with in-place updates, or create tree.putOrUpdate
+                    // method?
+                    // long record = tree.fetch(key);
+                    //
+                    // if (record == Record.NOT_STORED) {
+                    // record = _store.getRecordManager().insert(getBuffer(), 0,
+                    // getOffset());
+                    // tree.put(key, record);
+                    // } else
+                    // _store.getRecordManager().update(record, getBuffer(), 0,
+                    // getOffset());
+                }
             }
         }
 

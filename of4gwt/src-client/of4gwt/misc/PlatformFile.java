@@ -12,10 +12,11 @@
 
 package of4gwt.misc;
 
-import of4gwt.misc.RuntimeIOException;
-
 public final class PlatformFile {
 
+    /**
+     * @param name
+     */
     public PlatformFile(String name) {
         throw new UnsupportedOperationException();
     }
@@ -30,21 +31,23 @@ public final class PlatformFile {
         readOrZero(buffer, 0, buffer.length);
     }
 
+    /**
+     * @param buffer
+     * @param offset
+     * @param length
+     */
     public void readOrZero(byte[] buffer, int offset, int length) {
         throw new UnsupportedOperationException();
     }
 
-    /**
-     * @throws RuntimeIOException
-     *             if less data than requested
-     */
     public void readFull(byte[] buffer) {
         readFull(buffer, 0, buffer.length);
     }
 
     /**
-     * @throws RuntimeIOException
-     *             if less data than requested
+     * @param buffer
+     * @param offset
+     * @param length
      */
     public void readFull(byte[] buffer, int offset, int length) {
         throw new UnsupportedOperationException();
@@ -64,22 +67,39 @@ public final class PlatformFile {
 
     //
 
+    /**
+     * @param buffer
+     */
     public void write(byte[] buffer) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param buffer
+     * @param offset
+     * @param length
+     */
     public void write(byte[] buffer, int offset, int length) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param value
+     */
     public void writeShort(short value) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param value
+     */
     public void writeInt(int value) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param value
+     */
     public void writeLong(long value) {
         throw new UnsupportedOperationException();
     }
@@ -94,10 +114,16 @@ public final class PlatformFile {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param offset
+     */
     public void setOffset(long offset) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param value
+     */
     public void setLength(long value) {
         throw new UnsupportedOperationException();
     }

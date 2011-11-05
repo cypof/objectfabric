@@ -40,9 +40,12 @@ public class VMTest2Server extends TestsHelper {
         VMTest.writeStart(granularity, clients, flags, "VMTest2Server");
         final boolean serverWrites = (flags & VMTest.FLAG_PROPAGATE) != 0;
         SimpleObjectModel.register();
-        Transaction trunk = VMTest.createTrunk(granularity);
+        Transaction trunk = VMTest.createTrunk(granularity, flags);
         final SimpleClass object = new SimpleClass();
         object.setInt0(Transfer.TOTAL);
+
+        if (trunk.getStore() != null)
+            trunk.getStore().setRoot(object);
 
         object.addListener(new FieldListener() {
 
@@ -101,6 +104,9 @@ public class VMTest2Server extends TestsHelper {
                         c.close();
                 }
 
+                if (granularity == Granularity.COALESCE.ordinal())
+                    Debug.assertAlways(!OverloadHandler.isOverloaded(object.getTrunk()));
+
                 Transaction.run(new Runnable() {
 
                     public void run() {
@@ -125,9 +131,6 @@ public class VMTest2Server extends TestsHelper {
 
         server.stop();
 
-        Debug.ProcessName = "";
-        Debug.AssertNoConflict = false;
-
         for (SeparateClassLoader client : loaders) {
             int successes = (Integer) client.invoke("getSuccesses", new Class[0]);
             Debug.assertAlways(successes > 0);
@@ -135,6 +138,10 @@ public class VMTest2Server extends TestsHelper {
         }
 
         Transaction.setDefaultTrunk(Site.getLocal().getTrunk());
+
+        if (trunk.getStore() != null)
+            trunk.getStore().close();
+
         PlatformAdapter.shutdown();
     }
 }

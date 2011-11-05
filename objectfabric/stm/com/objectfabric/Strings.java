@@ -12,7 +12,7 @@
 
 package com.objectfabric;
 
-public final class Strings {
+public final class Strings { // TODO clean, use only for core
 
     public static final String CURRENT_NULL = "Current transaction is null. This generally means this operation requires you to start a transaction explicitly.";
 
@@ -79,6 +79,8 @@ public final class Strings {
     public static final String WRONG_STORE = "Object cannot be added to the store, its trunk is not persistent or persisted to another store. Make sure the object belong to a compatible trunk, either by passing the trunk as constructor, or by calling Transaction.setDefault(trunk) before creating objects. In addition, the trunk must have been created using Site.createTrunk(store). ";
 
     public static final String DISCONNECTED_BRANCH = "Connection has been lost with this object for the current transaction.";
+
+    public static final String EXCEPTION_ON_USER_METHOD = "An exception has been thrown by a user method, invoking 'setException' callback for this method.";
 
     public static final String NO_CALLBACK_FOR_EXCEPTION = "No callback were provided by the user to report this exception, logging it: ";
 

@@ -32,7 +32,7 @@ public class NIOTestSocketClient {
         NIOManager manager = NIOManager.getInstance();
         InetAddress host = InetAddress.getLocalHost();
         _connection = new Connection();
-        manager.connect(_connection, host, 4444);
+        manager.connect(_connection, host.getHostName(), 4444);
 
         while (!_connection.isDone())
             Thread.sleep(1);
@@ -50,6 +50,7 @@ public class NIOTestSocketClient {
         private DataGen _test = new DataGen(10000, 10000);
 
         public Connection() {
+            _test.setConnection(this);
             _test.start();
         }
 
@@ -61,7 +62,7 @@ public class NIOTestSocketClient {
         protected void onWriteStarted() {
             super.onWriteStarted();
 
-            requestWrite();
+            requestRun();
         }
 
         @Override

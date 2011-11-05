@@ -129,7 +129,6 @@ public abstract class Acknowledger extends Extension<Acknowledger.LastAcknowledg
         return value.Snapshot == snapshot;
     }
 
-    @SuppressWarnings("null")
     private final void run(Transaction branch, LastAcknowledged last, Visitor visitor) {
         if (!visitor.interrupted()) {
             for (;;) {

@@ -12,8 +12,6 @@
 
 package com.objectfabric;
 
-
-import com.objectfabric.TIndexedBase;
 import com.objectfabric.Visitor.ClassVisitor;
 import com.objectfabric.misc.Bits;
 import com.objectfabric.misc.Debug;
@@ -89,9 +87,17 @@ public abstract class TIndexed extends TIndexedBase {
             return com.objectfabric.Visitor.INDEXED_VISITOR_ID;
         }
 
+        /**
+         * @param object
+         * @param index
+         */
         protected void onRead(TObject object, int index) {
         }
 
+        /**
+         * @param object
+         * @param index
+         */
         protected void onWrite(TObject object, int index) {
         }
 

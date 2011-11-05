@@ -18,22 +18,10 @@ import java.util.HashSet;
 import java.util.Random;
 
 import com.objectfabric.misc.Log;
-import com.objectfabric.misc.PlatformConsole;
 
 public class Misc extends TestsHelper {
 
     public static void main(String[] args) throws Exception {
-        Thread thread = new Thread() {
-
-            @Override
-            public void run() {
-                throw new OutOfMemoryError();
-            }
-        };
-
-        thread.start();
-        PlatformConsole.readLine();
-
         ArrayList<Runnable> list = new ArrayList<Runnable>();
         HashSet<Runnable> set = new HashSet<Runnable>();
 

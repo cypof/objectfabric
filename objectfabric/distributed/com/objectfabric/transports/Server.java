@@ -12,40 +12,79 @@
 
 package com.objectfabric.transports;
 
-import java.io.IOException;
-import java.util.Set;
+import java.util.concurrent.Executor;
 
 import com.objectfabric.Connection;
+import com.objectfabric.Privileged;
+import com.objectfabric.Strings;
+import com.objectfabric.Validator;
 
-public interface Server<C extends Connection> {
+public abstract class Server<C extends Connection> extends Privileged {
 
-    public interface Callback<C> {
+    public interface Callback<S extends Connection> {
 
         /**
          * A client has connected.
          */
-        void onConnection(C session);
+        void onConnection(S session);
 
         /**
          * A client has disconnected. Exception might contain additional information about
          * the disconnection.
          */
-        void onDisconnection(C session, Exception e);
+        void onDisconnection(S session, Exception e);
 
         /**
          * An object has been sent by the client. Events occurring on it will be
          * replicated until the object is garbage-collected on either site.
          */
-        void onReceived(C session, Object object);
+        void onReceived(S session, Object object);
     }
 
-    Callback getCallback();
+    private Callback<?> _callback;
 
-    void setCallback(Callback value);
+    private Executor _callbackExecutor;
 
-    void start() throws IOException;
+    private Validator _validator;
 
-    void stop();
+    protected Server() {
+        _callbackExecutor = getDefaultAsyncOptions().getExecutor();
+    }
 
-    Set<C> getSessions();
+    public abstract boolean isStarted();
+
+    public final Callback<?> getCallback() {
+        return _callback;
+    }
+
+    public final void setCallback(Callback<?> value) {
+        if (isStarted())
+            throw new RuntimeException(Strings.ALREADY_STARTED);
+
+        _callback = value;
+    }
+
+    public final Executor getCallbackExecutor() {
+        return _callbackExecutor;
+    }
+
+    public final void setCallbackExecutor(Executor value) {
+        if (isStarted())
+            throw new RuntimeException(Strings.ALREADY_STARTED);
+
+        _callbackExecutor = value;
+    }
+
+    //
+
+    public final Validator getValidator() {
+        return _validator;
+    }
+
+    public final void setValidator(Validator value) {
+        if (isStarted())
+            throw new RuntimeException(Strings.ALREADY_STARTED);
+
+        _validator = value;
+    }
 }

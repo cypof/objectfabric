@@ -12,7 +12,7 @@
 
 package com.objectfabric.transports.http;
 
-import com.objectfabric.misc.ConnectionState;
+import com.objectfabric.Schedulable;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.ThreadAssert;
@@ -21,40 +21,84 @@ import com.objectfabric.misc.ThreadAssert;
  * HTTP requires two socket connections for true bidirectional communication as the Comet
  * request cannot send data while it is waiting for server chunks. This class implements a
  * simple protocol where each request has a type byte to specify if it is an initial
- * connection or on which side it is. Values are irrelevant, but using uncommon values
- * allows the HTTP filter to reject non-ObjectFabric requests faster.
+ * connection or on which side it is. Data is encoded if clients require it.
  */
-abstract class CometTransport extends ConnectionState {
-
-    public static final byte CONNECTION = 42;
-
-    public static final byte SERVER_TO_CLIENT = 43;
-
-    public static final byte CLIENT_TO_SERVER = 44;
-
-    public static final byte HEARTBEAT = 45;
-
-    public static final byte MIN = 42, MAX = 45;
+abstract class CometTransport extends Schedulable {
 
     /**
      * Otherwise browsers wait for several chunks to arrive instead of invoking client
      * callback immediately. Max seems to be Chrome, does not work with 1000.
+     * <nl>
+     * TODO: try to do only for first packet
      */
-    static final int MIN_CHUNK_SIZE = 1024;
+    public static final int MIN_CHUNK_SIZE = 1024;
 
-    static final int MAX_CHUNK_SIZE = 65535; // For HEX encoding & read length
+    public static final int MAX_CHUNK_SIZE = 65535; // For lengths encoding (HEX & binary)
 
     /**
      * Offset of fields in a request.
      */
     public static final int FIELD_TYPE = 0;
 
-    public static final int FIELD_IS_ENCODED = 1;
+    public static final int FIELD_REQUEST_ENCODING = 1;
 
-    public static final int FIELD_ID = 2;
+    public static final int FIELD_RESPONSE_ENCODING = 2;
+
+    public static final int FIELD_ID = 3;
 
     //
 
+    /*
+     * Values are irrelevant but must pass transports without encoding. Using uncommon
+     * values allows the HTTP filter to reject non-ObjectFabric requests faster.
+     */
+
+    public static final byte TYPE_CONNECTION = 42;
+
+    public static final byte TYPE_SERVER_TO_CLIENT = 43;
+
+    public static final byte TYPE_CLIENT_TO_SERVER = 44;
+
+    public static final byte TYPE_HEARTBEAT = 45;
+
+    public static final byte TYPE_MIN = 42, TYPE_MAX = 45;
+
+    //
+
+    /**
+     * If client can send binary data, e.g. a native app or a browser supporting XHR 2, no
+     * need to encode.
+     */
+    public static final byte ENCODING_NONE = 42;
+
+    /**
+     * Simply pad the end of buffer to reach {@link #MIN_CHUNK_SIZE}.
+     */
+    public static final byte ENCODING_PADDING = 43;
+
+    /**
+     * Default encoding for POST data is to remove negative bytes so that browsers UTF8
+     * encoding leaves data alone.
+     */
+    public static final byte ENCODING_0_127 = 44;
+
+    /**
+     * Special case for IE (for requests and responses) and Firefox 3 (for requests), that
+     * cannot transfer zeros. For IE, it seems that directive "charset=x-user-defined" is
+     * not fully respected for responses. Base64 would be good too but needs a way to send
+     * a continuous stream, so it would need to identify block ends etc.
+     */
+    public static final byte ENCODING_1_127 = 45;
+
+    //
+
+    public static final byte ENCODING_BYTE_ZERO = 42;
+
+    public static final byte ENCODING_BYTE_PADDING = 43;
+
+    //
+
+    // TODO: make configurable
     public static final int SERVER_HEARTBEAT = 15;
 
     public static final int CLIENT_TIMEOUT = 20;
@@ -91,9 +135,9 @@ abstract class CometTransport extends ConnectionState {
 
     private byte[] _seed = new byte[PlatformAdapter.UID_BYTES_COUNT];
 
-    private int _chunkLength, _chunkOffset = MIN_CHUNK_SIZE;
+    private int _headerOffset;
 
-    protected CometTransport(final boolean encoded) {
+    protected CometTransport() {
         _reader = createRequest(true);
 
         if (Debug.ENABLED) {
@@ -108,7 +152,7 @@ abstract class CometTransport extends ConnectionState {
         _reader.setCallback(new HTTPRequestCallback() {
 
             public int onWrite() {
-                return write(_reader.getBuffer(), true, encoded);
+                return write(_reader.getBuffer(), true);
             }
 
             public void onRead(byte[] buffer, int offset, int limit) {
@@ -138,10 +182,10 @@ abstract class CometTransport extends ConnectionState {
 
             public int onWrite() {
                 if (Debug.ENABLED)
-                    assertNotified();
+                    assertScheduled();
 
-                onWriteStarting();
-                return write(_writer.getBuffer(), false, encoded);
+                onRunStarting();
+                return write(_writer.getBuffer(), false);
             }
 
             public void onRead(byte[] buffer, int offset, int length) {
@@ -149,7 +193,7 @@ abstract class CometTransport extends ConnectionState {
             }
 
             public void onDone() {
-                endWrite();
+                onRunEnded();
             }
 
             public void onError(Exception e) {
@@ -186,92 +230,41 @@ abstract class CometTransport extends ConnectionState {
         if (Debug.ENABLED)
             ThreadAssert.resume(_reader);
 
+        final int ID_START = 0;
+        final int ID_END = PlatformAdapter.UID_BYTES_COUNT;
+        final int SEED_START = ID_END;
+        final int SEED_END = ID_END + PlatformAdapter.UID_BYTES_COUNT;
+
+        boolean headerDone = _headerOffset == SEED_END;
         boolean started = false;
 
-        for (;;) {
-            if (_chunkOffset == Math.max(_chunkLength, MIN_CHUNK_SIZE)) {
-                _chunkOffset = 0;
-                _chunkLength = 0;
+        if (!headerDone) {
+            if (_headerOffset >= ID_START && _headerOffset < ID_END) {
+                if (_id == null)
+                    _id = new byte[PlatformAdapter.UID_BYTES_COUNT];
+
+                int read = Math.min(ID_END - _headerOffset, limit - offset);
+                PlatformAdapter.arraycopy(buffer, offset, _id, _headerOffset - ID_START, read);
+                offset += read;
+                _headerOffset += read;
             }
 
-            if (offset == limit)
-                break;
-
-            if (_chunkOffset == 0) {
-                _chunkLength |= (buffer[offset++] & 0xff) << 8;
-                _chunkOffset++;
+            if (_headerOffset >= SEED_START && _headerOffset < SEED_END) {
+                int read = Math.min(SEED_END - _headerOffset, limit - offset);
+                PlatformAdapter.arraycopy(buffer, offset, _seed, _headerOffset - SEED_START, read);
+                offset += read;
+                _headerOffset += read;
             }
 
-            if (offset == limit)
-                break;
-
-            if (_chunkOffset == 1) {
-                _chunkLength |= (buffer[offset++] & 0xff);
-                _chunkOffset++;
-            }
-
-            if (_seed != null) {
-                final int LENGTH_FIELD = 2;
-                final int ID_START = LENGTH_FIELD;
-                final int ID_END = LENGTH_FIELD + PlatformAdapter.UID_BYTES_COUNT;
-                final int SEED_START = ID_END;
-                final int SEED_END = ID_END + PlatformAdapter.UID_BYTES_COUNT;
-
-                if (_chunkOffset >= ID_START && _chunkOffset < ID_END) {
-                    if (_id == null)
-                        _id = new byte[PlatformAdapter.UID_BYTES_COUNT];
-
-                    int read = Math.min(ID_END - _chunkOffset, limit - offset);
-                    PlatformAdapter.arraycopy(buffer, offset, _id, _chunkOffset - ID_START, read);
-                    offset += read;
-                    _chunkOffset += read;
-                }
-
-                if (_chunkOffset >= SEED_START && _chunkOffset < SEED_END) {
-                    int read = Math.min(SEED_END - _chunkOffset, limit - offset);
-                    PlatformAdapter.arraycopy(buffer, offset, _seed, _chunkOffset - SEED_START, read);
-                    offset += read;
-                    _chunkOffset += read;
-                }
-
-                if (_chunkOffset == SEED_END) {
-                    PlatformAdapter.initializeUIDGenerator(_seed);
-                    _seed = null;
-                    started = true;
-                }
-            }
-
-            if (_chunkOffset < _chunkLength) {
-                int needed = _chunkLength - _chunkOffset;
-                int available = limit - offset;
-
-                if (needed < available) {
-                    read(buffer, offset, offset + needed);
-                    offset += needed;
-                    _chunkOffset += needed;
-                } else {
-                    read(buffer, offset, limit);
-                    _chunkOffset += available;
-                    break;
-                }
-            }
-
-            if (_chunkOffset < MIN_CHUNK_SIZE) {
-                if (Debug.ENABLED)
-                    Debug.assertion(_chunkLength < MIN_CHUNK_SIZE);
-
-                int needed = MIN_CHUNK_SIZE - _chunkOffset;
-                int available = limit - offset;
-
-                if (needed < available) {
-                    offset += needed;
-                    _chunkOffset += needed;
-                } else {
-                    _chunkOffset += available;
-                    break;
-                }
+            if (_headerOffset == SEED_END) {
+                PlatformAdapter.initializeUIDGenerator(_seed);
+                _seed = null;
+                headerDone = started = true;
             }
         }
+
+        if (headerDone)
+            read(buffer, offset, limit);
 
         if (started)
             onStarted();
@@ -280,16 +273,20 @@ abstract class CometTransport extends ConnectionState {
             ThreadAssert.suspend(_reader);
     }
 
+    final void requestRunAccessor() {
+        requestRun();
+    }
+    
     @Override
-    protected void startWrite() {
+    protected void startRun() {
         _writer.connect();
     }
-
-    private final int write(byte[] buffer, boolean connection, boolean encoded) {
+    
+    private final int write(byte[] buffer, boolean connection) {
         if (Debug.ENABLED)
             ThreadAssert.resume(_writer);
 
-        int result = writeImpl(buffer, connection, encoded);
+        int result = writeImpl(buffer, connection);
 
         if (Debug.ENABLED)
             ThreadAssert.suspend(_writer);
@@ -297,17 +294,16 @@ abstract class CometTransport extends ConnectionState {
         return result;
     }
 
-    private final int writeImpl(byte[] buffer, boolean connection, boolean encoded) {
+    private final int writeImpl(byte[] buffer, boolean connection) {
         byte command;
 
         if (connection)
-            command = _id == null ? CONNECTION : SERVER_TO_CLIENT;
+            command = _id == null ? TYPE_CONNECTION : TYPE_SERVER_TO_CLIENT;
         else
-            command = CLIENT_TO_SERVER;
+            command = TYPE_CLIENT_TO_SERVER;
 
         buffer[FIELD_TYPE] = command;
-        buffer[FIELD_IS_ENCODED] = encoded ? (byte) 1 : 0;
-        int start = FIELD_IS_ENCODED + 1;
+        int start = FIELD_ID;
 
         if (_id != null) {
             for (int i = 0; i < PlatformAdapter.UID_BYTES_COUNT; i++)
@@ -316,7 +312,7 @@ abstract class CometTransport extends ConnectionState {
             start += PlatformAdapter.UID_BYTES_COUNT;
         }
 
-        if (command == SERVER_TO_CLIENT)
+        if (command == TYPE_SERVER_TO_CLIENT)
             return start;
 
         int written = write(buffer, start + 2, Math.min(buffer.length, MAX_CHUNK_SIZE));
@@ -324,9 +320,9 @@ abstract class CometTransport extends ConnectionState {
         if (written < 0)
             written = -written - 1;
         else
-            requestWrite();
+            requestRun();
 
-        if (command == CLIENT_TO_SERVER && written == 0)
+        if (command == TYPE_CLIENT_TO_SERVER && written == 0)
             return 0;
 
         buffer[start + 0] = (byte) (written >> 8);

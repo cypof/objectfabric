@@ -182,20 +182,14 @@ final class LongKeyChainedHashMap<E> {
             return key;
         }
 
-        public E getValue() {
-            return value;
+        @Override
+        public boolean equals(Object obj) {
+            throw new UnsupportedOperationException();
         }
 
         @Override
-        @SuppressWarnings("unchecked")
-        public boolean equals(Object obj) {
-            if (!(obj instanceof Entry))
-                return false;
-            Entry<E> e = (Entry<E>) obj;
-            Object eval = e.getValue();
-            if (eval == null)
-                return e.getKey() == key && value == null;
-            return e.getKey() == key && e.getValue().equals(value);
+        public int hashCode() {
+            throw new UnsupportedOperationException();
         }
     }
 

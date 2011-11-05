@@ -21,7 +21,8 @@
 				**/FileLog.java
 				**/ThreadAssert.java
 				**/TransparentExecutor.java
-				**/FutureWithCallback.java" />
+				**/FutureWithCallback.java
+				**/JavaSerializer.java" />
 			<fileset dir="../objectfabric/generated" includes="**/*.java" excludes="" />
 			<fileset dir="../objectfabric/extensibility" includes="**/*.java" excludes="" />
 			<fileset dir="../objectfabric/serialization" includes="**/*.java" excludes="" />
@@ -89,14 +90,6 @@
 				<replacestring from="_userFutureUpdater.compareAndSet(this, null, future)" to="(_userFuture == null ? ((_userFuture = future) == future) : false)" />
 				<replacestring from="_userFutureUpdater.compareAndSet(this, null, mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)" to="(_userFuture == null ? ((_userFuture = (mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)) == (mayInterruptIfRunning ? CANCELLED_INTERRUPT : CANCELLED)) : false)" />
 
-				<!-- Extension -->
-
-				<replacestring from="private static final AtomicIntegerFieldUpdater&lt;Extension&gt; _statusUpdater;" to="" />
-				<replacestring from="_statusUpdater = AtomicIntegerFieldUpdater.newUpdater(Extension.class, &quot;_status&quot;);" to="" />
-				<replacestring from="_statusUpdater.compareAndSet(this, value, STATUS_NOTIFIED)" to="(_status == value ? ((_status = STATUS_NOTIFIED) == STATUS_NOTIFIED) : false)" />
-				<replacestring from="_statusUpdater.compareAndSet(this, STATUS_RUNNING, STATUS_IDLE)" to="(_status == STATUS_RUNNING ? ((_status = STATUS_IDLE) == STATUS_IDLE) : false)" />
-				<replacestring from="_statusUpdater.compareAndSet(this, value, STATUS_NOTIFIED)" to="(_status == value ? ((_status = STATUS_NOTIFIED) == STATUS_NOTIFIED) : false)" />
-
 				<!-- All -->
 
 				<replacestring from="java.lang.Runnable" to="of4gwt.misc.Runnable" />
@@ -125,31 +118,6 @@
 			<fileset dir="src-converted/com/objectfabric" />
 		</move>
 		<delete dir="src-converted/com" />
-	</target>
-
-	<target name="convert-tests">
-		<delete includeemptydirs="true" failonerror="false">
-			<fileset dir="../of4gwt.tests/src-converted/of4gwt" />
-		</delete>
-
-		<copy todir="../of4gwt.tests/src-converted">
-			<fileset dir="../objectfabric.tests/distributed" includes="
-				**/DataGen.java
-				**/RandomSplitter.java" excludes="" />
-			<fileset dir="../objectfabric.tests/serialization" includes="**/*.java" excludes="
-				**/SerializationTestJava.java
-				**/generator/**" />
-			<filterchain>
-				<replacestring from="com.objectfabric" to="of4gwt" />
-				<replacestring from="java.util.concurrent.atomic.AtomicInteger" to="of4gwt.misc.AtomicInteger" />
-				<replacestring from="java.lang.InterruptedException" to="of4gwt.misc.InterruptedException" />
-			</filterchain>
-		</copy>
-
-		<move todir="../of4gwt.tests/src-converted/of4gwt">
-			<fileset dir="../of4gwt.tests/src-converted/com/objectfabric" />
-		</move>
-		<delete dir="../of4gwt.tests/src-converted/com" />
 	</target>
 
 	<target name="jar">

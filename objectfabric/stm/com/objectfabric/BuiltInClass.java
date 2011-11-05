@@ -23,8 +23,6 @@ final class BuiltInClass {
 
     public static final BuiltInClass CONNECTION;
 
-    public static final BuiltInClass INDEX;
-
     public static final BuiltInClass LAZY_MAP;
 
     public static final BuiltInClass SESSION;
@@ -53,7 +51,6 @@ final class BuiltInClass {
         List<BuiltInClass> all = new List<BuiltInClass>();
 
         all.add(CONNECTION = new BuiltInClass(DefaultObjectModelBase.COM_OBJECTFABRIC_CONNECTION_CLASS_ID, "com.objectfabric.Connection"));
-        all.add(INDEX = new BuiltInClass(DefaultObjectModelBase.COM_OBJECTFABRIC_INDEX_CLASS_ID, "com.objectfabric.Index"));
         all.add(LAZY_MAP = new BuiltInClass(DefaultObjectModelBase.COM_OBJECTFABRIC_LAZYMAP_CLASS_ID, "com.objectfabric.LazyMap"));
         all.add(SESSION = new BuiltInClass(DefaultObjectModelBase.COM_OBJECTFABRIC_SESSION_CLASS_ID, "com.objectfabric.Session"));
         all.add(SITE = new BuiltInClass(DefaultObjectModelBase.COM_OBJECTFABRIC_SITE_CLASS_ID, "com.objectfabric.Site"));

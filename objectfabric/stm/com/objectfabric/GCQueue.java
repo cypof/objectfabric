@@ -47,7 +47,6 @@ final class GCQueue extends ReferenceQueue {
 
         private volatile boolean _shutdown;
 
-        @SuppressWarnings("static-access")
         public void dispose() {
             _shutdown = true;
 

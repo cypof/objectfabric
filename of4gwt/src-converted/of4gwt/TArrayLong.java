@@ -85,7 +85,7 @@ public class TArrayLong extends TIndexed implements Iterable<Long> {
             value = version != null ? (long) version.get(index) : 0;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayLong extends TIndexed implements Iterable<Long> {
             value = version != null ? (long) version.get(index) : 0;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

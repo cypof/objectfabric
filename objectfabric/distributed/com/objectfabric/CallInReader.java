@@ -143,7 +143,9 @@ final class CallInReader extends DistributedReader {
 
             branch.startFromPublic(call.getTransaction(), snapshot);
             call.getTransaction().setFlags(Transaction.FLAG_NO_READS | Transaction.FLAG_REMOTE | Transaction.FLAG_REMOTE_METHOD_CALL);
-            call.getTransaction().setPrivateSnapshotVersions(writes);
+
+            if (writes != null)
+                call.getTransaction().setPrivateSnapshotVersions(writes);
         }
 
         Executor executor = call.getTarget().getDefaultMethodExecutor_objectfabric();
@@ -170,7 +172,7 @@ final class CallInReader extends DistributedReader {
         }
     }
 
-    public static final class Call extends MethodCall implements Runnable {
+    public static final class Call extends MethodCall {
 
         // Copy for thread assertions
         private final Endpoint _endpoint;
@@ -219,7 +221,6 @@ final class CallInReader extends DistributedReader {
             }
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         public void set(Object result, boolean direct) {
             Exception ex = null;

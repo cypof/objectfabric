@@ -85,7 +85,7 @@ public class TArrayDouble extends TIndexed implements Iterable<Double> {
             value = version != null ? (double) version.get(index) : 0;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayDouble extends TIndexed implements Iterable<Double> {
             value = version != null ? (double) version.get(index) : 0;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

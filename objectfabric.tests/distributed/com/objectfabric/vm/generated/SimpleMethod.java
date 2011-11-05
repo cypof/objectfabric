@@ -7,7 +7,7 @@ package com.objectfabric.vm.generated;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
 
     public SimpleMethod() {
@@ -100,25 +100,25 @@ public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
 
     public static final java.lang.String TEXT_NAME = "text";
 
-    public static final java.lang.Class TEXT_CLASS = java.lang.String.class;
+    public static final com.objectfabric.TType TEXT_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
     public static final int INT_INDEX = 1;
 
     public static final java.lang.String INT_NAME = "int";
 
-    public static final java.lang.Class INT_CLASS = int.class;
+    public static final com.objectfabric.TType INT_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT2_INDEX = 2;
 
     public static final java.lang.String INT2_NAME = "int2";
 
-    public static final java.lang.Class INT2_CLASS = int.class;
+    public static final com.objectfabric.TType INT2_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int SIMPLE_INDEX = 3;
 
     public static final java.lang.String SIMPLE_NAME = "simple";
 
-    public static final java.lang.Class SIMPLE_CLASS = com.objectfabric.vm.generated.MethodRef.class;
+    public static final com.objectfabric.TType SIMPLE_TYPE = com.objectfabric.vm.generated.MethodRef.TYPE;
 
     public static final int FIELD_COUNT = 4;
 
@@ -149,21 +149,21 @@ public class SimpleMethod extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case TEXT_INDEX:
-                return TEXT_CLASS;
+                return TEXT_TYPE;
             case INT_INDEX:
-                return INT_CLASS;
+                return INT_TYPE;
             case INT2_INDEX:
-                return INT2_CLASS;
+                return INT2_TYPE;
             case SIMPLE_INDEX:
-                return SIMPLE_CLASS;
+                return SIMPLE_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

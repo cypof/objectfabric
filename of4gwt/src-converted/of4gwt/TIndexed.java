@@ -12,8 +12,6 @@
 
 package of4gwt;
 
-
-import of4gwt.TIndexedBase;
 import of4gwt.Visitor.ClassVisitor;
 import of4gwt.misc.Bits;
 import of4gwt.misc.Debug;
@@ -89,9 +87,17 @@ public abstract class TIndexed extends TIndexedBase {
             return of4gwt.Visitor.INDEXED_VISITOR_ID;
         }
 
+        /**
+         * @param object
+         * @param index
+         */
         protected void onRead(TObject object, int index) {
         }
 
+        /**
+         * @param object
+         * @param index
+         */
         protected void onWrite(TObject object, int index) {
         }
 

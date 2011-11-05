@@ -83,7 +83,7 @@ public class ConnectionTestClient extends Privileged {
             }
         });
 
-        client.connectAsync();
+        client.connectAsync(null);
         SeparateClassLoader.waitForProgress(progress, DONE);
         client.close();
         NIOManager.getInstance().close();

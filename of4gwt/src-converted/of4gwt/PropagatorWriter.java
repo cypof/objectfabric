@@ -84,7 +84,7 @@ final class PropagatorWriter extends DistributedWriter {
                 Log.write("PropagatorWriter: registering branch " + branch);
 
             _walker.register(branch);
-            getEndpoint().onBranchPropagated(branch);
+            getEndpoint().onBranchPropagated();
 
             /*
              * Sometimes registration happens after commit made by reader, and request is
@@ -202,7 +202,7 @@ final class PropagatorWriter extends DistributedWriter {
                 }
 
                 for (int i = _snapshottedBranches.size() - 1; i >= 0; i--) {
-                    Transaction branch = _snapshottedBranches.remove(i);
+                    Transaction branch = _snapshottedBranches.removeLast();
                     getEndpoint().onBranchUpToDate(branch);
                 }
             }

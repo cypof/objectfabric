@@ -103,6 +103,9 @@ abstract class MultiplexerWriter extends Writer {
         OverrideAssert.end(this);
     }
 
+    /**
+     * @param e
+     */
     protected void onStopped(Exception e) {
         OverrideAssert.set(this);
     }

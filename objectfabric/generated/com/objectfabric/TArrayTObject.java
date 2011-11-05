@@ -85,7 +85,7 @@ public class TArrayTObject<E extends TObject> extends TIndexed implements Iterab
             value = version != null ? (E) version.get(index) : null;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayTObject<E extends TObject> extends TIndexed implements Iterab
             value = version != null ? (E) version.get(index) : null;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

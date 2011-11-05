@@ -14,8 +14,8 @@ package com.objectfabric;
 
 import org.junit.Test;
 
-import com.objectfabric.TestsHelper;
 import com.objectfabric.Transaction.Granularity;
+import com.objectfabric.vm.VMLazyMap;
 import com.objectfabric.vm.VMTest;
 import com.objectfabric.vm.VMTest1;
 import com.objectfabric.vm.VMTest2;
@@ -38,10 +38,15 @@ public class VMLoad extends TestsHelper {
         runAll(new VMTest3());
     }
 
+    @Test
+    public void runLazyMap() {
+        runAll(new VMLazyMap());
+    }
+
     private final void runAll(VMTest test) {
         for (Granularity granularity : new Granularity[] { Granularity.ALL, Granularity.COALESCE }) {
             for (int clientCount = 1; clientCount <= 8; clientCount += 7) {
-                for (int flags = 1; flags < VMTest.FLAG_ALL_2; flags++) {
+                for (int flags = 0; flags <= VMTest.FLAG_ALL_2; flags++) {
                     test.run(granularity, clientCount, flags);
                     assertIdleAndCleanup();
                 }

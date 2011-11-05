@@ -18,7 +18,7 @@ package com.objectfabric.generated;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 public class SimpleClass extends com.objectfabric.TGeneratedFields32 {
 
     public SimpleClass() {
@@ -129,31 +129,31 @@ public class SimpleClass extends com.objectfabric.TGeneratedFields32 {
 
     public static final java.lang.String TEXT_NAME = "text";
 
-    public static final java.lang.Class TEXT_CLASS = java.lang.String.class;
+    public static final com.objectfabric.TType TEXT_TYPE = com.objectfabric.ImmutableClass.STRING.getType();
 
     public static final int INT0_INDEX = 1;
 
     public static final java.lang.String INT0_NAME = "int0";
 
-    public static final java.lang.Class INT0_CLASS = int.class;
+    public static final com.objectfabric.TType INT0_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT1_INDEX = 2;
 
     public static final java.lang.String INT1_NAME = "int1";
 
-    public static final java.lang.Class INT1_CLASS = int.class;
+    public static final com.objectfabric.TType INT1_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT2_INDEX = 3;
 
     public static final java.lang.String INT2_NAME = "int2";
 
-    public static final java.lang.Class INT2_CLASS = int.class;
+    public static final com.objectfabric.TType INT2_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT3_INDEX = 4;
 
     public static final java.lang.String INT3_NAME = "int3";
 
-    public static final java.lang.Class INT3_CLASS = int.class;
+    public static final com.objectfabric.TType INT3_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int FIELD_COUNT = 5;
 
@@ -186,23 +186,23 @@ public class SimpleClass extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case TEXT_INDEX:
-                return TEXT_CLASS;
+                return TEXT_TYPE;
             case INT0_INDEX:
-                return INT0_CLASS;
+                return INT0_TYPE;
             case INT1_INDEX:
-                return INT1_CLASS;
+                return INT1_TYPE;
             case INT2_INDEX:
-                return INT2_CLASS;
+                return INT2_TYPE;
             case INT3_INDEX:
-                return INT3_CLASS;
+                return INT3_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

@@ -13,6 +13,7 @@
 package com.objectfabric.misc;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.nio.ByteBuffer;
@@ -78,6 +79,9 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
 
     public abstract Object waitOnSelector() throws IOException;
 
+    /**
+     * @param result
+     */
     public void waitOnSelectorSucceeded(Object result) {
         throw new UnsupportedOperationException();
     }
@@ -160,15 +164,20 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
 
         private final NIOConnection _connection;
 
-        private final SocketChannel _channel;
+        private final String _host;
+
+        private final int _port;
 
         private final FutureAccessor<Void> _future;
 
+        private SocketChannel _channel;
+
         private SelectionKey _key;
 
-        public Connect(NIOConnection connection, SocketChannel channel, AsyncCallback<Void> callback, AsyncOptions asyncOptions) {
+        public Connect(NIOConnection connection, String host, int port, AsyncCallback<Void> callback, AsyncOptions asyncOptions) {
             _connection = connection;
-            _channel = channel;
+            _host = host;
+            _port = port;
 
             _future = new FutureAccessor<Void>(callback, asyncOptions) {
 
@@ -196,7 +205,6 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
             return _connection;
         }
 
-        @SuppressWarnings("unchecked")
         public Future<Void> getFuture() {
             return _future;
         }
@@ -204,6 +212,13 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
         @Override
         public Object waitOnSelector() throws IOException {
             NIOManager.assertLocked();
+            _channel = SocketChannel.open();
+            // TODO: bench _channel.socket().setTcpNoDelay(true);
+            _channel.socket().setSendBufferSize(NIOManager.SOCKET_BUFFER_SIZE);
+            _channel.socket().setReceiveBufferSize(NIOManager.SOCKET_BUFFER_SIZE);
+            _channel.configureBlocking(false);
+            _channel.connect(new InetSocketAddress(_host, _port));
+
             Selector selector = NIOManager.getInstance().getSelector();
             _key = _channel.register(selector, SelectionKey.OP_CONNECT, this);
             NIOManager.getInstance().onNewKey(_key);
@@ -463,9 +478,9 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                 if (Debug.ENABLED) {
                     ThreadAssert.suspend(this);
                     setNoTransaction(true);
+                    assertThreadContextEmpty();
                 }
 
-                assertThreadContextEmpty();
                 stop(e);
                 NIOManager.getInstance().execute(this);
                 return false;
@@ -534,7 +549,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
         }
     }
 
-    public static final class Write extends NIOTask implements NIOAttachement {
+    public static final class Write extends NIOTask {
 
         private final NIOConnection _connection;
 
@@ -580,7 +595,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
         @Override
         public Object waitOnSelector() throws IOException {
             if (Debug.ENABLED) {
-                getConnection().assertNotified();
+                getConnection().assertScheduledAccessor();
                 Debug.assertion((_key.interestOps() & SelectionKey.OP_WRITE) == 0);
             }
 
@@ -598,7 +613,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
         public void select(final ByteBuffer buffer) {
             NIOManager.assertUnlocked();
 
-            if (!_connection.onWriteStarting())
+            if (!_connection.onRunStartingAccessor())
                 return;
 
             if (Debug.ENABLED)
@@ -629,7 +644,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                     assertThreadContextEmpty();
                 }
 
-                _connection.setIdle();
+                _connection.setIdleAccessor();
                 stop(e);
                 return;
             }
@@ -663,7 +678,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                     if (Debug.ENABLED)
                         ThreadAssert.suspend(this);
 
-                    _connection.setIdle();
+                    _connection.setIdleAccessor();
                     stop(ex);
                     return;
                 }
@@ -689,7 +704,7 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                             Stats.getInstance().SocketRemaining.addAndGet(buffer.remaining());
                     }
 
-                    _connection.setNotified();
+                    _connection.setScheduledAccessor();
                     NIOManager.getInstance().execute(this);
                     return;
                 }
@@ -716,9 +731,9 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
                 ThreadAssert.suspend(this);
 
             if (done)
-                _connection.endWrite();
+                _connection.onRunEndedAccessor();
             else {
-                _connection.setNotified();
+                _connection.setScheduledAccessor();
                 NIOManager.getInstance().execute(this);
             }
         }
@@ -757,8 +772,8 @@ abstract class NIOTask extends Privileged implements NIOAttachement, Runnable {
 
         @Override
         public void waitOnSelectorSucceeded(Object result) {
-            if (!getConnection().isDisposed()) {
-                if (!getConnection().dispose())
+            if (!getConnection().isDisposedAccessor()) {
+                if (!getConnection().disposeFromOtherThreadAccessor())
                     NIOManager.getInstance().execute(this);
                 else {
                     if (Debug.ENABLED)

@@ -26,7 +26,7 @@ public abstract class SerializationTest {
 
     protected abstract TestReader createTestReader(boolean unknown);
 
-    public void run(boolean check, boolean unknown, String assembly) {
+    public void run(boolean check, boolean unknown) {
         if (Debug.ENABLED)
             ImmutableWriter.setCheckCommunications(check);
 

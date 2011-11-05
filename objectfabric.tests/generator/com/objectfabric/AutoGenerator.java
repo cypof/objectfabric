@@ -66,8 +66,6 @@ class AutoGenerator extends Privileged {
                     String hsql = new File("../objectfabric.examples.sql/libs/hsqldb.jar").getAbsolutePath();
                     list.add(System.getProperty("java.class.path") + ";" + new File(folder).getAbsolutePath() + ";" + hsql);
                     list.add(name);
-                    list.add("/Android");
-                    list.add("/CSharp");
                     ProcessBuilder builder = new ProcessBuilder(list);
                     builder.directory(new File(generator[1]));
                     Process process = builder.start();

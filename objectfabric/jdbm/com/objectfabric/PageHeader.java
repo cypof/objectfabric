@@ -97,8 +97,8 @@ class PageHeader implements BlockView {
 
         if (view != null && view instanceof PageHeader)
             return (PageHeader) view;
-        else
-            return new PageHeader(block);
+
+        return new PageHeader(block);
     }
 
     private void initialize(BlockIo b) {

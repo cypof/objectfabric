@@ -15,9 +15,6 @@ package of4gwt.misc;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import of4gwt.misc.Debug;
-import of4gwt.misc.List;
-
 /**
  * Debug purposes. Allows objects to be associated to threads, and asserts that only this
  * thread access them. When a context switches thread, a common object needs to be given
@@ -71,72 +68,122 @@ public final class ThreadAssert {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param exceptions
+     */
     public static void assertIdle(Object... exceptions) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static void addPrivate(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static boolean addPrivateIfNot(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static void assertPrivate(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static void assertPrivateOrShared(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static boolean isPrivate(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static void removePrivate(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param objects
+     */
     public static void removePrivateList(List<Object> objects) {
         throw new UnsupportedOperationException();
     }
 
     //
 
+    /**
+     * @param object
+     */
     public static void addShared(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static void assertShared(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static void removeShared(Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     */
     public static void addSharedDefinitively(Object object) {
         throw new UnsupportedOperationException();
     }
 
     //
 
+    /**
+     * @param object
+     */
     public static void assertCleaned(Object object) {
         throw new UnsupportedOperationException();
     }
 
     //
 
+    /**
+     * @param key
+     * @param object
+     */
     public static void exchangeGive(Object key, Object object) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param key
+     * @param objects
+     */
     public static void exchangeGiveList(Object key, List<Object> objects) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param key
+     */
     public static ArrayList<Object> exchangeTake(Object key) {
         throw new UnsupportedOperationException();
     }
@@ -145,12 +192,22 @@ public final class ThreadAssert {
      * Whole context operations, used also to debug non thread related stuff.
      */
 
+    /**
+     * @param key
+     */
     public static void suspend(Object key) {
     }
 
+    /**
+     * @param key
+     */
     public static void resume(Object key) {
     }
 
+    /**
+     * @param key
+     * @param assertExists
+     */
     public static void resume(Object key, boolean assertExists) {
     }
 

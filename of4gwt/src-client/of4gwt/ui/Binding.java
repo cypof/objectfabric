@@ -24,20 +24,15 @@ import com.google.gwt.user.client.ui.UIObject;
  */
 public abstract class Binding<T extends TIndexed, C extends UIObject> {
 
-    private final T _tObject;
-
     private final C _control;
 
     private final int _fieldIndex;
 
-    protected Binding(T tObject, C control, int fieldIndex) {
-        _control = control;
-        _tObject = tObject;
-        _fieldIndex = fieldIndex;
-    }
+    private T _tObject;
 
-    public T getTObject() {
-        return _tObject;
+    protected Binding(C control, int fieldIndex) {
+        _control = control;
+        _fieldIndex = fieldIndex;
     }
 
     public C getControl() {
@@ -48,9 +43,17 @@ public abstract class Binding<T extends TIndexed, C extends UIObject> {
         return _fieldIndex;
     }
 
-    public static <T extends TIndexed, C extends UIObject> Binding<T, TextBox> bind(T object, C control, int fieldIndex) {
+    public T getTObject() {
+        return _tObject;
+    }
+
+    public void setTObject(T value) {
+        _tObject = value;
+    }
+
+    public static <T extends TIndexed, C extends UIObject> Binding<T, TextBox> bind(C control, int fieldIndex) {
         if (control instanceof TextBox)
-            return new BindingTextBox<T>(object, (TextBox) control, fieldIndex);
+            return new BindingTextBox<T>((TextBox) control, fieldIndex);
 
         throw new IllegalArgumentException("Unsupported " + control.getClass().getName());
     }

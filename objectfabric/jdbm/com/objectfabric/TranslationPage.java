@@ -76,8 +76,8 @@ final class TranslationPage extends PageHeader {
         BlockView view = block.getView();
         if (view != null && view instanceof TranslationPage)
             return (TranslationPage) view;
-        else
-            return new TranslationPage(block);
+
+        return new TranslationPage(block);
     }
 
     /** Returns the value of the indicated rowid on the page */

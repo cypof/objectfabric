@@ -34,7 +34,7 @@ import com.objectfabric.misc.TransparentExecutor;
  * replicated from a remote site. In this case, entries will be fetched every time.
  */
 @SuppressWarnings("unchecked")
-public class LazyMap<K, V> extends LazyMapBase {
+public class LazyMap<K, V> extends LazyMapBase<K> {
 
     public LazyMap() {
         this(Transaction.getDefaultTrunk());
@@ -86,9 +86,6 @@ public class LazyMap<K, V> extends LazyMapBase {
         Future<V> future = (Future) fetchAsync(key, FutureWithCallback.NOP_CALLBACK);
 
         try {
-            if (CompileTimeSettings.DISALLOW_THREAD_BLOCKING)
-                throw new RuntimeException(Strings.THREAD_BLOCKING_DISALLOWED);
-
             return future.get();
         } catch (java.lang.InterruptedException ex) {
             ExpectedExceptionThrower.throwRuntimeException(ex);
@@ -161,7 +158,7 @@ public class LazyMap<K, V> extends LazyMapBase {
         try {
             entry = getEntry(inner, key, hash);
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return entry;

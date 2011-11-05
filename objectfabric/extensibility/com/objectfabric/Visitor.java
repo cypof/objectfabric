@@ -33,12 +33,10 @@ import com.objectfabric.misc.Utils;
 @SingleThreaded
 public class Visitor {
 
-    static final int NULL_MAP_INDEX = -1;
-
     /**
      * Called during visit.
      */
-    static class Listener extends Privileged {
+    static abstract class Listener extends Schedulable {
 
         /**
          * A listener can return an action to guide the visit.
@@ -67,11 +65,20 @@ public class Visitor {
             return Action.VISIT;
         }
 
+        /**
+         * @param visitor
+         * @param mapIndex
+         */
         protected void onVisitedMap(Visitor visitor, int mapIndex) {
             if (!visitor.interrupted())
                 OverrideAssert.set(this);
         }
 
+        /**
+         * @param visitor
+         * @param object
+         * @return
+         */
         protected Action onVisitingTObject(Visitor visitor, TObject object) {
             if (!visitor.interrupted())
                 OverrideAssert.set(this);
@@ -79,11 +86,19 @@ public class Visitor {
             return Action.VISIT;
         }
 
+        /**
+         * @param visitor
+         * @param shared
+         */
         protected void onVisitingVersions(Visitor visitor, Version shared) {
             if (!visitor.interrupted())
                 OverrideAssert.set(this);
         }
 
+        /**
+         * @param visitor
+         * @param shared
+         */
         protected void onVisitedVersions(Visitor visitor, Version shared) {
             if (!visitor.interrupted())
                 OverrideAssert.set(this);
@@ -247,6 +262,9 @@ public class Visitor {
 
         protected abstract int getId();
 
+        /**
+         * @param version
+         */
         protected void visit(Version version) {
             throw new UnsupportedOperationException();
         }
@@ -361,13 +379,10 @@ public class Visitor {
     }
 
     private final Object resumeImpl() {
-        if (Debug.STACKS) {
-            int last = _continueStack.size() - 1;
-            PlatformAdapter.assertCurrentStack(_continueStack.remove(last));
-        }
+        if (Debug.STACKS)
+            PlatformAdapter.assertCurrentStack(_continueStack.removeLast());
 
-        int last = _continueStack.size() - 1;
-        return _continueStack.remove(last);
+        return _continueStack.removeLast();
     }
 
     //
@@ -498,7 +513,7 @@ public class Visitor {
 
                         if (reads != null) {
                             _visitingReads = true;
-                            atLeastOneRead = gatherReads(reads, mapIndex);
+                            atLeastOneRead = gatherReads(reads);
 
                             if (interrupted()) {
                                 interruptBoolean(atLeastOneWrite);
@@ -515,7 +530,7 @@ public class Visitor {
             case WRITES: {
                 if (action == Action.VISIT) {
                     Version[] versions = _snapshot.getWrites()[mapIndex];
-                    atLeastOneWrite = gatherWrites(versions, mapIndex);
+                    atLeastOneWrite = gatherWrites(versions);
 
                     if (interrupted()) {
                         interruptBoolean(atLeastOneWrite);
@@ -563,7 +578,7 @@ public class Visitor {
 
     //
 
-    private final boolean gatherReads(Version[] reads, int mapIndex) {
+    private final boolean gatherReads(Version[] reads) {
         if (Debug.ENABLED)
             Debug.assertion(reads.length > 0);
 
@@ -579,7 +594,7 @@ public class Visitor {
         for (; index >= 0; index--) {
             Version version = reads[index];
 
-            if (version != null && version.visitable(this, mapIndex)) {
+            if (version != null) {
                 Version shared = version.getShared();
                 Action action = onVisitingTObject(shared);
 
@@ -617,7 +632,7 @@ public class Visitor {
         return atLeastOne;
     }
 
-    private final boolean gatherWrites(Version[] versions, int mapIndex) {
+    private final boolean gatherWrites(Version[] versions) {
         if (Debug.ENABLED)
             Debug.assertion(versions.length > 0);
 
@@ -633,7 +648,7 @@ public class Visitor {
         for (; index >= 0; index--) {
             Version version = versions[index];
 
-            if (version != null && version.visitable(this, mapIndex)) {
+            if (version != null) {
                 Version shared = version.getShared();
                 Action action = onVisitingTObject(shared);
 
@@ -881,7 +896,8 @@ public class Visitor {
 
     /*
      * Hard-coded classes. Default implementations is to invoke the class visitors if one
-     * is registered.
+     * is registered. TODO: skip merging versions when map has been merged already? (e.g.
+     * 'currentVersion' below, when mergeInfo == MERGE_DONE).
      */
 
     /*
@@ -1050,7 +1066,6 @@ public class Visitor {
         visit((TKeyedSharedVersion) version.getShared(), version.getEntries(), false, false);
     }
 
-    @SuppressWarnings("null")
     protected void visit(TKeyedSharedVersion shared) {
         TKeyedEntry[] entries;
         boolean cleared = false;
@@ -1140,6 +1155,12 @@ public class Visitor {
         }
     }
 
+    /**
+     * @param shared
+     * @param entries
+     * @param cleared
+     * @param fullyRead
+     */
     protected void visit(TKeyedSharedVersion shared, TKeyedEntry[] entries, boolean cleared, boolean fullyRead) {
         TKeyed.Visitor visitor = (TKeyed.Visitor) getClassVisitor(KEYED_VISITOR_ID);
 
@@ -1150,22 +1171,6 @@ public class Visitor {
     /*
      * TList.
      */
-
-    protected void visitRead(TListSharedVersion shared) {
-        TList.Visitor visitor = (TList.Visitor) getClassVisitor(LIST_VISITOR_ID);
-
-        if (visitor != null)
-            visitor.visitRead(shared);
-    }
-
-    protected void visitSnapshot(TListSharedVersion shared, Object[] array, int size) {
-        TList.Visitor visitor = (TList.Visitor) getClassVisitor(LIST_VISITOR_ID);
-
-        if (visitor != null)
-            visitor.visitGatheredWrites(shared, array, size);
-    }
-
-    //
 
     protected void visit(TListRead read) {
         if (Debug.ENABLED)
@@ -1182,7 +1187,6 @@ public class Visitor {
             visitor.visitVersion(version);
     }
 
-    @SuppressWarnings("null")
     protected void visit(TListSharedVersion shared) {
         if (Debug.ENABLED)
             Debug.assertion(visitingGatheredVersions());
@@ -1217,11 +1221,11 @@ public class Visitor {
                         version = currentVersion;
                     else {
                         if (!cloned) {
-                            version = (TListVersion) version.cloneThis(visitingReads());
+                            version = (TListVersion) version.cloneThis(visitingReads(), true);
                             cloned = true;
                         }
 
-                        TObject.Version merged = version.merge(version, currentVersion, Version.MERGE_FLAG_BY_COPY);
+                        TObject.Version merged = version.merge(version, currentVersion, Version.MERGE_FLAG_COPY_ARRAY_ELEMENTS);
 
                         if (Debug.ENABLED)
                             Debug.assertion(merged == version);
@@ -1231,13 +1235,22 @@ public class Visitor {
         }
 
         if (version != null) {
-            if (version.getBits() != null || version.getRemovalsCount() != 0 || version.getInsertsCount() != 0 || version.getCleared()) {
+            boolean bits = version.getBits() != null && !Bits.isEmpty(version.getBits());
+
+            if (bits || version.getRemovalsCount() != 0 || version.getInsertsCount() != 0 || version.getCleared()) {
                 visit(version);
 
                 if (interrupted())
                     interrupt(version);
             }
         }
+    }
+
+    private final void visitRead(TListSharedVersion shared) {
+        TList.Visitor visitor = (TList.Visitor) getClassVisitor(LIST_VISITOR_ID);
+
+        if (visitor != null)
+            visitor.visitRead(shared);
     }
 
     @SuppressWarnings("null")
@@ -1318,10 +1331,22 @@ public class Visitor {
         }
     }
 
+    protected void visitSnapshot(TListSharedVersion shared, Object[] array, int size) {
+        TList.Visitor visitor = (TList.Visitor) getClassVisitor(LIST_VISITOR_ID);
+
+        if (visitor != null)
+            visitor.visitGatheredWrites(shared, array, size);
+    }
+
     /*
      * Other classes.
      */
 
+    /**
+     * @param classVisitorId
+     * @param shared
+     * @param version
+     */
     public void visit(int classVisitorId, TObject.Version shared, Version version) {
         ClassVisitor visitor = getClassVisitor(classVisitorId);
 

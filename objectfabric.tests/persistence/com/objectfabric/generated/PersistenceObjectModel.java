@@ -21,7 +21,7 @@ package com.objectfabric.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class PersistenceObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { 98, -82, -13, 66, 106, 34, -61, 69, 16, -85, -58, 43, -85, 43, 105, -19 };
+    private static final byte[] UID = { 47, 69, 48, 113, -71, 53, 51, 35, 16, 69, 23, 115, 24, 70, -99, -22 };
 
     private static volatile PersistenceObjectModel _instance;
 

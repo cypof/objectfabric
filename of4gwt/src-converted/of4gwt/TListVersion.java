@@ -25,7 +25,6 @@ import of4gwt.misc.Utils;
  * corresponding to updates and to avoid re-sending shifted elements in the distributed
  * case.
  */
-@SuppressWarnings("unchecked")
 final class TListVersion extends TArrayVersion {
 
     private static final int DEFAULT_TEMP_CAPACITY = 4;
@@ -507,7 +506,7 @@ final class TListVersion extends TArrayVersion {
             Debug.assertion(getCopied() == null || retry);
         }
 
-        updateFromSnapshot(newSnapshot, mapIndex, false);
+        updateFromSnapshot(newSnapshot, mapIndex);
         return true;
     }
 
@@ -516,12 +515,12 @@ final class TListVersion extends TArrayVersion {
         if (Debug.ENABLED)
             Debug.assertion(sizeValid());
 
-        TListVersion result = (TListVersion) cloneThis(false);
-        result.updateFromSnapshot(newSnapshot, mapIndex, true);
+        TListVersion result = (TListVersion) cloneThis(false, false);
+        result.updateFromSnapshot(newSnapshot, mapIndex);
         return result;
     }
 
-    private void updateFromSnapshot(Snapshot snapshot, int mapIndex, boolean clone) {
+    private void updateFromSnapshot(Snapshot snapshot, int mapIndex) {
         TListVersion version = null;
 
         for (int i = mapIndex - 1; i > TransactionManager.OBJECTS_VERSIONS_INDEX; i--) {
@@ -601,17 +600,6 @@ final class TListVersion extends TArrayVersion {
     public TObject.Version merge(TObject.Version target, TObject.Version next, int flags) {
         TListVersion source = (TListVersion) next;
 
-        if (Debug.ENABLED) {
-            Debug.assertion(this == target);
-            Debug.assertion(!isShared());
-
-            target.checkInvariants();
-            source.checkInvariants();
-
-            if ((flags & MERGE_FLAG_PRIVATE) != 0)
-                Debug.assertion(_versionId == 0 && source._versionId == 0);
-        }
-
         if ((flags & MERGE_FLAG_CLONE) != 0) {
             if (Debug.ENABLED) {
                 Debug.assertion(_removals == null);
@@ -624,12 +612,27 @@ final class TListVersion extends TArrayVersion {
                 Debug.assertion(!_cleared);
             }
 
-            setBits(source.getBits());
-            setValues(source.getValues());
+            Version test = super.merge(this, source, flags);
 
-            _removals = source._removals;
+            if (Debug.ENABLED)
+                Debug.assertion(test == this);
+
+            if ((flags & MERGE_FLAG_COPY_ARRAYS) != 0) {
+                if (source._removals != null) {
+                    _removals = new int[source._removals.length];
+                    PlatformAdapter.arraycopy(source._removals, 0, _removals, 0, _removals.length);
+                }
+
+                if (source._inserts != null) {
+                    _inserts = new int[source._inserts.length];
+                    PlatformAdapter.arraycopy(source._inserts, 0, _inserts, 0, _inserts.length);
+                }
+            } else {
+                _removals = source._removals;
+                _inserts = source._inserts;
+            }
+
             _removalsCount = source._removalsCount;
-            _inserts = source._inserts;
             _insertsCount = source._insertsCount;
             _size = source._size;
             _versionId = source._versionId;
@@ -637,6 +640,17 @@ final class TListVersion extends TArrayVersion {
             _cleared = source._cleared;
 
             return this;
+        }
+
+        if (Debug.ENABLED) {
+            Debug.assertion(this == target);
+            Debug.assertion(!isShared());
+
+            target.checkInvariants();
+            source.checkInvariants();
+
+            if ((flags & MERGE_FLAG_PRIVATE) != 0)
+                Debug.assertion(_versionId == 0 && source._versionId == 0);
         }
 
         if (source.getCleared()) {
@@ -668,9 +682,9 @@ final class TListVersion extends TArrayVersion {
         TListVersion toRead = this;
 
         if (source._removals != null || source._inserts != null) {
-            merged = (TListVersion) cloneThis(false);
+            merged = (TListVersion) cloneThis(false, false);
 
-            if ((flags & (MERGE_FLAG_PRIVATE | MERGE_FLAG_BY_COPY)) != 0) {
+            if ((flags & (MERGE_FLAG_PRIVATE | MERGE_FLAG_COPY_ARRAY_ELEMENTS)) != 0) {
                 toRead = merged;
                 merged = this;
             }
@@ -743,7 +757,7 @@ final class TListVersion extends TArrayVersion {
                     /*
                      * Both arrays can be modified for inserts or removals.
                      */
-                    if ((flags & MERGE_FLAG_BY_COPY) != 0) {
+                    if ((flags & MERGE_FLAG_COPY_ARRAY_ELEMENTS) != 0) {
                         if (merged._removals != null) {
                             int[] temp = new int[merged._removals.length];
                             PlatformAdapter.arraycopy(merged._removals, 0, temp, 0, merged._removals.length);

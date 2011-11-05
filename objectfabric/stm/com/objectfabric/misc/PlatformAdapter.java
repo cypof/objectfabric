@@ -17,6 +17,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.lang.reflect.Field;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
@@ -97,6 +98,9 @@ public final class PlatformAdapter extends Privileged {
             OF.setConfig(new Config());
     }
 
+    /**
+     * @param store
+     */
     public static Transaction createTrunk(Store store) {
         throw new IllegalStateException();
     }
@@ -272,6 +276,14 @@ public final class PlatformAdapter extends Privileged {
         Log.write(Strings.USER_CODE_RAISED_AN_EXCEPTION + result.toString());
     }
 
+    public static final void exit(int code) {
+        System.exit(code);
+    }
+
+    /*
+     * Debug
+     */
+
     public static boolean shallowEquals(Object a, Object b, Class c, String... exceptions) {
         if (!Debug.ENABLED)
             throw new IllegalStateException();
@@ -321,6 +333,9 @@ public final class PlatformAdapter extends Privileged {
     }
 
     private static boolean referenceLevelEquals(Class c, Object a, Object b) {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
         // Primitives will be boxed so equals
         if (c.isPrimitive())
             return a.equals(b);
@@ -329,9 +344,10 @@ public final class PlatformAdapter extends Privileged {
         return a == b;
     }
 
-    // Debug
-
     public static final Object getCurrentStack() {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
         return new Exception().getStackTrace();
     }
 
@@ -387,6 +403,9 @@ public final class PlatformAdapter extends Privileged {
     }
 
     public static Object getPrivateField(Object object, String name, Class c) {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
         try {
             Field field = c.getDeclaredField(name);
             field.setAccessible(true);
@@ -396,13 +415,44 @@ public final class PlatformAdapter extends Privileged {
         }
     }
 
-    public static void assertEqualsAndHashCodeAreDefault(TObject object) {
+    public static TType getTypeField(Class c) {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
         try {
-            java.lang.reflect.Method e = object.getClass().getMethod("equals", Object.class);
-            java.lang.reflect.Method h = object.getClass().getMethod("hashCode");
+            Field field = c.getField("TYPE");
+            Debug.assertion((field.getModifiers() & Modifier.PUBLIC) != 0);
+            Debug.assertion((field.getModifiers() & Modifier.STATIC) != 0);
+            field.setAccessible(true); // Might be package visible class
+            return (TType) field.get(null);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("null")
+    public static void assertEqualsAndHashCodeAreDefault(TObject object) {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
+        try {
+            java.lang.reflect.Method e = null, h = null;
+
+            for (Method m : object.getClass().getMethods()) {
+                if (m.getName().equals("equals"))
+                    e = m;
+
+                if (m.getName().equals("hashCode"))
+                    h = m;
+            }
+
             Class c = e.getDeclaringClass();
             Debug.assertion(c == h.getDeclaringClass());
-            Debug.assertion(c.getName().equals("com.objectfabric.TObject$UserTObject") || c == TList.class || c == TMap.class || c == TSet.class);
+
+            if (!e.isSynthetic()) {
+                boolean known = c == TList.class || c == TMap.class || c == TSet.class;
+                Debug.assertion(known || c.getName().equals("com.objectfabric.TObject$UserTObject"));
+            }
         } catch (Exception ex) {
             throw new RuntimeException();
         }
@@ -410,6 +460,9 @@ public final class PlatformAdapter extends Privileged {
 
     @SuppressWarnings("null")
     public static void writeAndResetAtomicLongs(Object object, boolean write) {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
         StringBuilder sb = write ? new StringBuilder() : null;
         NumberFormat format = NumberFormat.getInstance();
         format.setGroupingUsed(true);
@@ -437,6 +490,9 @@ public final class PlatformAdapter extends Privileged {
     }
 
     public static void assertHasNoUserTObjects(Object object) {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
         try {
             for (Field field : object.getClass().getFields())
                 Debug.assertion(!isUserTObject(field.get(object)));
@@ -453,6 +509,7 @@ public final class PlatformAdapter extends Privileged {
         resetOF();
         Transaction.setDefaultTrunk(Site.getLocal().getTrunk());
         Debug.ProcessName = "";
+        Debug.AssertNoConflict = false;
         assertIdleAndCleanup();
     }
 
@@ -463,9 +520,5 @@ public final class PlatformAdapter extends Privileged {
         reset();
         PlatformThreadPool.shutdown();
         disposeGCQueue();
-    }
-
-    public static final void exit(int i) {
-        System.exit(1);
     }
 }

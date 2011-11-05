@@ -46,6 +46,8 @@ public final class Debug extends Privileged {
 
     public static final boolean COMMUNICATIONS_DISABLE_TIMEOUTS = ENABLED && false;
 
+    public static final boolean COMMUNICATIONS_LOG_TIMEOUTS = ENABLED && false;
+
     public static final boolean PERSISTENCE_LOG = ENABLED && false;
 
     // TODO: create thread to GC continuously

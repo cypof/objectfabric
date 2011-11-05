@@ -54,6 +54,9 @@ public final class PlatformAdapter extends Privileged {
             OF.setConfig(new GWTConfig());
     }
 
+    /**
+     * @param store
+     */
     public static Transaction createTrunk(Store store) {
         throw new IllegalStateException();
     }
@@ -104,6 +107,10 @@ public final class PlatformAdapter extends Privileged {
         return "\n";
     }
 
+    /**
+     * @param value
+     * @param chars
+     */
     public static String[] split(String value, char... chars) {
         throw new UnsupportedOperationException();
     }
@@ -112,6 +119,11 @@ public final class PlatformAdapter extends Privileged {
         System.arraycopy(src, srcPos, dest, destPos, length);
     }
 
+    /**
+     * @param source
+     * @param size
+     * @param target
+     */
     public static Object copyWithTypedResize(Object source, int size, Object target) {
         Object[] a = (Object[]) source;
         Object[] b = (Object[]) target;
@@ -129,8 +141,8 @@ public final class PlatformAdapter extends Privileged {
         return clone;
     }
 
-    public static IOException createIOException(Throwable throwable) {
-        return new IOException(getStackAsString(throwable));
+    public static IOException createIOException(Exception e) {
+        return new IOException(getStackAsString(e));
     }
 
     //
@@ -168,10 +180,16 @@ public final class PlatformAdapter extends Privileged {
 
     //
 
+    /**
+     * @param value
+     */
     public static int floatToInt(float value) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param value
+     */
     public static float intToFloat(int value) {
         throw new UnsupportedOperationException();
     }
@@ -186,10 +204,16 @@ public final class PlatformAdapter extends Privileged {
 
     //
 
+    /**
+     * @param value
+     */
     public static long doubleToLong(double value) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param value
+     */
     public static double longToDouble(long value) {
         throw new UnsupportedOperationException();
     }
@@ -214,6 +238,9 @@ public final class PlatformAdapter extends Privileged {
         Log.write(Strings.USER_CODE_RAISED_AN_EXCEPTION + value.toString());
     }
 
+    /**
+     * @param exceptions
+     */
     public static boolean shallowEquals(Object a, Object b, Class c, String... exceptions) {
         if (c.isArray()) {
             Object[] x = (Object[]) a;
@@ -243,6 +270,9 @@ public final class PlatformAdapter extends Privileged {
         return a == b;
     }
 
+    /**
+     * @param i
+     */
     public static final void exit(int i) {
         Log.write("Fatal error.");
     }
@@ -263,20 +293,45 @@ public final class PlatformAdapter extends Privileged {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param previous
+     */
     public static final void assertCurrentStack(Object previous) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param object
+     * @param name
+     * @param c
+     */
     public static Object getPrivateField(Object object, String name, Class c) {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * @param c
+     */
+    public static TType getTypeField(Class c) {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param object
+     */
     public static void assertEqualsAndHashCodeAreDefault(TObject object) {
     }
 
+    /**
+     * @param object
+     * @param write
+     */
     public static void writeAndResetAtomicLongs(Object object, boolean write) {
     }
 
+    /**
+     * @param object
+     */
     public static void assertHasNoUserTObjects(Object object) {
     }
 }

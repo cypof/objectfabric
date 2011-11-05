@@ -15,7 +15,7 @@ package com.objectfabric;
 /**
  * Called when an element is added or removed from a List.
  */
-public interface ListListener<E> extends TObjectListener {
+public interface ListListener extends TObjectListener {
 
     void onAdded(int index);
 

@@ -18,7 +18,7 @@ package com.objectfabric;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 abstract class SessionBase extends com.objectfabric.TGeneratedFields32 {
 
     protected SessionBase(com.objectfabric.Site originImpl, com.objectfabric.Transaction trunkImpl) {
@@ -59,13 +59,13 @@ abstract class SessionBase extends com.objectfabric.TGeneratedFields32 {
 
     protected static final java.lang.String ORIGIN_IMPL_NAME = "originImpl";
 
-    protected static final java.lang.Class ORIGIN_IMPL_CLASS = com.objectfabric.Site.class;
+    protected static final com.objectfabric.TType ORIGIN_IMPL_TYPE = com.objectfabric.Site.TYPE;
 
     protected static final int TRUNK_IMPL_INDEX = 1;
 
     protected static final java.lang.String TRUNK_IMPL_NAME = "trunkImpl";
 
-    protected static final java.lang.Class TRUNK_IMPL_CLASS = com.objectfabric.Transaction.class;
+    protected static final com.objectfabric.TType TRUNK_IMPL_TYPE = com.objectfabric.Transaction.TYPE;
 
     public static final int FIELD_COUNT = 2;
 
@@ -92,17 +92,17 @@ abstract class SessionBase extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case ORIGIN_IMPL_INDEX:
-                return ORIGIN_IMPL_CLASS;
+                return ORIGIN_IMPL_TYPE;
             case TRUNK_IMPL_INDEX:
-                return TRUNK_IMPL_CLASS;
+                return TRUNK_IMPL_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

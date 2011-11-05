@@ -85,7 +85,7 @@ public class TArrayDate extends TIndexed implements Iterable<java.util.Date> {
             value = version != null ? (java.util.Date) version.get(index) : null;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayDate extends TIndexed implements Iterable<java.util.Date> {
             value = version != null ? (java.util.Date) version.get(index) : null;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

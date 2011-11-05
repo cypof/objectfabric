@@ -14,6 +14,7 @@ package com.objectfabric.transports.http;
 
 import java.nio.ByteBuffer;
 
+import com.objectfabric.Connection;
 import com.objectfabric.Privileged;
 import com.objectfabric.misc.Bits;
 import com.objectfabric.misc.Debug;
@@ -45,7 +46,7 @@ public class HTTP extends Privileged implements FilterFactory {
 
     private final boolean _enableCrossOriginResourceSharing;
 
-    static final ByteBuffer OK, OK_CROSS_ORIGIN, OK_CHUNKED, OK_CHUNKED_CROSS_ORIGIN, TIMEOUT, HEARTBEAT, EOF;
+    static final ByteBuffer OK, OK_CROSS_ORIGIN, OK_CHUNKED, OK_CHUNKED_CROSS_ORIGIN, TIMEOUT, EOF;
 
     static {
         StringBuilder sb = new StringBuilder();
@@ -73,7 +74,7 @@ public class HTTP extends Privileged implements FilterFactory {
         sb.append("HTTP/1.1 200 OK\r\n");
         sb.append("Connection: Keep-Alive\r\n");
         sb.append("Transfer-Encoding: chunked\r\n");
-        sb.append("Content-Type: text/plain\r\n\r\n");
+        sb.append("Content-Type: text/plain; charset=x-user-defined\r\n\r\n");
         OK_CHUNKED = ByteBuffer.allocate(sb.length());
         OK_CHUNKED.put(sb.toString().getBytes());
         OK_CHUNKED.flip();
@@ -99,20 +100,6 @@ public class HTTP extends Privileged implements FilterFactory {
 
         if (Debug.ENABLED)
             Debug.assertion(TIMEOUT.remaining() == sb.length());
-
-        sb.setLength(0);
-        sb.append("400\r\n");
-
-        for (int i = 0; i < 0x400; i++)
-            sb.append((char) 0);
-
-        sb.append("\r\n");
-        HEARTBEAT = ByteBuffer.allocate(sb.length());
-        HEARTBEAT.put(sb.toString().getBytes());
-        HEARTBEAT.flip();
-
-        if (Debug.ENABLED)
-            Debug.assertion(HEARTBEAT.remaining() == sb.length());
 
         sb.setLength(0);
         sb.append("0\r\n\r\n");
@@ -162,15 +149,15 @@ public class HTTP extends Privileged implements FilterFactory {
 
         private int _filterIndex;
 
-        private Filter _previous, _next;
+        private Filter _previous;
 
         //
 
         private int _httpCheckIndex, _readHeadersIndex, _offset;
 
-        private byte _type;
+        private byte _type, _requestEncoding, _responseEncoding;
 
-        private int _decoderBits, _decoderIndex;
+        private int _decoderIndex, _decoderLZ, _decoderGZ;
 
         private final byte[] _id = new byte[PlatformAdapter.UID_BYTES_COUNT];
 
@@ -200,11 +187,15 @@ public class HTTP extends Privileged implements FilterFactory {
         }
 
         public Filter getNext() {
-            return _next;
+            throw new UnsupportedOperationException();
         }
 
         public void setNext(Filter value) {
-            _next = value;
+            throw new UnsupportedOperationException();
+        }
+
+        public Connection getConnection() {
+            throw new UnsupportedOperationException();
         }
 
         //
@@ -308,8 +299,8 @@ public class HTTP extends Privileged implements FilterFactory {
             if (_offset == CometTransport.FIELD_TYPE) {
                 byte type = buffer.get();
 
-                if (type < CometTransport.MIN && type > CometTransport.MAX) {
-                    // Invalid type, probably not an ObjectFabric connection, close socket
+                if (type < CometTransport.TYPE_MIN && type > CometTransport.TYPE_MAX) {
+                    // Invalid, probably not an ObjectFabric connection, close socket
                     throw new RuntimeIOException();
                 }
 
@@ -320,39 +311,81 @@ public class HTTP extends Privileged implements FilterFactory {
             if (buffer.remaining() == 0)
                 return;
 
-            if (_offset == CometTransport.FIELD_IS_ENCODED) {
-                _decoderIndex = buffer.get() == 0 ? -1 : 0;
-                _decoderBits = 0;
+            if (_offset == CometTransport.FIELD_REQUEST_ENCODING) {
+                _requestEncoding = buffer.get();
+                _decoderIndex = 0;
                 _offset++;
-            }
-
-            // Decode if needed
-
-            if (_decoderIndex >= 0) {
-                int position = buffer.position();
-
-                for (int i = buffer.position(); i < buffer.limit(); i++) {
-                    if (_decoderIndex == 0) {
-                        _decoderBits = buffer.get(i);
-                        _decoderIndex = 7;
-                    } else {
-                        byte b = buffer.get(i);
-                        buffer.put(position++, Bits.get(_decoderBits, --_decoderIndex) ? (byte) (-b - 1) : b);
-                    }
-                }
-
-                buffer.limit(position);
             }
 
             if (buffer.remaining() == 0)
                 return;
 
-            if (_type == CometTransport.CONNECTION) {
+            if (_offset == CometTransport.FIELD_RESPONSE_ENCODING) {
+                _responseEncoding = buffer.get();
+                _offset++;
+            }
+
+            // Decode if needed
+
+            switch (_requestEncoding) {
+                case CometTransport.ENCODING_NONE:
+                    break;
+                case CometTransport.ENCODING_0_127: {
+                    int position = buffer.position();
+
+                    for (int i = buffer.position(); i < buffer.limit(); i++) {
+                        if (_decoderIndex == 0) {
+                            _decoderLZ = buffer.get(i);
+                            _decoderIndex = 7;
+                        } else {
+                            byte b = buffer.get(i);
+                            buffer.put(position++, Bits.get(_decoderLZ, --_decoderIndex) ? (byte) (-b - 1) : b);
+                        }
+                    }
+
+                    buffer.limit(position);
+                    break;
+                }
+                case CometTransport.ENCODING_1_127: {
+                    int position = buffer.position();
+
+                    for (int i = buffer.position(); i < buffer.limit(); i++) {
+                        if (_decoderIndex == 0) {
+                            _decoderLZ = buffer.get(i);
+                            _decoderIndex = -1;
+                        } else if (_decoderIndex < 0) {
+                            _decoderGZ = buffer.get(i);
+                            _decoderIndex = 6;
+                        } else {
+                            byte b = 0;
+
+                            if (Bits.get(_decoderGZ, --_decoderIndex))
+                                b = buffer.get(i);
+                            else if (Debug.ENABLED)
+                                Debug.assertion(buffer.get(i) == CometTransport.ENCODING_BYTE_ZERO);
+
+                            buffer.put(position++, Bits.get(_decoderLZ, _decoderIndex) ? (byte) (-b - 1) : b);
+                        }
+                    }
+
+                    buffer.limit(position);
+                    break;
+                }
+                default: {
+                    // Invalid, probably not an ObjectFabric connection, close socket
+                    throw new RuntimeIOException();
+                }
+            }
+
+            if (buffer.remaining() == 0)
+                return;
+
+            if (_type == CometTransport.TYPE_CONNECTION) {
                 boolean first = _offset == CometTransport.FIELD_ID;
 
                 if (first) {
                     byte[] id = PlatformAdapter.createUID();
-                    _session = new HTTPSession(HTTP.this, id, _enableCrossOriginResourceSharing);
+                    _session = new HTTPSession(HTTP.this, id, _enableCrossOriginResourceSharing, _responseEncoding);
                     _sessions.put(new UID(id), _session);
                     _session.init(_factories, _filterIndex, false);
                     _offset++;
@@ -386,7 +419,7 @@ public class HTTP extends Privileged implements FilterFactory {
                     }
                 }
 
-                if (_type == CometTransport.CLIENT_TO_SERVER) {
+                if (_type == CometTransport.TYPE_CLIENT_TO_SERVER) {
                     boolean done = _session.readAndReturnIfDone(this, buffer);
 
                     if (done) {
@@ -418,7 +451,7 @@ public class HTTP extends Privileged implements FilterFactory {
                 addHeader(response, buffer, headers);
             }
 
-            if (_type == CometTransport.CONNECTION || _type == CometTransport.SERVER_TO_CLIENT)
+            if (_type == CometTransport.TYPE_CONNECTION || _type == CometTransport.TYPE_SERVER_TO_CLIENT)
                 return _session.write(this, buffer, headers);
 
             return true;

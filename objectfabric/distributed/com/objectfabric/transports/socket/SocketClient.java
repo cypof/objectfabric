@@ -13,8 +13,6 @@
 package com.objectfabric.transports.socket;
 
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Future;
 
@@ -33,7 +31,7 @@ import com.objectfabric.transports.filters.FilterFactory;
 
 public class SocketClient extends SocketConnection implements Client {
 
-    private final InetAddress _host;
+    private final String _host;
 
     private final int _port;
 
@@ -45,19 +43,13 @@ public class SocketClient extends SocketConnection implements Client {
 
     private Executor _callbackExecutor;
 
-    public SocketClient(String host, int port) throws UnknownHostException {
+    private FirstObjectFuture _firstObject;
+
+    public SocketClient(String host, int port) {
         this(host, port, null);
     }
 
-    public SocketClient(InetAddress host, int port) {
-        this(host, port, null);
-    }
-
-    public SocketClient(String host, int port, Validator validator) throws UnknownHostException {
-        this(InetAddress.getByName(host), port, validator);
-    }
-
-    public SocketClient(InetAddress host, int port, Validator validator) {
+    public SocketClient(String host, int port, Validator validator) {
         super(Site.getLocal().getTrunk(), null, validator);
 
         _host = host;
@@ -100,15 +92,11 @@ public class SocketClient extends SocketConnection implements Client {
 
         try {
             future.get();
-        } catch (java.lang.InterruptedException ex) {
-            throw new RuntimeException(ex);
-        } catch (java.util.concurrent.ExecutionException ex) {
-            throw PlatformAdapter.createIOException((Exception) ex.getCause());
+        } catch (java.lang.InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (java.util.concurrent.ExecutionException e) {
+            throw PlatformAdapter.createIOException((Exception) e.getCause());
         }
-    }
-
-    public Future<Void> connectAsync() {
-        return connectAsync(null);
     }
 
     public Future<Void> connectAsync(AsyncCallback<Void> callback) {
@@ -131,7 +119,6 @@ public class SocketClient extends SocketConnection implements Client {
 
         Future<Void> socketFuture = NIOManager.getInstance().connect(first, _host, _port, new AsyncCallback<Void>() {
 
-            @SuppressWarnings("unchecked")
             public void onSuccess(Void result) {
             }
 
@@ -150,6 +137,20 @@ public class SocketClient extends SocketConnection implements Client {
         return future;
     }
 
+    public Object connectAndWaitObject() throws IOException {
+        FirstObjectFuture future = new FirstObjectFuture();
+        _firstObject = future;
+        connect();
+
+        try {
+            return future.get();
+        } catch (java.lang.InterruptedException e) {
+            throw new RuntimeException(e);
+        } catch (java.util.concurrent.ExecutionException e) {
+            throw PlatformAdapter.createIOException((Exception) e.getCause());
+        }
+    }
+
     //
 
     @Override
@@ -160,6 +161,11 @@ public class SocketClient extends SocketConnection implements Client {
     @Override
     protected void onObject(final Object object) {
         super.onObject(object);
+
+        if (_firstObject != null) {
+            _firstObject.set(object);
+            _firstObject = null;
+        }
 
         getCallbackExecutor().execute(new CheckedRunnable() {
 

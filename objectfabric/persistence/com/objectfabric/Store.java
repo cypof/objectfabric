@@ -12,8 +12,12 @@
 
 package com.objectfabric;
 
-import com.objectfabric.Index.Insert;
+import java.util.concurrent.Future;
+
 import com.objectfabric.TObject.UserTObject;
+import com.objectfabric.misc.AsyncCallback;
+import com.objectfabric.misc.List;
+import com.objectfabric.misc.RuntimeIOException;
 import com.objectfabric.misc.ThreadAssert.SingleThreaded;
 
 /**
@@ -23,6 +27,8 @@ import com.objectfabric.misc.ThreadAssert.SingleThreaded;
  * is only acknowledged when the store is done with the commit, which for a file-backed
  * store means after a successful java.io.FileDescriptor.sync(). Each trunk can have only
  * one store, but a store can contain many trunks.
+ * <nl>
+ * TODO: hide and unify stores & remote shares
  */
 public abstract class Store extends Acknowledger {
 
@@ -37,29 +43,103 @@ public abstract class Store extends Acknowledger {
     }
 
     @SingleThreaded
-    protected abstract void getAsync(byte[] ref, FutureWithCallback<Object> future);
+    protected abstract void getRootAsync(FutureWithCallback<Object> future);
+
+    @SingleThreaded
+    protected abstract void setRootAsync(Object value, FutureWithCallback<Void> future);
 
     @SingleThreaded
     protected abstract void getAsync(UserTObject object, Object key, FutureWithCallback<Object> future);
 
+    // For indexes
+
     @SingleThreaded
-    protected abstract void insert(Insert insert);
+    protected abstract void insertAsync(Object object, AsyncCallback<byte[]> ref);
+
+    @SingleThreaded
+    protected abstract void fetchAsync(List<byte[]> refs, AsyncCallback<Object[]> objects);
+
+    //
 
     /**
      * Does not influence the behavior of the store, simply allows the current thread to
      * wait until store is done with all pending operations.
      */
     public final void flush() {
-        Flush flush = _run.startFlush();
+        Future<Void> flush = _run.startFlush();
 
         if (requestRun())
             OF.getConfig().wait(flush);
     }
 
+    public final Object getRoot() throws RuntimeIOException {
+        FutureWithCallback<Object> result = getRootAsync();
+
+        try {
+            return result.get();
+        } catch (Exception e) {
+            throw new RuntimeIOException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public final FutureWithCallback<Object> getRootAsync() {
+        return getRootAsync(FutureWithCallback.NOP_CALLBACK);
+    }
+
+    public final FutureWithCallback<Object> getRootAsync(AsyncCallback<Object> callback) {
+        return getRootAsync(callback, null);
+    }
+
+    public final FutureWithCallback<Object> getRootAsync(AsyncCallback<Object> callback, AsyncOptions options) {
+        final FutureWithCallback<Object> future = new FutureWithCallback<Object>(callback, options);
+
+        getRun().execute(new Runnable() {
+
+            public void run() {
+                getRootAsync(future);
+            }
+        });
+
+        return future;
+    }
+
+    public final void setRoot(Object value) throws RuntimeIOException {
+        FutureWithCallback<Void> result = setRootAsync(value);
+
+        try {
+            result.get();
+        } catch (Exception e) {
+            ExpectedExceptionThrower.throwRuntimeException(e);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    public final FutureWithCallback<Void> setRootAsync(Object value) {
+        return setRootAsync(value, FutureWithCallback.NOP_CALLBACK);
+    }
+
+    public final FutureWithCallback<Void> setRootAsync(Object value, AsyncCallback<Void> callback) {
+        return setRootAsync(value, callback, null);
+    }
+
+    public final FutureWithCallback<Void> setRootAsync(final Object value, AsyncCallback<Void> callback, AsyncOptions options) {
+        final FutureWithCallback<Void> future = new FutureWithCallback<Void>(callback, options);
+
+        getRun().execute(new Runnable() {
+
+            public void run() {
+                setRootAsync(value, future);
+            }
+        });
+
+        return future;
+    }
+
     /**
      * WARNING: Do not use. Stores record changes on objects after they have been loaded,
-     * so they must run as long as objects are live. This method is mostly for testing
-     * purposes for now.
+     * so they must run as long as objects are live. This method is for testing purposes
+     * only for now.
      * <nl>
      * TODO Disconnect and block branches, abort pending gets etc.
      */
@@ -70,7 +150,7 @@ public abstract class Store extends Acknowledger {
 
             public void run() {
                 ExpectedExceptionThrower.expectException();
-                ExpectedExceptionThrower.throwStoreCloseException();
+                ExpectedExceptionThrower.throwExtensionShutdownException();
             }
         });
 

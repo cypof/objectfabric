@@ -68,6 +68,10 @@ final class VersionMap {
      */
     static final int DEFAULT_WATCHERS = 1;
 
+    /*
+     * TODO Use an array of counters indexed by a kind of thread id, and only update this
+     * when thread counter reaches 0.
+     */
     private volatile int _watchers = DEFAULT_WATCHERS;
 
     
@@ -215,7 +219,6 @@ final class VersionMap {
         }
     }
 
-    @SuppressWarnings("null")
     private boolean mergeAndReturnIfShouldWalkDelayedQueue(Transaction branch, Snapshot mapSnapshot) {
         // TODO bench read field before for less CAS
 
@@ -383,8 +386,12 @@ final class VersionMap {
              * If map not present anymore, it was speculative and has been aborted.
              */
             if (aIndex < 0) {
-                if (Debug.ENABLED)
+                if (Debug.ENABLED) {
+                    if (mapSnapshot == null)
+                        throw new AssertionError();
+
                     Debug.assertion(Helper.getIndex(mapSnapshot, this) > mapSnapshot.getAcknowledgedIndex());
+                }
 
                 _mergeInfo = MERGE_DONE;
                 b._mergeInfo = MERGE_DEFAULT;
@@ -426,10 +433,15 @@ final class VersionMap {
                 }
             }
         } else {
-            boolean propagated = false;
+            boolean clone = false;
 
-            propagated |= a.getSource() != null && a.getSource().Propagated;
-            propagated |= b.getSource() != null && b.getSource().Propagated;
+            /*
+             * Cannot clone only if a.Propagated != b.Propagated as a transaction can
+             * start with propagated maps in its snapshot, and then have new maps
+             * propagated and merged to them.
+             */
+            clone |= a.getSource() != null && a.getSource().Propagated;
+            clone |= b.getSource() != null && b.getSource().Propagated;
 
             for (int i = bVersions.length - 1; i >= 0; i--) {
                 if (bVersions[i] != null) {
@@ -451,9 +463,9 @@ final class VersionMap {
                          * it does not become visible to those transactions or it would
                          * change their snapshot.
                          */
-                        if (propagated) {
-                            merged = merged.cloneThis(reads);
-                            flags |= Version.MERGE_FLAG_BY_COPY;
+                        if (clone) {
+                            merged = merged.cloneThis(reads, true);
+                            flags |= Version.MERGE_FLAG_COPY_ARRAY_ELEMENTS;
                         }
 
                         merged = merge(aVersion, merged, bVersions[i], flags);
@@ -565,7 +577,7 @@ final class VersionMap {
             target.getContentForDebug(targetWrites);
             sourceClones = cloneArrays(sourceWrites);
 
-            if ((flags & Version.MERGE_FLAG_BY_COPY) != 0)
+            if ((flags & Version.MERGE_FLAG_COPY_ARRAY_ELEMENTS) != 0)
                 targetClones = cloneArrays(targetWrites);
 
             if (target.isShared())
@@ -580,7 +592,7 @@ final class VersionMap {
             /*
              * No need to clone if private or by copy (already a new instance).
              */
-            if ((flags & (Version.MERGE_FLAG_PRIVATE | Version.MERGE_FLAG_BY_COPY)) != 0)
+            if ((flags & (Version.MERGE_FLAG_PRIVATE | Version.MERGE_FLAG_COPY_ARRAYS | Version.MERGE_FLAG_COPY_ARRAY_ELEMENTS)) != 0)
                 Debug.assertion(result == merged);
 
             if (target.isShared())
@@ -599,27 +611,42 @@ final class VersionMap {
             target.getContentForDebug(targetWrites2);
 
             /*
+             * Assert all arrays copied.
+             */
+            if ((flags & Version.MERGE_FLAG_COPY_ARRAYS) != 0) {
+                Debug.assertion(merged == target);
+                Debug.assertion(targetWrites2.size() == sourceWrites2.size());
+
+                for (int i = 0; i < targetWrites2.size(); i++) {
+                    Object element = targetWrites2.get(i);
+
+                    if (element instanceof Object[]) {
+                        Debug.assertion(element != sourceWrites2.get(i));
+                        PlatformAdapter.shallowEquals(element, sourceWrites2.get(i), Object[].class);
+                    }
+                }
+            }
+
+            /*
              * Assert source has not be modified.
              */
             assertNoChange(sourceWrites, sourceClones, sourceWrites2);
 
             /*
-             * Assert target has not be modified if not in place merged.
+             * Assert target has not be modified if not in-place merge.
              */
-            if ((flags & Version.MERGE_FLAG_BY_COPY) != 0)
+            if ((flags & Version.MERGE_FLAG_COPY_ARRAY_ELEMENTS) != 0)
                 assertNoChange(targetWrites, targetClones, targetWrites2);
 
             /*
              * Assert that even if target has been modified, the objects themselves are
              * the same or from source. New arrays would not be visible to other threads.
              */
-            if ((flags & Version.MERGE_FLAG_PRIVATE) == 0) {
-                if (!(target instanceof TKeyedSharedVersion) && !(target instanceof TListSharedVersion)) {
+            if ((flags & Version.MERGE_FLAG_PRIVATE) == 0)
+                if (!(target instanceof TKeyedSharedVersion) && !(target instanceof TListSharedVersion))
                     for (int i = 0; i < targetWrites.size(); i++)
                         if (targetWrites.get(i) != null && targetWrites.get(i).getClass().isArray())
                             Debug.assertion(targetWrites2.get(i) == targetWrites.get(i) || sourceWrites.contains(targetWrites2.get(i)));
-                }
-            }
 
             /*
              * Assert hard references are valid.

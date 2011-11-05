@@ -47,16 +47,7 @@ public class FileStore extends BinaryStore {
      * You can specify another executor.
      */
     public FileStore(String file, boolean disableLogAheadAndSync, Executor executor) throws IOException {
-        this(file, disableLogAheadAndSync, executor, false);
-    }
-
-    /**
-     * terminateProcessOnException kills the process if an exception occurs. On a local
-     * disk, the only error that usually occur is running out of disk space. In some cases
-     * the only useful reaction is to log the exception and terminate the process.
-     */
-    public FileStore(String file, boolean disableLogAheadAndSync, Executor executor, boolean terminateProcessOnException) throws IOException {
-        super(getBackend(file, disableLogAheadAndSync), true, executor, terminateProcessOnException);
+        super(getBackend(file, disableLogAheadAndSync), true, executor);
     }
 
     private static final FileBackend getBackend(String file, boolean disableLogAheadAndSync) throws IOException {

@@ -13,6 +13,7 @@
 package of4gwt;
 
 import of4gwt.misc.Executor;
+import of4gwt.misc.Future;
 
 import of4gwt.TObject.UserTObject.Method;
 import of4gwt.Transaction.Granularity;
@@ -52,6 +53,8 @@ class Notifier extends Walker {
     public Notifier(AsyncOptions options) {
         super(options.getForcedGranularity());
 
+        onStarting();
+
         _asyncOptions = options;
         _executor = options.getExecutor();
         _notifyLocalEvents = options.notifyLocalEvents();
@@ -62,13 +65,7 @@ class Notifier extends Walker {
         _visitor.registerClassVisitor(Visitor.KEYED_VISITOR_ID, new TKeyedVisitor());
         _visitor.registerClassVisitor(Visitor.LIST_VISITOR_ID, new TListVisitor());
 
-        if (!end())
-            requestRunOnce();
-
-        if (Debug.THREADS) {
-            ThreadAssert.exchangeGive(_run, _visitor);
-            ThreadAssert.exchangeGive(_run, this);
-        }
+        onStarted();
     }
 
     final Visitor getVisitor() {
@@ -76,7 +73,7 @@ class Notifier extends Walker {
     }
 
     public final void flush() {
-        Flush flush = _run.startFlush();
+        Future<Void> flush = _run.startFlush();
 
         if (requestRun())
             OF.getConfig().wait(flush);
@@ -106,17 +103,12 @@ class Notifier extends Walker {
     //
 
     @Override
-    protected final void requestRunOnce() {
+    protected void startRun() {
         _executor.execute(_run);
     }
 
     private final class Run extends DefaultRunnable {
 
-        public Run() {
-            super(Notifier.this);
-        }
-
-        @SuppressWarnings("fallthrough")
         @Override
         protected void checkedRun() {
             if (Debug.ENABLED)
@@ -128,37 +120,29 @@ class Notifier extends Walker {
             // So that notifications are not made in-transaction
             OF.updateAsync();
 
-            for (;;) {
-                boolean resumed = false;
+            if (getVisitor().interrupted())
+                getVisitor().resume();
+            else {
+                onRunStarting();
+                runTasks();
+            }
 
-                if (getVisitor().interrupted()) {
-                    getVisitor().resume();
-                    resumed = true;
-                }
+            walk(getVisitor());
 
-                if (!resumed)
-                    before();
-
-                walk(getVisitor());
-
-                if (getVisitor().interrupted()) {
-                    getVisitor().interrupt(null);
-
-                    if (Debug.ENABLED)
-                        ThreadAssert.suspend(this);
-
-                    return;
-                }
+            if (getVisitor().interrupted()) {
+                getVisitor().interrupt(null);
 
                 if (Debug.ENABLED)
                     ThreadAssert.suspend(this);
 
-                if (after())
-                    return;
-
-                if (Debug.ENABLED)
-                    ThreadAssert.resume(this);
+                return;
             }
+
+            if (Debug.ENABLED)
+                ThreadAssert.suspend(this);
+
+            setFlushes();
+            onRunEnded();
         }
     }
 
@@ -346,7 +330,6 @@ class Notifier extends Walker {
             }
         }
 
-        @SuppressWarnings("unchecked")
         @Override
         protected void onClear(TObject object) {
             if (Debug.ENABLED) {

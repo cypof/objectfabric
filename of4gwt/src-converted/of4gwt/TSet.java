@@ -39,7 +39,7 @@ import of4gwt.misc.List;
 @SuppressWarnings("unchecked")
 public class TSet<E> extends TKeyed<E> implements Set<E> {
 
-    @SuppressWarnings({ "hiding", "static-access" })
+    @SuppressWarnings("hiding")
     public static final TType TYPE = new TType(DefaultObjectModel.getInstance(), DefaultObjectModel.COM_OBJECTFABRIC_TSET_CLASS_ID);
 
     protected static final String NULL_NOT_SUPPORTED = "TSet elements cannot be null.";
@@ -161,7 +161,7 @@ public class TSet<E> extends TKeyed<E> implements Set<E> {
         try {
             entry = getEntry(inner, (E) o, hash);
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return entry != null && !entry.isRemoval();
@@ -187,7 +187,7 @@ public class TSet<E> extends TKeyed<E> implements Set<E> {
                 }
             }
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return result;
@@ -229,7 +229,7 @@ public class TSet<E> extends TKeyed<E> implements Set<E> {
                     Helper.getInstance().enableEqualsOrHashCheck();
             }
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return h;
@@ -359,7 +359,7 @@ public class TSet<E> extends TKeyed<E> implements Set<E> {
         for (Object e : this)
             list.add(e);
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         Object[] array = new Object[list.size()];
         list.copyToFixed(array);
         return array;
@@ -377,7 +377,7 @@ public class TSet<E> extends TKeyed<E> implements Set<E> {
         for (E e : this)
             list.add((T) e);
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return list.copyToWithResizeAndNullEnd(array);
     }
 

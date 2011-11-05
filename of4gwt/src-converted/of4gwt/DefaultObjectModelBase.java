@@ -21,7 +21,7 @@ package of4gwt;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 abstract class DefaultObjectModelBase extends of4gwt.ObjectModel {
 
-    private static final byte[] UID = { 2, 72, 68, 90, -92, -76, -96, -87, -79, -13, -80, 19, 70, 106, 112, 36 };
+    private static final byte[] UID = { -92, -99, 116, 47, 13, -33, 68, 49, 96, -98, -116, 94, -73, 57, 13, -48 };
 
     private static volatile DefaultObjectModel _instance;
 
@@ -77,33 +77,27 @@ abstract class DefaultObjectModelBase extends of4gwt.ObjectModel {
         return "0.8";
     }
 
-    public static final int CLASS_COUNT = 6;
+    public static final int CLASS_COUNT = 5;
 
     public static final int COM_OBJECTFABRIC_CONNECTION_CLASS_ID = 0;
 
-    public static final int COM_OBJECTFABRIC_INDEX_CLASS_ID = 1;
+    public static final int COM_OBJECTFABRIC_LAZYMAP_CLASS_ID = 1;
 
-    public static final int COM_OBJECTFABRIC_LAZYMAP_CLASS_ID = 2;
+    public static final int COM_OBJECTFABRIC_SESSION_CLASS_ID = 2;
 
-    public static final int COM_OBJECTFABRIC_SESSION_CLASS_ID = 3;
+    public static final int COM_OBJECTFABRIC_SITE_CLASS_ID = 3;
 
-    public static final int COM_OBJECTFABRIC_SITE_CLASS_ID = 4;
+    public static final int COM_OBJECTFABRIC_TRANSACTION_CLASS_ID = 4;
 
-    public static final int COM_OBJECTFABRIC_TRANSACTION_CLASS_ID = 5;
+    public static final int METHOD_COUNT = 1;
 
-    public static final int METHOD_COUNT = 2;
-
-    public static final int COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID = 6;
-
-    public static final int COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID = 7;
+    public static final int COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID = 5;
 
     @Override
     protected java.lang.Class getClass(int classId, of4gwt.TType[] genericParameters) {
         switch (classId) {
             case COM_OBJECTFABRIC_CONNECTION_CLASS_ID:
                 return of4gwt.Connection.class;
-            case COM_OBJECTFABRIC_INDEX_CLASS_ID:
-                return of4gwt.Index.class;
             case COM_OBJECTFABRIC_LAZYMAP_CLASS_ID:
                 return of4gwt.LazyMap.class;
             case COM_OBJECTFABRIC_SESSION_CLASS_ID:
@@ -114,8 +108,6 @@ abstract class DefaultObjectModelBase extends of4gwt.ObjectModel {
                 return of4gwt.Transaction.class;
             case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID:
                 return Method0.class;
-            case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID:
-                return Method1.class;
         }
 
         return super.getClass(classId, genericParameters);
@@ -126,8 +118,6 @@ abstract class DefaultObjectModelBase extends of4gwt.ObjectModel {
         switch (classId) {
             case COM_OBJECTFABRIC_CONNECTION_CLASS_ID:
                 return new of4gwt.Connection(trunk, null);
-            case COM_OBJECTFABRIC_INDEX_CLASS_ID:
-                return new of4gwt.Index(trunk);
             case COM_OBJECTFABRIC_LAZYMAP_CLASS_ID:
                 return new of4gwt.LazyMap(trunk);
             case COM_OBJECTFABRIC_SESSION_CLASS_ID:
@@ -138,8 +128,6 @@ abstract class DefaultObjectModelBase extends of4gwt.ObjectModel {
                 return new of4gwt.Transaction(trunk, null, 0, null, null, null);
             case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID:
                 return new Method0(trunk);
-            case COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID:
-                return new Method1(trunk);
         }
 
         return super.createInstance(trunk, classId, genericParameters);
@@ -175,19 +163,19 @@ abstract class DefaultObjectModelBase extends of4gwt.ObjectModel {
 
         public static final java.lang.String KEY_NAME = "key";
 
-        public static final java.lang.Class KEY_CLASS = java.lang.Object.class;
+        public static final of4gwt.TType KEY_TYPE = of4gwt.TType.OBJECT;
 
         public static final int RETURN_OBJECTFABRIC_INDEX = 1;
 
         public static final java.lang.String RETURN_OBJECTFABRIC_NAME = "return_objectfabric";
 
-        public static final java.lang.Class RETURN_OBJECTFABRIC_CLASS = java.lang.Object.class;
+        public static final of4gwt.TType RETURN_OBJECTFABRIC_TYPE = of4gwt.TType.OBJECT;
 
         public static final int ERROR_OBJECTFABRIC_INDEX = 2;
 
         public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
 
-        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
+        public static final of4gwt.TType ERROR_OBJECTFABRIC_TYPE = of4gwt.ImmutableClass.STRING.getType();
 
         public static final int FIELD_COUNT = 3;
 
@@ -216,19 +204,19 @@ abstract class DefaultObjectModelBase extends of4gwt.ObjectModel {
         }
 
         @Override
-        public java.lang.Class getFieldClass(int index) {
-            return getFieldClassStatic(index);
+        public  of4gwt.TType getFieldType(int index) {
+            return getFieldTypeStatic(index);
         }
 
         @SuppressWarnings("static-access")
-        public static java.lang.Class getFieldClassStatic(int index) {
+        public static of4gwt.TType getFieldTypeStatic(int index) {
             switch (index) {
                 case KEY_INDEX:
-                    return KEY_CLASS;
+                    return KEY_TYPE;
                 case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_CLASS;
+                    return RETURN_OBJECTFABRIC_TYPE;
                 case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_CLASS;
+                    return ERROR_OBJECTFABRIC_TYPE;
                 default:
                     throw new IllegalArgumentException();
             }
@@ -368,227 +356,6 @@ abstract class DefaultObjectModelBase extends of4gwt.ObjectModel {
             @Override
             public int getClassId() {
                 return of4gwt.DefaultObjectModelBase.COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_0_ID;
-            }
-
-            @SuppressWarnings("static-access")
-            @Override
-            public of4gwt.ObjectModel getObjectModel() {
-                return of4gwt.DefaultObjectModel.getInstance();
-            }
-        }
-    }
-
-    public static class Method1 extends of4gwt.TGeneratedFields32 implements of4gwt.TObject.UserTObject.Method {
-
-        public static final Method1 INSTANCE = new Method1(of4gwt.Site.getLocal().getTrunk());
-
-        public Method1(of4gwt.Transaction trunk) {
-            super(new Version(null, FIELD_COUNT), trunk);
-        }
-
-        public String getName() {
-            return "fetch";
-        }
-
-        public static final of4gwt.TType TYPE = new of4gwt.TType(of4gwt.DefaultObjectModel.getInstance(), of4gwt.DefaultObjectModelBase.COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID);
-
-        public static final int REF_INDEX = 0;
-
-        public static final java.lang.String REF_NAME = "ref";
-
-        public static final java.lang.Class REF_CLASS = byte[].class;
-
-        public static final int RETURN_OBJECTFABRIC_INDEX = 1;
-
-        public static final java.lang.String RETURN_OBJECTFABRIC_NAME = "return_objectfabric";
-
-        public static final java.lang.Class RETURN_OBJECTFABRIC_CLASS = of4gwt.TObject.class;
-
-        public static final int ERROR_OBJECTFABRIC_INDEX = 2;
-
-        public static final java.lang.String ERROR_OBJECTFABRIC_NAME = "error_objectfabric";
-
-        public static final java.lang.Class ERROR_OBJECTFABRIC_CLASS = java.lang.String.class;
-
-        public static final int FIELD_COUNT = 3;
-
-        @Override
-        public int getFieldCount() {
-            return FIELD_COUNT;
-        }
-
-        @Override
-        public java.lang.String getFieldName(int index) {
-            return getFieldNameStatic(index);
-        }
-
-        @SuppressWarnings("static-access")
-        public static java.lang.String getFieldNameStatic(int index) {
-            switch (index) {
-                case REF_INDEX:
-                    return REF_NAME;
-                case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_NAME;
-                case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_NAME;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-        @Override
-        public java.lang.Class getFieldClass(int index) {
-            return getFieldClassStatic(index);
-        }
-
-        @SuppressWarnings("static-access")
-        public static java.lang.Class getFieldClassStatic(int index) {
-            switch (index) {
-                case REF_INDEX:
-                    return REF_CLASS;
-                case RETURN_OBJECTFABRIC_INDEX:
-                    return RETURN_OBJECTFABRIC_CLASS;
-                case ERROR_OBJECTFABRIC_INDEX:
-                    return ERROR_OBJECTFABRIC_CLASS;
-                default:
-                    throw new IllegalArgumentException();
-            }
-        }
-
-        public static class Version extends of4gwt.TGeneratedFields32.Version {
-
-            public byte[] _ref;
-
-            public of4gwt.TObject _return_objectfabric;
-
-            public java.lang.String _error_objectfabric;
-
-            public Version(of4gwt.TGeneratedFields32.Version shared, int length) {
-                super(shared, length);
-            }
-
-            @Override
-            public of4gwt.TObject.Version merge(of4gwt.TObject.Version target, of4gwt.TObject.Version next, int flags) {
-                Method1.Version source = (Method1.Version) next;
-                Method1.Version merged = (Method1.Version) super.merge(target, next, flags);
-
-                if (source.hasBits()) {
-                    if (source.getBit(REF_INDEX))
-                        merged._ref = source._ref;
-
-                    if (source.getBit(RETURN_OBJECTFABRIC_INDEX))
-                        merged._return_objectfabric = mergeTObject(merged._return_objectfabric, source._return_objectfabric);
-
-                    if (source.getBit(ERROR_OBJECTFABRIC_INDEX))
-                        merged._error_objectfabric = source._error_objectfabric;
-                }
-
-                return merged;
-            }
-
-            @Override
-            public void writeWrite(of4gwt.Writer writer, int index) {
-                if (writer.interrupted())
-                    writer.resume();
-
-                switch (index) {
-                    case REF_INDEX: {
-                        writer.writeBinary(_ref);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case RETURN_OBJECTFABRIC_INDEX: {
-                        writer.writeTObject(_return_objectfabric);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case ERROR_OBJECTFABRIC_INDEX: {
-                        writer.writeString(_error_objectfabric);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    default: {
-                        super.writeWrite(writer, index);
-
-                        if (writer.interrupted()) {
-                            writer.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public void readWrite(of4gwt.Reader reader, int index) {
-                if (reader.interrupted())
-                    reader.resume();
-
-                switch (index) {
-                    case REF_INDEX: {
-                        _ref = reader.readBinary();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case RETURN_OBJECTFABRIC_INDEX: {
-                        _return_objectfabric = reader.readTObject();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    case ERROR_OBJECTFABRIC_INDEX: {
-                        _error_objectfabric = reader.readString();
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                    default: {
-                        super.readWrite(reader, index);
-
-                        if (reader.interrupted()) {
-                            reader.interrupt(null);
-                            return;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            @Override
-            public of4gwt.TObject.Version createRead() {
-                return null;
-            }
-
-            @Override
-            public of4gwt.TObject.Version createVersion() {
-                return new Method1.Version(this, FIELD_COUNT);
-            }
-
-            @Override
-            public int getClassId() {
-                return of4gwt.DefaultObjectModelBase.COM_OBJECTFABRIC_DEFAULTOBJECTMODELBASE_METHOD_1_ID;
             }
 
             @SuppressWarnings("static-access")

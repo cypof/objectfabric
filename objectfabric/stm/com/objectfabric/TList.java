@@ -27,7 +27,7 @@ import com.objectfabric.misc.Debug;
 @SuppressWarnings("unchecked")
 public class TList<E> extends TIndexed implements List<E> {
 
-    @SuppressWarnings({ "hiding", "static-access" })
+    @SuppressWarnings("hiding")
     public static final TType TYPE = new TType(DefaultObjectModel.getInstance(), DefaultObjectModel.COM_OBJECTFABRIC_TLIST_CLASS_ID);
 
     public TList() {
@@ -192,7 +192,7 @@ public class TList<E> extends TIndexed implements List<E> {
                 }
             }
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return result;
@@ -211,7 +211,7 @@ public class TList<E> extends TIndexed implements List<E> {
                 }
             }
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return result;
@@ -246,7 +246,7 @@ public class TList<E> extends TIndexed implements List<E> {
             if (result)
                 result = !(it1.hasNext() || it2.hasNext());
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return result;
@@ -258,12 +258,12 @@ public class TList<E> extends TIndexed implements List<E> {
         TListVersion version = (TListVersion) inner.getVersionFromTObject(this);
 
         if (index < 0 || index >= size(inner, false, version)) {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
             ExpectedExceptionThrower.throwIndexOutOfBoundsException();
         }
 
         E result = get(index, inner, version, true);
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return result;
     }
 
@@ -405,7 +405,7 @@ public class TList<E> extends TIndexed implements List<E> {
             for (E e : this)
                 hashCode = 31 * hashCode + (e == null ? 0 : e.hashCode());
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return hashCode;
@@ -419,7 +419,7 @@ public class TList<E> extends TIndexed implements List<E> {
         try {
             result = indexOf(o, inner);
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return result;
@@ -461,7 +461,7 @@ public class TList<E> extends TIndexed implements List<E> {
                         return i.nextIndex();
             }
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return -1;
@@ -482,7 +482,7 @@ public class TList<E> extends TIndexed implements List<E> {
         return new IteratorImpl(Transaction.getCurrent(), true, index);
     }
 
-    private final class IteratorImpl implements Iterator<E>, ListIterator<E> {
+    private final class IteratorImpl implements ListIterator<E> {
 
         private int _cursor;
 
@@ -743,7 +743,7 @@ public class TList<E> extends TIndexed implements List<E> {
         Transaction outer = Transaction.getCurrent();
         Transaction inner = Transaction.startRead(outer, this);
         int result = size(inner, true);
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return result;
     }
 
@@ -841,7 +841,7 @@ public class TList<E> extends TIndexed implements List<E> {
         for (E e : this)
             list.add(e);
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         Object[] array = new Object[list.size()];
         list.copyToFixed(array);
         return array;
@@ -859,25 +859,25 @@ public class TList<E> extends TIndexed implements List<E> {
         for (E e : this)
             list.add((T) e);
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return list.copyToWithResizeAndNullEnd(array);
     }
 
     //
 
-    public void addListener(ListListener<E> listener) {
+    public void addListener(ListListener listener) {
         addListener(listener, OF.getDefaultAsyncOptions());
     }
 
-    public void addListener(ListListener<E> listener, AsyncOptions options) {
+    public void addListener(ListListener listener, AsyncOptions options) {
         OF.addListener(this, listener, options);
     }
 
-    public void removeListener(ListListener<E> listener) {
+    public void removeListener(ListListener listener) {
         removeListener(listener, OF.getDefaultAsyncOptions());
     }
 
-    public void removeListener(ListListener<E> listener, AsyncOptions options) {
+    public void removeListener(ListListener listener, AsyncOptions options) {
         OF.removeListener(this, listener, options);
     }
 
@@ -896,17 +896,31 @@ public class TList<E> extends TIndexed implements List<E> {
 
         // Reads
 
+        /**
+         * @param object
+         */
         protected void onRead(TObject object) {
         }
 
         // Writes
 
+        /**
+         * @param object
+         * @param index
+         */
         protected void onAdd(TObject object, int index) {
         }
 
+        /**
+         * @param object
+         * @param index
+         */
         protected void onRemoval(TObject object, int index) {
         }
 
+        /**
+         * @param object
+         */
         protected void onClear(TObject object) {
         }
 
@@ -976,10 +990,10 @@ public class TList<E> extends TIndexed implements List<E> {
                 inserts = (int[]) getParent().resume();
                 object = (TObject) getParent().resume();
             } else {
-                if (version.getRemovals() != null)
+                if (version.getRemovalsCount() != 0)
                     removals = version.getRemovalsReindexedAsPrevious(0);
 
-                if (version.getInserts() != null)
+                if (version.getInsertsCount() != 0)
                     inserts = version.getInsertsReindexedAsPrevious(0);
 
                 object = shared.getReference().get();

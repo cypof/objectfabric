@@ -18,7 +18,7 @@ package of4gwt;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 abstract class SessionBase extends of4gwt.TGeneratedFields32 {
 
     protected SessionBase(of4gwt.Site originImpl, of4gwt.Transaction trunkImpl) {
@@ -59,13 +59,13 @@ abstract class SessionBase extends of4gwt.TGeneratedFields32 {
 
     protected static final java.lang.String ORIGIN_IMPL_NAME = "originImpl";
 
-    protected static final java.lang.Class ORIGIN_IMPL_CLASS = of4gwt.Site.class;
+    protected static final of4gwt.TType ORIGIN_IMPL_TYPE = of4gwt.Site.TYPE;
 
     protected static final int TRUNK_IMPL_INDEX = 1;
 
     protected static final java.lang.String TRUNK_IMPL_NAME = "trunkImpl";
 
-    protected static final java.lang.Class TRUNK_IMPL_CLASS = of4gwt.Transaction.class;
+    protected static final of4gwt.TType TRUNK_IMPL_TYPE = of4gwt.Transaction.TYPE;
 
     public static final int FIELD_COUNT = 2;
 
@@ -92,17 +92,17 @@ abstract class SessionBase extends of4gwt.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  of4gwt.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static of4gwt.TType getFieldTypeStatic(int index) {
         switch (index) {
             case ORIGIN_IMPL_INDEX:
-                return ORIGIN_IMPL_CLASS;
+                return ORIGIN_IMPL_TYPE;
             case TRUNK_IMPL_INDEX:
-                return TRUNK_IMPL_CLASS;
+                return TRUNK_IMPL_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

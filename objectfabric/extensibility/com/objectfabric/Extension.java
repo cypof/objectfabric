@@ -13,19 +13,14 @@
 package com.objectfabric;
 
 import java.util.concurrent.Executor;
-import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 import com.objectfabric.Snapshot.SlowChanging;
 import com.objectfabric.TObject.Reference;
 import com.objectfabric.TObject.Version;
-import com.objectfabric.misc.CheckedRunnable;
 import com.objectfabric.misc.Debug;
-import com.objectfabric.misc.List;
 import com.objectfabric.misc.Log;
 import com.objectfabric.misc.OverrideAssert;
 import com.objectfabric.misc.PlatformAdapter;
-import com.objectfabric.misc.PlatformConcurrentQueue;
-import com.objectfabric.misc.PlatformFuture;
 import com.objectfabric.misc.SparseArrayHelper;
 import com.objectfabric.misc.ThreadAssert;
 import com.objectfabric.misc.ThreadAssert.SingleThreaded;
@@ -33,22 +28,14 @@ import com.objectfabric.misc.ThreadAssert.SingleThreaded;
 /**
  * Main extension point. Features like object replication or persistence are implemented
  * as particular extensions.
+ * <nl>
+ * TODO merge with Walker
  */
 @SingleThreaded
 public abstract class Extension<T> extends Visitor.Listener {
 
-    private static final int STATUS_IDLE = 0;
-
-    private static final int STATUS_NOTIFIED = 1;
-
-    private static final int STATUS_RUNNING = 2;
-
-    private static final int STATUS_DISPOSED = 3;
-
-    // Initially running to avoid run during initialization
-    private volatile int _status = STATUS_RUNNING;
-
-    private static final AtomicIntegerFieldUpdater<Extension> _statusUpdater;
+    public static final class ExtensionShutdownException extends RuntimeException {
+    }
 
     // Stores registered branches, and last snapshot if LATEST_VALUES
     // TODO: use a weak list? (warn, notifier does get())
@@ -60,115 +47,19 @@ public abstract class Extension<T> extends Visitor.Listener {
 
     private int _branchIndex;
 
-    static {
-        _statusUpdater = AtomicIntegerFieldUpdater.newUpdater(Extension.class, "_status");
-    }
-
     protected Extension() {
     }
 
-    //
-
     /**
-     * Notifies the extension it needs to run.
+     * @param branch
      */
-    protected boolean requestRun() {
-        /*
-         * By default, always ask run if not already.
-         */
-        for (;;) {
-            int value = _status;
-
-            switch (value) {
-                case STATUS_IDLE: {
-                    if (_statusUpdater.compareAndSet(this, value, STATUS_NOTIFIED)) {
-                        requestRunOnce();
-                        return true;
-                    }
-
-                    break;
-                }
-                case STATUS_NOTIFIED: {
-                    return true;
-                }
-                case STATUS_RUNNING: {
-                    if (_statusUpdater.compareAndSet(this, value, STATUS_NOTIFIED))
-                        return true;
-
-                    break;
-                }
-                case STATUS_DISPOSED: {
-                    return false;
-                }
-            }
-        }
-    }
-
-    /**
-     * Same as requestRun, but filtered to be called only once. Use in conjunction with
-     * begin() and end().
-     */
-    protected void requestRunOnce() {
-        throw new IllegalStateException();
-    }
-
-    /**
-     * Must be called by the extension before it runs.
-     */
-    protected final void begin() {
-        if (Debug.ENABLED) {
-            int status = _status;
-            Debug.assertion(status == STATUS_NOTIFIED || status == STATUS_RUNNING);
-        }
-
-        _status = STATUS_RUNNING;
-    }
-
-    /**
-     * Must be called by the extension after it runs.
-     * 
-     * @return false if another run has been requested.
-     */
-    protected final boolean end() {
-        if (Debug.ENABLED) {
-            int status = _status;
-            Debug.assertion(status == STATUS_NOTIFIED || status == STATUS_RUNNING);
-        }
-
-        if (_status == STATUS_NOTIFIED || !_statusUpdater.compareAndSet(this, STATUS_RUNNING, STATUS_IDLE)) {
-            if (Debug.ENABLED)
-                Debug.assertion(_status == STATUS_NOTIFIED);
-
-            return false;
-        }
-
-        return true;
-    }
-
-    protected final void dispose() {
-        if (Debug.ENABLED) {
-            int status = _status;
-            Debug.assertion(status == STATUS_NOTIFIED || status == STATUS_RUNNING);
-        }
-
-        _status = STATUS_DISPOSED;
-    }
-
-    protected static final void restoreCurrentAfterUserCode(Transaction expected) {
-        Transaction current = Transaction.getCurrent();
-
-        if (current != expected) {
-            Log.write(Strings.USER_CODE_CHANGED_CURRENT_TRANSACTION);
-            Transaction.setCurrent(expected);
-        }
-    }
-
-    //
-
     protected void onRegistering(Transaction branch) {
         OverrideAssert.set(this);
     }
 
+    /**
+     * @param branch
+     */
     protected void onUnregistered(Transaction branch) {
         OverrideAssert.set(this);
     }
@@ -238,6 +129,13 @@ public abstract class Extension<T> extends Visitor.Listener {
         _branchCount--;
     }
 
+    /**
+     * @param branch
+     * @param snapshot
+     * @param newSnapshot
+     * @param exception
+     * @return
+     */
     boolean casSnapshotWithoutThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot, Exception exception) {
         return branch.casSharedSnapshot(snapshot, newSnapshot);
     }
@@ -350,6 +248,9 @@ public abstract class Extension<T> extends Visitor.Listener {
 
     protected abstract boolean isUpToDate(Transaction branch, T value);
 
+    /**
+     * @param branch
+     */
     protected void onUpToDate(Transaction branch) {
         OverrideAssert.set(this);
     }
@@ -365,6 +266,17 @@ public abstract class Extension<T> extends Visitor.Listener {
 
         if (TObjectMapEntry.removeIfPresent(_branches, shared))
             _branchCount--;
+    }
+
+    //
+
+    protected static final void restoreCurrentAfterUserCode(Transaction expected) {
+        Transaction current = Transaction.getCurrent();
+
+        if (current != expected) {
+            Log.write(Strings.USER_CODE_CHANGED_CURRENT_TRANSACTION);
+            Transaction.setCurrent(expected);
+        }
     }
 
     //
@@ -402,7 +314,6 @@ public abstract class Extension<T> extends Visitor.Listener {
      */
     protected static final class TObjectMapEntry<V> {
 
-        @SuppressWarnings("unchecked")
         public static final TObjectMapEntry REMOVED = new TObjectMapEntry();
 
         private final Version _key;
@@ -604,95 +515,18 @@ public abstract class Extension<T> extends Visitor.Listener {
 
     //
 
-    protected static abstract class DefaultRunnable extends CheckedRunnable implements Executor {
-
-        private final Extension _extension;
-
-        private final PlatformConcurrentQueue<Runnable> _runnables = new PlatformConcurrentQueue<Runnable>();
-
-        // TODO: unify with _runnables?
-        private final PlatformConcurrentQueue<Flush> _pendingFlushes = new PlatformConcurrentQueue<Flush>();
-
-        private final List<Flush> _currentFlushes = new List<Flush>();
-
-        public DefaultRunnable(Extension extension) {
-            _extension = extension;
-        }
-
-        public void onException(Exception e) {
-            for (;;) {
-                Flush flush = _pendingFlushes.poll();
-
-                if (flush == null)
-                    break;
-
-                flush.setResult();
-            }
-
-            for (int i = 0; i < _currentFlushes.size(); i++)
-                _currentFlushes.get(i).setResult();
-        }
-
-        public final Extension getExtension() {
-            return _extension;
-        }
-
-        public Flush startFlush() {
-            Flush future = new Flush();
-            _pendingFlushes.add(future);
-            return future;
-        }
-
-        public final void add(Runnable runnable) {
-            _runnables.add(runnable);
-        }
+    protected abstract class DefaultRunnable extends Actor implements Executor {
 
         public final void execute(Runnable runnable) {
-            _runnables.add(runnable);
-            _extension.requestRun();
+            add(runnable);
+            Extension.this.requestRun();
         }
 
-        protected final void before() {
-            if (Debug.ENABLED)
-                Debug.assertion(_currentFlushes.size() == 0);
+        @Override
+        public void onException(Exception e) {
+            super.onException(e);
 
-            for (;;) {
-                Flush flush = _pendingFlushes.poll();
-
-                if (flush == null)
-                    break;
-
-                _currentFlushes.add(flush);
-            }
-
-            for (;;) {
-                Runnable runnable = _runnables.poll();
-
-                if (runnable == null)
-                    break;
-
-                runnable.run();
-            }
-
-            _extension.begin();
-        }
-
-        protected final boolean after() {
-            if (_currentFlushes.size() > 0) {
-                for (int i = 0; i < _currentFlushes.size(); i++)
-                    _currentFlushes.get(i).setResult();
-
-                _currentFlushes.clear();
-            }
-
-            return _extension.end();
-        }
-    }
-
-    protected static final class Flush extends PlatformFuture<Object> {
-
-        public void setResult() {
-            set(null);
+            OF.getConfig().onException(Extension.this, e);
         }
     }
 

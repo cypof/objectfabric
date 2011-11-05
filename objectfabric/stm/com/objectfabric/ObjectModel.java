@@ -31,10 +31,19 @@ public abstract class ObjectModel extends UserTObject implements SystemClass {
         getSharedVersion_objectfabric().setUnion(new DescriptorForUID(this, Record.EMPTY), true);
     }
 
+    /**
+     * @param classId
+     * @param genericParameters
+     */
     protected java.lang.Class getClass(int classId, TType[] genericParameters) {
         throw new IllegalStateException();
     }
 
+    /**
+     * @param trunk
+     * @param classId
+     * @param genericParameters
+     */
     protected UserTObject createInstance(Transaction trunk, int classId, TType[] genericParameters) {
         throw new IllegalStateException();
     }

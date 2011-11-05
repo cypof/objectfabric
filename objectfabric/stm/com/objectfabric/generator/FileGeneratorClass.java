@@ -150,7 +150,7 @@ class FileGeneratorClass extends FileGenerator {
         }
 
         if (g().isJava())
-            wl("@SuppressWarnings({ \"hiding\", \"unchecked\", \"static-access\" })");
+            wl("@SuppressWarnings({ \"hiding\", \"unchecked\", \"static-access\", \"unused\" })");
 
         wl(public_ + abstract_ + partial + "class " + Name + " " + g().getTarget().extendsString() + " " + ext + " {");
 

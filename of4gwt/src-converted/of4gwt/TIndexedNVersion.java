@@ -12,9 +12,6 @@
 
 package of4gwt;
 
-
-import of4gwt.Reader;
-import of4gwt.Writer;
 import of4gwt.misc.Bits;
 import of4gwt.misc.PlatformAdapter;
 import of4gwt.misc.Utils;
@@ -44,10 +41,17 @@ abstract class TIndexedNVersion extends TIndexedNRead {
 
     //
 
+    /**
+     * @param index
+     */
     public Object getAsObject(int index) {
         throw new IllegalStateException();
     }
 
+    /**
+     * @param index
+     * @param value
+     */
     public void setAsObject(int index, Object value) {
         throw new IllegalStateException();
     }
@@ -82,10 +86,18 @@ abstract class TIndexedNVersion extends TIndexedNRead {
 
     //
 
+    /**
+     * @param writer
+     * @param index
+     */
     public void writeWrite(Writer writer, int index) {
         throw new IllegalStateException();
     }
 
+    /**
+     * @param reader
+     * @param index
+     */
     public void readWrite(Reader reader, int index) {
         throw new IllegalStateException();
     }

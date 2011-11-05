@@ -95,12 +95,12 @@ class FileGeneratorMethod {
                 wl("            try {");
                 wl("                " + returnStatement + "future_.get();");
                 wl("            } catch (java.lang.InterruptedException ex_) {");
-                wl("                throw new RuntimeException(ex_);");
+                wl("                throw new java.lang.RuntimeException(ex_);");
                 wl("            } catch (java.util.concurrent.ExecutionException ex_) {");
-                wl("                if (ex_.getCause() instanceof RuntimeException)");
-                wl("                    throw (RuntimeException) ex_.getCause();");
+                wl("                if (ex_.getCause() instanceof java.lang.RuntimeException)");
+                wl("                    throw (java.lang.RuntimeException) ex_.getCause();");
                 wl();
-                wl("                throw new RuntimeException(ex_.getCause());");
+                wl("                throw new java.lang.RuntimeException(ex_.getCause());");
                 wl("            }");
             } else {
                 wl("            " + returnStatement + "future_.Result;");
@@ -192,7 +192,7 @@ class FileGeneratorMethod {
             wl("     * Override to implement the method.");
             wl("     */");
             wl("    protected " + _method.ReturnValue.getType().getFullName(_gen.getTarget(), true) + " " + name + "Implementation(" + args + ") {");
-            wl("        throw new RuntimeException(com.objectfabric.Strings.MISSING_METHOD_CALL_IMPLEMENTATION);");
+            wl("        throw new java.lang.RuntimeException(com.objectfabric.Strings.MISSING_METHOD_CALL_IMPLEMENTATION);");
             wl("    }");
             wl();
             wl("    /**");

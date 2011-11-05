@@ -19,7 +19,6 @@ import of4gwt.Transaction.ConflictDetection;
 import of4gwt.VersionMap.Source;
 import of4gwt.misc.Debug;
 import of4gwt.misc.Log;
-import of4gwt.misc.PlatformAdapter;
 import of4gwt.misc.PlatformThread;
 import of4gwt.misc.SparseArrayHelper;
 
@@ -289,12 +288,9 @@ final class PropagatorReader extends DistributedReader {
         }
     }
 
-    @SuppressWarnings("null")
     public boolean onDisposingReturnIfKeep(Transaction branch, Snapshot snapshot, int mapIndex) {
-        if (Debug.ENABLED) {
+        if (Debug.ENABLED)
             Debug.assertion(branch.getConflictDetection() != ConflictDetection.LAST_WRITE_WINS);
-            Debug.assertion(snapshot != null);
-        }
 
         synchronized (_lock) {
             ValidationPoint point = TObjectMapEntry.get(_points, branch);
@@ -395,7 +391,7 @@ final class PropagatorReader extends DistributedReader {
         CODE, COMMAND
     }
 
-    @SuppressWarnings({ "fallthrough", "null" })
+    @SuppressWarnings("fallthrough")
     @Override
     public byte read() {
         for (;;) {
@@ -546,8 +542,7 @@ final class PropagatorReader extends DistributedReader {
         if (!Debug.ENABLED)
             throw new IllegalStateException();
 
-        if (PlatformAdapter.PLATFORM != CompileTimeSettings.PLATFORM_GWT)
-            Debug.assertion(PlatformThread.holdsLock(_lock));
+        PlatformThread.assertHoldsLock(_lock);
 
         for (TObjectMapEntry<ValidationPoint> entry : _points) {
             if (entry != null && entry != TObjectMapEntry.REMOVED) {

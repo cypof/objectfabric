@@ -44,7 +44,6 @@
 			<zipfileset dir="." prefix="objectfabric-${version}/objectfabric" excludes="classes/**" />
 
 			<zipfileset dir="../objectfabric.examples" prefix="objectfabric-${version}/objectfabric.examples" excludes="classes/** temp/**" />
-			<zipfileset dir="../objectfabric.examples.amazon" prefix="objectfabric-${version}/objectfabric.examples.amazon" excludes="classes/** temp/**" />
 			<zipfileset dir="../objectfabric.examples.android" prefix="objectfabric-${version}/objectfabric.examples.android" excludes="classes/** temp/**" />
 			<zipfileset dir="../objectfabric.examples.indexes" prefix="objectfabric-${version}/objectfabric.examples.indexes" excludes="classes/** temp/**" />
 

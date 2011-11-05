@@ -61,6 +61,9 @@ abstract class MultiplexerReader extends Reader {
         OverrideAssert.end(this);
     }
 
+    /**
+     * @param e
+     */
     protected void onStopped(Exception e) {
         OverrideAssert.set(this);
     }

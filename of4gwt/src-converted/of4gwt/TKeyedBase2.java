@@ -14,6 +14,7 @@ package of4gwt;
 
 import of4gwt.misc.Debug;
 import of4gwt.misc.List;
+import of4gwt.misc.PlatformAdapter;
 
 class TKeyedBase2 extends TKeyedBase1 {
 
@@ -79,7 +80,12 @@ class TKeyedBase2 extends TKeyedBase1 {
         }
 
         if (merged._entries == null || source._cleared) {
-            merged._entries = source._entries;
+            if ((flags & MERGE_FLAG_COPY_ARRAYS) != 0) {
+                merged._entries = new TKeyedEntry[source._entries.length];
+                PlatformAdapter.arraycopy(source._entries, 0, merged._entries, 0, merged._entries.length);
+            } else
+                merged._entries = source._entries;
+
             merged._entryCount = source._entryCount;
         } else if (source._entries != null)
             merged = merge(target, merged, source, flags);
@@ -112,8 +118,8 @@ class TKeyedBase2 extends TKeyedBase1 {
 
         TKeyedBase2 result = this;
 
-        if (result == target && (flags & (MERGE_FLAG_PRIVATE | MERGE_FLAG_BY_COPY)) == 0)
-            result = (TKeyedBase2) cloneThis((flags & MERGE_FLAG_READS) != 0);
+        if (result == target && (flags & (MERGE_FLAG_PRIVATE | MERGE_FLAG_COPY_ARRAY_ELEMENTS)) == 0)
+            result = (TKeyedBase2) cloneThis((flags & MERGE_FLAG_READS) != 0, false);
 
         result._entries = rehash(result._entries);
         return result;

@@ -18,7 +18,7 @@ package com.objectfabric;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 abstract class SiteBase extends com.objectfabric.TGeneratedFields32 {
 
     protected SiteBase() {
@@ -57,7 +57,7 @@ abstract class SiteBase extends com.objectfabric.TGeneratedFields32 {
 
     protected static final java.lang.String DISTANCE_NAME = "distance";
 
-    protected static final java.lang.Class DISTANCE_CLASS = int.class;
+    protected static final com.objectfabric.TType DISTANCE_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int FIELD_COUNT = 1;
 
@@ -82,15 +82,15 @@ abstract class SiteBase extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case DISTANCE_INDEX:
-                return DISTANCE_CLASS;
+                return DISTANCE_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

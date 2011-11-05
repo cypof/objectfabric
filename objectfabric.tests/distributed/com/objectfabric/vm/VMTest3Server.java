@@ -49,7 +49,7 @@ public class VMTest3Server extends TestsHelper {
         Debug.ProcessName = "Server";
         VMTest.writeStart(granularity, clients, flags, "VMTest3Server");
         LimitsObjectModel.register();
-        final Transaction trunk = VMTest.createTrunk(granularity);
+        final Transaction trunk = VMTest.createTrunk(granularity, flags);
         final Limit32 limit32 = new Limit32();
         final LimitN limitN = new LimitN();
         final TMap<Integer, Integer> map = new TMap<Integer, Integer>();
@@ -87,6 +87,9 @@ public class VMTest3Server extends TestsHelper {
         share.set(5, arrayTObjects);
         share.set(6, ref);
         VMServer server = new VMServer(share);
+
+        if (trunk.getStore() != null)
+            trunk.getStore().setRoot(share);
 
         ArrayList<VMConnection> connections = new ArrayList<VMConnection>();
 
@@ -198,6 +201,10 @@ public class VMTest3Server extends TestsHelper {
             client.close();
 
         Transaction.setDefaultTrunk(Site.getLocal().getTrunk());
+
+        if (trunk.getStore() != null)
+            trunk.getStore().close();
+
         PlatformAdapter.shutdown();
     }
 

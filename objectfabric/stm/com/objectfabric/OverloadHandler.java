@@ -34,6 +34,8 @@ import com.objectfabric.misc.PlatformThread;
  */
 public class OverloadHandler {
 
+    // TODO change class to abstract or interface to avoid repeat in GWT
+
     public static final int MAP_QUEUE_SIZE_THRESHOLD = 40;
 
     public static final int MAP_QUEUE_SIZE_MAXIMUM = 100;
@@ -87,6 +89,8 @@ public class OverloadHandler {
      * be merged together before distribution extensions have processed them. Those
      * callbacks can be used to slow down data production, and eventually block a writing
      * thread if the overload continues.
+     * 
+     * @param branch
      */
     protected void onMapQueueSizeThresholdReached(Transaction branch) {
     }
@@ -136,6 +140,8 @@ public class OverloadHandler {
      * called from the user thread that is trying to add a new object to send, which can
      * be blocked as a throttling solution, e.g. Thread.sleep(1), or trigger an
      * application-specific mechanism.
+     * 
+     * @param connection
      */
     protected void onPendingSendsThresholdReached(Connection connection) {
     }
@@ -165,6 +171,8 @@ public class OverloadHandler {
      * method is called from the user thread that is trying to add a new method call,
      * which can be blocked as a throttling solution, e.g. Thread.sleep(1), or trigger an
      * application-specific mechanism.
+     * 
+     * @param connection
      */
     protected void onPendingCallsThresholdReached(Connection connection) {
     }

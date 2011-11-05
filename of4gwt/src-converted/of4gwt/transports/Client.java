@@ -42,11 +42,15 @@ public interface Client extends Closeable {
 
     void connect() throws IOException;
 
-    Future<Void> connectAsync();
-
     Future<Void> connectAsync(AsyncCallback<Void> callback);
 
     Future<Void> connectAsync(AsyncCallback<Void> callback, AsyncOptions asyncOptions);
+
+    /**
+     * Connects and blocks until received a first message from the server. This is handy
+     * for applications that share one root object between client and server.
+     */
+    Object connectAndWaitObject() throws IOException;
 
     void close();
 }

@@ -24,7 +24,6 @@ import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.SeparateClassLoader;
 import com.objectfabric.transports.Server.Callback;
 import com.objectfabric.transports.http.HTTP;
-import com.objectfabric.transports.socket.SocketConnection;
 import com.objectfabric.transports.socket.SocketServer;
 
 public class ConnectionTest extends Privileged {
@@ -91,16 +90,16 @@ public class ConnectionTest extends Privileged {
         _server = new SocketServer(4444);
         _server.addFilter(new HTTP());
 
-        _server.setCallback(new Callback<SocketConnection>() {
+        _server.setCallback(new Callback<SocketServer.Session>() {
 
-            public void onConnection(SocketConnection session) {
+            public void onConnection(SocketServer.Session session) {
                 session.send(share);
             }
 
-            public void onDisconnection(SocketConnection session, Exception e) {
+            public void onDisconnection(SocketServer.Session session, Exception e) {
             }
 
-            public void onReceived(SocketConnection session, Object object) {
+            public void onReceived(SocketServer.Session session, Object object) {
             }
         });
 

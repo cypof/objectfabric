@@ -24,6 +24,10 @@ public final class PlatformClass {
         return c.getName();
     }
 
+    /**
+     * @param c
+     * @param o
+     */
     public static boolean isInstance(Class c, Object o) {
         throw new UnsupportedOperationException();
     }
@@ -36,7 +40,18 @@ public final class PlatformClass {
         return o.getClass().getName();
     }
 
+    /**
+     * @param c
+     */
     public static Class getEnclosingClass(Class c) {
         throw new UnsupportedOperationException();
+    }
+
+    public static Class getObjectClass() {
+        return Object.class;
+    }
+
+    public static Class getVoidClass() {
+        return void.class;
     }
 }

@@ -74,6 +74,9 @@ class Visitor {
         def.ReturnValue.visit(this);
     }
 
+    /**
+     * @param def
+     */
     public void visit(ValueDef def) {
     }
 

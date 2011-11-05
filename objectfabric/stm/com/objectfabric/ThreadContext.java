@@ -50,8 +50,6 @@ final class ThreadContext { // TODO merge with transactions' sets
 
     private final Run _run = new Run();
 
-    private byte[] _buffer = new byte[256];
-
     public static final ThreadContext getCurrent() {
         ThreadContext current = _current.get();
 
@@ -222,7 +220,7 @@ final class ThreadContext { // TODO merge with transactions' sets
             }
 
             for (int i = _branches.size() - 1; i >= 0; i--) {
-                Transaction branch = _branches.remove(i);
+                Transaction branch = _branches.removeLast();
                 TObjectMapEntry<Transaction> entry = TObjectMapEntry.getEntry(_transactions, branch);
 
                 if (entry.getValue() != null) {
@@ -276,15 +274,6 @@ final class ThreadContext { // TODO merge with transactions' sets
 
             transaction = parent;
         }
-    }
-
-    public final byte[] getBuffer() {
-        return _buffer;
-    }
-
-    public final void ensureBufferLength(int length) {
-        if (_buffer.length < length)
-            _buffer = new byte[length];
     }
 
     private static final class UpdateFuture extends FutureWithCallback<CommitStatus> {

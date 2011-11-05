@@ -395,7 +395,7 @@ public abstract class TKeyed<K> extends UserTObject {
         try {
             size = size(inner, true);
         } finally {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         return size;
@@ -455,7 +455,6 @@ public abstract class TKeyed<K> extends UserTObject {
             init(writes, privateVersions, publicVersions, mapIndex, transaction, record);
         }
 
-        @SuppressWarnings("null")
         private final void init(Version[] writes, Version[][] privateVersions, Version[][] publicVersions, int mapIndex, Transaction transaction, boolean record) {
             if (Debug.ENABLED && transaction != null) {
                 Debug.assertion(!transaction.isPublic());
@@ -475,9 +474,14 @@ public abstract class TKeyed<K> extends UserTObject {
                 _writes = version.getEntries();
             }
 
-            if (record && !transaction.noReads()) {
-                TKeyedRead read = TKeyed.this.getOrCreateRead(transaction);
-                read.setFullyRead(true);
+            if (record) {
+                if (transaction == null)
+                    throw new AssertionError();
+
+                if (!transaction.noReads()) {
+                    TKeyedRead read = TKeyed.this.getOrCreateRead(transaction);
+                    read.setFullyRead(true);
+                }
             }
 
             if (_writes == null)
@@ -618,15 +622,31 @@ public abstract class TKeyed<K> extends UserTObject {
             return com.objectfabric.Visitor.KEYED_VISITOR_ID;
         }
 
+        /**
+         * @param object
+         * @param key
+         */
         protected void onRead(TObject object, K key) {
         }
 
+        /**
+         * @param object
+         * @param key
+         * @param value
+         */
         protected void onPut(TObject object, K key, V value) {
         }
 
+        /**
+         * @param object
+         * @param key
+         */
         protected void onRemoval(TObject object, K key) {
         }
 
+        /**
+         * @param object
+         */
         protected void onClear(TObject object) {
         }
 

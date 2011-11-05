@@ -85,7 +85,7 @@ public class TArrayBigInteger extends TIndexed implements Iterable<java.math.Big
             value = version != null ? (java.math.BigInteger) version.get(index) : null;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayBigInteger extends TIndexed implements Iterable<java.math.Big
             value = version != null ? (java.math.BigInteger) version.get(index) : null;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

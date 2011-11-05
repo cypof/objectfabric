@@ -326,10 +326,6 @@ public class Reader extends TObjectReader {
     protected void visit(TListRead read) {
     }
 
-    @Override
-    protected void visitRead(TListSharedVersion shared) {
-    }
-
     private enum VisitListWrites {
         SIZE_OR_FLAGS, SHARED_VALUES, ENTRIES, REMOVALS, INSERTS
     }
@@ -417,8 +413,10 @@ public class Reader extends TObjectReader {
 
                         version.writeRemoval(value);
                     }
-                } else if (Debug.ENABLED)
+                } else if (Debug.ENABLED) {
                     Debug.assertion(version.getRemovals() == null);
+                    Debug.assertion(version.getRemovalsCount() == 0);
+                }
             }
             case INSERTS: {
                 if ((size & Writer.TLIST_VERSION_INSERTS) != 0) {
@@ -439,8 +437,10 @@ public class Reader extends TObjectReader {
 
                         version.writeInsert(value);
                     }
-                } else if (Debug.ENABLED)
+                } else if (Debug.ENABLED) {
                     Debug.assertion(version.getInserts() == null);
+                    Debug.assertion(version.getInsertsCount() == 0);
+                }
             }
         }
 

@@ -14,13 +14,10 @@ package com.objectfabric.misc;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
-import java.nio.channels.SocketChannel;
 import java.nio.channels.spi.SelectorProvider;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,7 +74,6 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
 
     static int _debugPurposesMinBufferLength;
 
-    @SuppressWarnings("unchecked")
     private NIOManager() {
         try {
             _selector = SelectorProvider.provider().openSelector();
@@ -125,7 +121,7 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
             String name = "ObjectFabric NIO " + i;
 
             if (Debug.ENABLED)
-                if (Debug.ProcessName != null && Debug.ProcessName.length() > 0)
+                if (Debug.ProcessName.length() > 0)
                     name = Debug.ProcessName + " " + name;
 
             thread.setName(name);
@@ -164,7 +160,6 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
     /**
      * Testing purposes only! Does not call onStopped methods on NIOConnections.
      */
-    @SuppressWarnings("static-access")
     public final void close() {
         _shutdown = true;
 
@@ -217,7 +212,7 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
         _selector.wakeup();
     }
 
-    public final void connect(NIOConnection connection, InetAddress host, int port) throws IOException {
+    public final void connect(NIOConnection connection, String host, int port) throws IOException {
         Future<Void> future = connect(connection, host, port, null, null);
 
         try {
@@ -232,25 +227,10 @@ public final class NIOManager extends Privileged implements Executor, Closeable 
         }
     }
 
-    @SuppressWarnings("unchecked")
-    public final Future<Void> connect(NIOConnection connection, InetAddress host, int port, AsyncCallback<Void> callback, AsyncOptions asyncOptions) {
-        try {
-            SocketChannel channel = SocketChannel.open();
-            // TODO: bench channel.socket().setTcpNoDelay(true);
-            channel.socket().setSendBufferSize(SOCKET_BUFFER_SIZE);
-            channel.socket().setReceiveBufferSize(SOCKET_BUFFER_SIZE);
-            channel.configureBlocking(false);
-            channel.connect(new InetSocketAddress(host, port));
-
-            Connect connect = new Connect(connection, channel, callback, asyncOptions);
-            execute(connect);
-
-            return connect.getFuture();
-        } catch (IOException ex) {
-            FutureAccessor<Void> future = new FutureAccessor<Void>(callback, asyncOptions);
-            future.setException(ex);
-            return future;
-        }
+    public final Future<Void> connect(NIOConnection connection, String host, int port, AsyncCallback<Void> callback, AsyncOptions asyncOptions) {
+        Connect connect = new Connect(connection, host, port, callback, asyncOptions);
+        execute(connect);
+        return connect.getFuture();
     }
 
     //

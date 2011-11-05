@@ -15,6 +15,7 @@ package of4gwt;
 import of4gwt.misc.ExecutionException;
 import of4gwt.misc.Future;
 
+import of4gwt.Extension.ExtensionShutdownException;
 import of4gwt.Transaction.CommitStatus;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import of4gwt.misc.Debug;
@@ -101,9 +102,24 @@ public class OF {
         /**
          * This is only called when the policy is DELAYED. Warning: Commits must be
          * executed on the same thread transactions were created on.
+         * 
+         * @param runnable
          */
         protected void delayCommit(Runnable runnable) {
             throw new UnsupportedOperationException();
+        }
+
+        /**
+         * When an exception occur in an extension, the default behavior is to stop the
+         * process if the exception is not part of a regular extension shutdown. It can be
+         * overridden, e.g. to try to restart the extension or for testing. This method is
+         * called after the extension did a best effort to shutdown cleanly.
+         */
+        protected void onException(Extension extension, Exception e) {
+            if (!(e instanceof ExtensionShutdownException)) {
+                Log.write(Strings.FATAL_ERROR + " (Extension " + extension + ")", e);
+                PlatformAdapter.exit(1);
+            }
         }
 
         /**
@@ -113,8 +129,7 @@ public class OF {
          * corruption.
          */
         protected void onThrowable(Throwable t) {
-            Log.write(t);
-            Log.write(Strings.FATAL_ERROR);
+            Log.write(Strings.FATAL_ERROR, t);
             PlatformAdapter.exit(1);
         }
 

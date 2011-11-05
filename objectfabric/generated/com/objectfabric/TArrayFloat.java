@@ -85,7 +85,7 @@ public class TArrayFloat extends TIndexed implements Iterable<Float> {
             value = version != null ? (float) version.get(index) : 0;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayFloat extends TIndexed implements Iterable<Float> {
             value = version != null ? (float) version.get(index) : 0;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

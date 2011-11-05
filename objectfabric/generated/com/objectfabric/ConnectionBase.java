@@ -18,7 +18,7 @@ package com.objectfabric;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 abstract class ConnectionBase extends com.objectfabric.TGeneratedFields32 {
 
     protected ConnectionBase(com.objectfabric.Site target) {
@@ -49,7 +49,7 @@ abstract class ConnectionBase extends com.objectfabric.TGeneratedFields32 {
 
     public static final java.lang.String TARGET_NAME = "target";
 
-    public static final java.lang.Class TARGET_CLASS = com.objectfabric.Site.class;
+    public static final com.objectfabric.TType TARGET_TYPE = com.objectfabric.Site.TYPE;
 
     public static final int FIELD_COUNT = 1;
 
@@ -74,15 +74,15 @@ abstract class ConnectionBase extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case TARGET_INDEX:
-                return TARGET_CLASS;
+                return TARGET_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

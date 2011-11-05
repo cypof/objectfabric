@@ -145,6 +145,8 @@ abstract class DistributedWriter extends MultiplexerWriter {
     @Override
     protected final boolean isKnown(Version shared) {
         Status status = _endpoint.getStatus(shared);
+        
+        // TODO merge the two
         boolean known = status == Status.SNAPSHOTTED || status == Status.CREATED;
 
         if (!known) {
@@ -245,7 +247,6 @@ abstract class DistributedWriter extends MultiplexerWriter {
         _wroteCommand = true;
     }
 
-    @SuppressWarnings("fallthrough")
     public void writeCommandInBranch(Transaction branch, byte command) {
         boolean transactionDone = false;
 

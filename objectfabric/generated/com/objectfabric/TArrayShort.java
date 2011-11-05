@@ -85,7 +85,7 @@ public class TArrayShort extends TIndexed implements Iterable<Short> {
             value = version != null ? (short) version.get(index) : ((short) 0);
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -112,7 +112,7 @@ public class TArrayShort extends TIndexed implements Iterable<Short> {
             value = version != null ? (short) version.get(index) : ((short) 0);
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

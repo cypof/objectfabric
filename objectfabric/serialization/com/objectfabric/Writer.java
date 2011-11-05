@@ -12,15 +12,6 @@
 
 package com.objectfabric;
 
-import com.objectfabric.TIndexed32Read;
-import com.objectfabric.TIndexed32Version;
-import com.objectfabric.TIndexedNRead;
-import com.objectfabric.TIndexedNVersion;
-import com.objectfabric.TKeyedEntry;
-import com.objectfabric.TKeyedSharedVersion;
-import com.objectfabric.TListRead;
-import com.objectfabric.TListSharedVersion;
-import com.objectfabric.TListVersion;
 import com.objectfabric.TObject.Version;
 import com.objectfabric.misc.Bits;
 import com.objectfabric.misc.Debug;
@@ -324,20 +315,8 @@ public abstract class Writer extends TObjectWriter {
         COMMAND, TOBJECT, BOOLEAN, ENTRIES, END
     }
 
-    @SuppressWarnings("fallthrough")
     @Override
     protected void visit(TKeyedSharedVersion shared, TKeyedEntry[] entries, boolean cleared, boolean fullyRead) {
-        if (Debug.ENABLED) {
-            boolean ok = cleared || fullyRead;
-
-            if (entries != null)
-                for (TKeyedEntry entry : entries)
-                    if (entry != null && entry != TKeyedEntry.REMOVED)
-                        ok = true;
-
-            Debug.assertion(ok);
-        }
-
         KeyedStep step;
         int index = 0;
         boolean wroteKey = false;
@@ -441,19 +420,41 @@ public abstract class Writer extends TObjectWriter {
      * List.
      */
 
-    @Override
-    protected void visit(TListRead read) {
+    private enum ListReadStep {
+        COMMAND, TOBJECT
     }
 
     @Override
-    protected void visitRead(TListSharedVersion shared) {
+    protected void visit(TListRead read) {
+        ListReadStep step = ListReadStep.COMMAND;
+
+        if (interrupted())
+            step = (ListReadStep) resume();
+
+        switch (step) {
+            case COMMAND: {
+                writeCommand(_nextCommand);
+
+                if (interrupted()) {
+                    interrupt(ListReadStep.COMMAND);
+                    return;
+                }
+            }
+            case TOBJECT: {
+                writeTObject(read.getShared());
+
+                if (interrupted()) {
+                    interrupt(ListReadStep.TOBJECT);
+                    return;
+                }
+            }
+        }
     }
 
     private enum ListSharedStep {
         COMMAND, TOBJECT, SIZE_OR_FLAGS, VALUES
     }
 
-    @SuppressWarnings("fallthrough")
     @Override
     protected void visitSnapshot(TListSharedVersion shared, Object[] array, int size) {
         if (Debug.ENABLED)
@@ -522,7 +523,6 @@ public abstract class Writer extends TObjectWriter {
         COMMAND, TOBJECT, SIZE_OR_FLAGS, ENTRIES, REMOVALS, INSERTS
     }
 
-    @SuppressWarnings("fallthrough")
     @Override
     protected void visit(TListVersion version) {
         if (Debug.ENABLED) {
@@ -538,13 +538,15 @@ public abstract class Writer extends TObjectWriter {
         }
 
         ListStep step;
-        int index = 0;
+        int index;
 
         if (interrupted()) {
             step = (ListStep) resume();
             index = resumeInt();
-        } else
+        } else {
             step = _nextCommand != NULL_COMMAND ? ListStep.COMMAND : ListStep.SIZE_OR_FLAGS;
+            index = 0;
+        }
 
         boolean hasBits = !Bits.isEmpty(version.getBits());
 
@@ -582,10 +584,10 @@ public abstract class Writer extends TObjectWriter {
                 if (hasBits)
                     flags |= TLIST_VERSION_ENTRIES;
 
-                if (version.getRemovals() != null)
+                if (version.getRemovalsCount() != 0)
                     flags |= TLIST_VERSION_REMOVALS;
 
-                if (version.getInserts() != null)
+                if (version.getInsertsCount() != 0)
                     flags |= TLIST_VERSION_INSERTS;
 
                 writeInteger(flags);
@@ -602,10 +604,7 @@ public abstract class Writer extends TObjectWriter {
                 }
             }
             case REMOVALS: {
-                if (version.getRemovals() != null) {
-                    if (Debug.ENABLED)
-                        Debug.assertion(version.getRemovalsCount() != 0);
-
+                if (version.getRemovalsCount() != 0) {
                     for (; index < version.getRemovalsCount(); index++) {
                         if (!canWriteInteger()) {
                             interruptInt(index);
@@ -620,13 +619,12 @@ public abstract class Writer extends TObjectWriter {
 
                         writeInteger(index < version.getRemovalsCount() - 1 ? value : -value - 1);
                     }
+
+                    index = 0;
                 }
             }
             case INSERTS: {
-                if (version.getInserts() != null) {
-                    if (Debug.ENABLED)
-                        Debug.assertion(version.getInsertsCount() != 0);
-
+                if (version.getInsertsCount() != 0) {
                     for (; index < version.getInsertsCount(); index++) {
                         if (!canWriteInteger()) {
                             interruptInt(index);

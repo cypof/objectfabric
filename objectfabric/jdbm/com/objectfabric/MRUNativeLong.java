@@ -223,7 +223,7 @@ final class MRUNativeLong {
     protected CacheEntry purgeEntry() {
         CacheEntry entry = _first;
 
-        _file.cacheObjectEvicted(entry._key, entry._value);
+        _file.cacheObjectEvicted(entry._value);
 
         removeEntry(entry);
         _hash.remove(((Long) entry.getKey()).longValue());
@@ -297,9 +297,9 @@ final class MRUNativeLong {
             CacheEntry entry = (CacheEntry) _itr.next();
             if (_resolve) {
                 return entry.getValue();
-            } else {
-                return entry;
             }
+
+            return entry;
         }
     }
 

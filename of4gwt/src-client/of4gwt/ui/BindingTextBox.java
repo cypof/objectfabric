@@ -33,8 +33,8 @@ final class BindingTextBox<T extends TIndexed> extends Binding<T, TextBox> {
 
     private HandlerRegistration _keyPressHandler;
 
-    public BindingTextBox(T object, TextBox control, int fieldIndex) {
-        super(object, control, fieldIndex);
+    public BindingTextBox(TextBox control, int fieldIndex) {
+        super(control, fieldIndex);
 
         /*
          * If a transaction the object, update the control.
@@ -43,11 +43,9 @@ final class BindingTextBox<T extends TIndexed> extends Binding<T, TextBox> {
 
             public void onFieldChanged(int i) {
                 if (i == getFieldIndex())
-                    getControl().setText((String) get(getTObject(), i));
+                    updateTextBox();
             }
         };
-
-        getTObject().addListener(_fieldListener);
 
         _changeHandler = getControl().addChangeHandler(new ChangeHandler() {
 
@@ -56,10 +54,6 @@ final class BindingTextBox<T extends TIndexed> extends Binding<T, TextBox> {
             }
         });
 
-        /*
-         * If the TextBox changes, start a transaction and copy the new value in the
-         * replicated form object.
-         */
         _keyPressHandler = getControl().addKeyPressHandler(new KeyPressHandler() {
 
             public void onKeyPress(KeyPressEvent event) {
@@ -69,10 +63,28 @@ final class BindingTextBox<T extends TIndexed> extends Binding<T, TextBox> {
     }
 
     @Override
+    public void setTObject(T value) {
+        if (getTObject() != null)
+            getTObject().removeListener(_fieldListener);
+
+        super.setTObject(value);
+
+        if (getTObject() != null) {
+            getTObject().addListener(_fieldListener);
+            updateTextBox();
+        }
+    }
+
+    @Override
     public void dispose() {
-        getTObject().removeListener(_fieldListener);
         _changeHandler.removeHandler();
         _keyPressHandler.removeHandler();
+
+        setTObject(null);
+    }
+
+    private void updateTextBox() {
+        getControl().setText((String) get(getTObject(), getFieldIndex()));
     }
 
     private void onTextBoxChanged() {

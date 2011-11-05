@@ -120,10 +120,6 @@ public class ShareStoredObject extends TestsHelper {
             Assert.assertEquals(12, object.getInt1());
 
             server.stop();
-
-            Debug.ProcessName = "";
-            Debug.AssertNoConflict = false;
-
             client.close();
             store.close();
 

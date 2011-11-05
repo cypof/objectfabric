@@ -19,8 +19,6 @@ import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
@@ -133,15 +131,8 @@ final class UI extends Data {
             public void actionPerformed(ActionEvent e) {
                 final NIOManager manager = NIOManager.getInstance();
                 final TestConnection connection = new TestConnection();
-                InetAddress address;
 
-                try {
-                    address = InetAddress.getByName(host.getText());
-                } catch (UnknownHostException ex) {
-                    throw new RuntimeException(ex);
-                }
-
-                manager.connect(connection, address, DEFAULT_PORT, new AsyncCallback<Void>() {
+                manager.connect(connection, host.getText(), DEFAULT_PORT, new AsyncCallback<Void>() {
 
                     public void onSuccess(Void _) {
                         log("Connected to " + connection.getChannel().socket().getRemoteSocketAddress());

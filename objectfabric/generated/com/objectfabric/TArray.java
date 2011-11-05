@@ -85,7 +85,7 @@ public class TArray<E> extends TIndexed implements Iterable<E>  {
             value = version != null ? (Object) version.get(index) : null;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return (E) value;
     }
 
@@ -112,7 +112,7 @@ public class TArray<E> extends TIndexed implements Iterable<E>  {
             value = version != null ? (Object) version.get(index) : null;
         }
 
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return (E) value;
     }
 

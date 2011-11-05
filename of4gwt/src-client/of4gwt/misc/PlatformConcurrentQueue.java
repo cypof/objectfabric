@@ -12,14 +12,17 @@
 
 package of4gwt.misc;
 
-import of4gwt.misc.Queue;
-
 public final class PlatformConcurrentQueue<E> extends Queue<E> {
 
     public boolean isEmpty() {
         return size() == 0;
     }
 
+    /**
+     * TODO remove
+     * 
+     * @param element
+     */
     public boolean contains(E element) {
         throw new UnsupportedOperationException();
     }

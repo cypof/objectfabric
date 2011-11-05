@@ -91,6 +91,7 @@ public final class PlatformClass {
         return void.class;
     }
 
+    // TODO unify with .NET enums
     public static boolean isJavaEnum(Class c) {
         return c.isEnum();
     }

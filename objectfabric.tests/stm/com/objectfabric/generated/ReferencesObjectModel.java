@@ -21,7 +21,7 @@ package com.objectfabric.generated;
 @SuppressWarnings({ "hiding", "unchecked", "static-access" })
 public class ReferencesObjectModel extends com.objectfabric.ObjectModel {
 
-    private static final byte[] UID = { -77, -27, -115, -9, 116, 0, 13, -123, 27, 67, 99, 124, -93, -63, -90, -108 };
+    private static final byte[] UID = { 67, 82, 65, -78, 103, 88, -73, -21, -115, -68, 10, 103, -1, 108, -98, 87 };
 
     private static volatile ReferencesObjectModel _instance;
 

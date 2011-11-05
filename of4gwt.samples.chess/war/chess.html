@@ -1,0 +1,195 @@
+<!DOCTYPE HTML>
+<html lang="en-US">
+<!-- Author: Anders Haig = minim.co -->
+<head>
+<meta charset="UTF-8">
+<title>Chess Game</title>
+<link rel="stylesheet" href="css/style.css" media="screen" />
+
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+<script type="text/javascript" src="js/app.js"></script>
+
+<script type="text/javascript">
+	function move(index, x, y) {
+		moveGWT(index, x, y);
+	}
+
+	<!-- Called from GWT -->
+
+	function onMove(index, x, y) {
+		//alert(index + ", " + x + ", " + y);
+	}
+</script>
+
+<script type="text/javascript" src="chess.app/chess.app.nocache.js"></script>
+</head>
+<body>
+	<iframe src="javascript:''" id="__gwt_historyFrame" tabIndex='-1'
+		style="position: absolute; width: 0; height: 0; border: 0"></iframe>
+
+	<div id="wrapper">
+		<div id="legal">
+			<div id="chessboard">
+				<div class="row">
+					<div id="8A" class="square even">
+						<img src="img/BlackRook.png" alt="Black Rook" title="Black Rook" />
+					</div>
+					<div id="8B" class="square">
+						<img src="img/BlackKnight.png" alt="Black Knight" title="Black Knight" />
+					</div>
+					<div id="8C" class="square even">
+						<img src="img/BlackBishop.png" alt="Black Bishop" title="Black Bishop" />
+					</div>
+					<div id="8D" class="square">
+						<img src="img/BlackQueen.png" alt="Black Queen" title="Black Queen" />
+					</div>
+					<div id="8E" class="square even">
+						<img src="img/BlackKing.png" alt="Black King" title="Black King" />
+					</div>
+					<div id="8F" class="square">
+						<img src="img/BlackBishop.png" alt="Black Bishop" title="Black Bishop" />
+					</div>
+					<div id="8G" class="square even">
+						<img src="img/BlackKnight.png" alt="Black Knight" title="Black Knight" />
+					</div>
+					<div id="8H" class="square">
+						<img src="img/BlackRook.png" alt="Black Rook" title="Black Rook" />
+					</div>
+				</div>
+				<div class="row">
+					<div id="7A" class="square">
+						<img src="img/BlackPeon.png" alt="Black Peon" title="Black Peon" />
+					</div>
+					<div id="7B" class="square even">
+						<img src="img/BlackPeon.png" alt="Black Peon" title="Black Peon" />
+					</div>
+					<div id="7C" class="square">
+						<img src="img/BlackPeon.png" alt="Black Peon" title="Black Peon" />
+					</div>
+					<div id="7D" class="square even">
+						<img src="img/BlackPeon.png" alt="Black Peon" title="Black Peon" />
+					</div>
+					<div id="7E" class="square">
+						<img src="img/BlackPeon.png" alt="Black Peon" title="Black Peon" />
+					</div>
+					<div id="7F" class="square even">
+						<img src="img/BlackPeon.png" alt="Black Peon" title="Black Peon" />
+					</div>
+					<div id="7G" class="square">
+						<img src="img/BlackPeon.png" alt="Black Peon" title="Black Peon" />
+					</div>
+					<div id="7H" class="square even">
+						<img src="img/BlackPeon.png" alt="Black Peon" title="Black Peon" />
+					</div>
+				</div>
+				<div class="row">
+					<div id="6A" class="square even"></div>
+					<div id="6B" class="square"></div>
+					<div id="6C" class="square even"></div>
+					<div id="6D" class="square"></div>
+					<div id="6E" class="square even"></div>
+					<div id="6F" class="square"></div>
+					<div id="6G" class="square even"></div>
+					<div id="6H" class="square"></div>
+				</div>
+				<div class="row">
+					<div id="5A" class="square"></div>
+					<div id="5B" class="square even"></div>
+					<div id="5C" class="square"></div>
+					<div id="5D" class="square even"></div>
+					<div id="5E" class="square"></div>
+					<div id="5F" class="square even"></div>
+					<div id="5G" class="square"></div>
+					<div id="5H" class="square even"></div>
+				</div>
+				<div class="row">
+					<div id="4A" class="square even"></div>
+					<div id="4B" class="square"></div>
+					<div id="4C" class="square even"></div>
+					<div id="4D" class="square"></div>
+					<div id="4E" class="square even"></div>
+					<div id="4F" class="square"></div>
+					<div id="4G" class="square even"></div>
+					<div id="4H" class="square"></div>
+				</div>
+				<div class="row">
+					<div id="3A" class="square"></div>
+					<div id="3B" class="square even"></div>
+					<div id="3C" class="square"></div>
+					<div id="3D" class="square even"></div>
+					<div id="3E" class="square"></div>
+					<div id="3F" class="square even"></div>
+					<div id="3G" class="square"></div>
+					<div id="3H" class="square even"></div>
+				</div>
+				<div class="row">
+					<div id="2A" class="square even">
+						<img src="img/WhitePeon.png" alt="White Peon" title="White Peon" />
+					</div>
+					<div id="2B" class="square">
+						<img src="img/WhitePeon.png" alt="White Peon" title="White Peon" />
+					</div>
+					<div id="2C" class="square even">
+						<img src="img/WhitePeon.png" alt="White Peon" title="White Peon" />
+					</div>
+					<div id="2D" class="square">
+						<img src="img/WhitePeon.png" alt="White Peon" title="White Peon" />
+					</div>
+					<div id="2E" class="square even">
+						<img src="img/WhitePeon.png" alt="White Peon" title="White Peon" />
+					</div>
+					<div id="2F" class="square">
+						<img src="img/WhitePeon.png" alt="White Peon" title="White Peon" />
+					</div>
+					<div id="2G" class="square even">
+						<img src="img/WhitePeon.png" alt="White Peon" title="White Peon" />
+					</div>
+					<div id="2H" class="square">
+						<img src="img/WhitePeon.png" alt="White Peon" title="White Peon" />
+					</div>
+				</div>
+				<div class="row">
+					<div id="1A" class="square">
+						<img src="img/WhiteRook.png" alt="White Rook" title="White Rook" />
+					</div>
+					<div id="1B" class="square even">
+						<img src="img/WhiteKnight.png" alt="White Knight" title="White Knight" />
+					</div>
+					<div id="1C" class="square">
+						<img src="img/WhiteBishop.png" alt="White Bishop" title="White Bishop" />
+					</div>
+					<div id="1D" class="square even">
+						<img src="img/WhiteQueen.png" alt="White Queen" title="White Queen" />
+					</div>
+					<div id="1E" class="square">
+						<img src="img/WhiteKing.png" alt="White King" title="White King" />
+					</div>
+					<div id="1F" class="square even">
+						<img src="img/WhiteBishop.png" alt="White Bishop" title="White Bishop" />
+					</div>
+					<div id="1G" class="square">
+						<img src="img/WhiteKnight.png" alt="White Knight" title="White Knight" />
+					</div>
+					<div id="1H" class="square even">
+						<img src="img/WhiteRook.png" alt="White Rook" title="White Rook" />
+					</div>
+				</div>
+			</div>
+			<!-- end #chessboard -->
+
+			<div id="dead"></div>
+			<div class="clear"></div>
+		</div>
+		<!-- end #legal -->
+	</div>
+	<!-- #wrapper -->
+
+	<table>
+		<tr>
+			<td width="400px" />
+			<td id="log">Loading...</td>
+		</tr>
+	</table>
+</body>
+</html>

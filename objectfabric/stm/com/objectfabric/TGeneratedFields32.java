@@ -30,7 +30,7 @@ public abstract class TGeneratedFields32 extends TGeneratedFields {
         Transaction inner = Transaction.startRead(outer, this);
         TIndexed32Version version = getTIndexed32Version_objectfabric(inner, index);
         Object value = version != null ? getUserTObject_objectfabric(version.getAsObject(index)) : null;
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 
@@ -46,7 +46,7 @@ public abstract class TGeneratedFields32 extends TGeneratedFields {
         Transaction inner = Transaction.startRead(outer, this);
         TIndexed32Version version = findTIndexed32PublicVersion(inner, index);
         Object value = version != null ? getUserTObject_objectfabric(version.getAsObject(index)) : null;
-        Transaction.endRead(outer, inner, this);
+        Transaction.endRead(outer, inner);
         return value;
     }
 

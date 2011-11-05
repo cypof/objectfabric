@@ -18,9 +18,12 @@ import com.objectfabric.ImmutableClass;
 import com.objectfabric.Privileged;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.PlatformClass;
+import com.objectfabric.misc.Utils;
 
 @XmlType(name = "Type")
 public class TypeDef extends Privileged {
+
+    // TODO merge with TType
 
     static final String ENUM_VALUES_ARRAY = "_ENUM_VALUES_ARRAY";
 
@@ -28,7 +31,7 @@ public class TypeDef extends Privileged {
 
     private ImmutableClass _immutable;
 
-    private GeneratedClassDef _classDef;
+    private GeneratedClassDef _generated;
 
     private java.lang.Class _otherClass;
 
@@ -43,8 +46,8 @@ public class TypeDef extends Privileged {
         _immutable = immutable;
     }
 
-    public TypeDef(GeneratedClassDef classDef) {
-        _classDef = classDef;
+    public TypeDef(GeneratedClassDef generated) {
+        _generated = generated;
     }
 
     public TypeDef(java.lang.Class other) {
@@ -122,10 +125,10 @@ public class TypeDef extends Privileged {
                 else if ("void".equals(name) || "Void".equals(name) || "Void".equals(name) || "java.lang.Void".equals(name))
                     result._otherClass = PlatformClass.getVoidClass();
                 else {
-                    result._classDef = findGeneratedClass(name, model);
+                    result._generated = findGeneratedClass(name, model);
 
-                    if (result._classDef == null) {
-                        result._otherClass = findOtherClass(name, model);
+                    if (result._generated == null) {
+                        result._otherClass = findOtherClass(name);
 
                         if (result._otherClass == null)
                             throw new IllegalArgumentException(name);
@@ -140,7 +143,7 @@ public class TypeDef extends Privileged {
         return result;
     }
 
-    private static java.lang.Class findOtherClass(String name, ObjectModelDef model) {
+    private static java.lang.Class findOtherClass(String name) {
         java.lang.Class c = getBuiltInClassFromString(name);
 
         if (c != null)
@@ -221,8 +224,8 @@ public class TypeDef extends Privileged {
         if (_immutable != null)
             return target == Target.CSHARP ? _immutable.getCSharp() : _immutable.getJava();
 
-        if (_classDef != null)
-            return _classDef.getFullName();
+        if (_generated != null)
+            return _generated.getFullName();
 
         if (_otherClass != null) {
             boolean ok = PlatformClass.isTObject(_otherClass);
@@ -276,6 +279,36 @@ public class TypeDef extends Privileged {
         return getFullName(generator.getTarget(), false);
     }
 
+    String getTTypeString(Target target) {
+        if (_immutable != null)
+            return "com.objectfabric.ImmutableClass." + Utils.getNameAsConstant(_immutable.toString()) + ".getType()";
+
+        if (_generated != null)
+            return _generated.getFullName() + ".TYPE";
+
+        if (_otherClass != null) {
+            String name = PlatformClass.getName(_otherClass).replace('$', '.');
+
+            if (_otherClass == PlatformClass.getVoidClass())
+                return "com.objectfabric.TType.VOID";
+
+            if (PlatformClass.isTObject(_otherClass))
+                return name + ".TYPE";
+
+            if (_otherClass == PlatformClass.getObjectClass())
+                return "com.objectfabric.TType.OBJECT";
+
+            String type = target == Target.JAVA ? name + ".class" : "typeof(" + name + ")";
+            return "new com.objectfabric.TType(" + type + ")";
+        }
+
+        if (_custom == null)
+            throw new RuntimeException("Type value is missing.");
+
+        String type = target == Target.JAVA ? _custom + ".class" : "typeof(" + _custom + ")";
+        return "new com.objectfabric.TType(" + type + ")";
+    }
+
     String getDefaultString() {
         return getImmutable() != null ? getImmutable().getDefaultString() : "null";
     }
@@ -297,7 +330,7 @@ public class TypeDef extends Privileged {
     }
 
     boolean isTObject() {
-        return _classDef != null || (_otherClass != null && PlatformClass.isTObject(_otherClass));
+        return _generated != null || (_otherClass != null && PlatformClass.isTObject(_otherClass));
     }
 
     boolean isJavaEnum() {
@@ -305,8 +338,8 @@ public class TypeDef extends Privileged {
     }
 
     public GeneratedClassDef getFirstGeneratedClassAmongstThisAndParents(ObjectModelDef model) {
-        if (_classDef != null)
-            return _classDef;
+        if (_generated != null)
+            return _generated;
 
         if (_otherClass != null) {
             java.lang.Class parent = PlatformClass.getSuperclass(_otherClass);
@@ -325,8 +358,8 @@ public class TypeDef extends Privileged {
     }
 
     public boolean isTGeneratedFields(ObjectModelDef model) {
-        if (_classDef != null && _classDef.getParent() != null)
-            return _classDef.getParent().isTGeneratedFields(model);
+        if (_generated != null && _generated.getParent() != null)
+            return _generated.getParent().isTGeneratedFields(model);
 
         if (_otherClass != null) {
             java.lang.Class parent = PlatformClass.getSuperclass(_otherClass);

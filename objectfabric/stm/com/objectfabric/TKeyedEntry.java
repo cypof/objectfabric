@@ -54,12 +54,12 @@ final class TKeyedEntry<K, V> implements Map.Entry<K, V> {
             Debug.assertion(key != null);
 
             if (soft)
-                Debug.assertion(value != REMOVAL && value != READ);
+                Debug.assertion(value != READ);
         }
 
         if (soft) {
             key = (K) new SoftReference<K>(key);
-            value = (V) new SoftReference<V>(value);
+            value = value != REMOVAL ? (V) new SoftReference<V>(value) : (V) REMOVAL;
         }
 
         _key = key;
@@ -95,7 +95,6 @@ final class TKeyedEntry<K, V> implements Map.Entry<K, V> {
         return _key;
     }
 
-    @SuppressWarnings("unchecked")
     public K getKeyDirect() {
         if (Debug.ENABLED) {
             Debug.assertion(this != REMOVED);

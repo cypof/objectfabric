@@ -335,8 +335,7 @@ public final class PlatformFile extends Privileged {
         }
 
         try {
-            if (writer != null)
-                writer.close();
+            writer.close();
         } catch (IOException ex) {
             // Ignore
         }

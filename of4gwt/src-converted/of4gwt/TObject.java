@@ -74,7 +74,6 @@ public abstract class TObject {
      */
     public abstract Transaction getTrunk();
 
-    @SuppressWarnings("static-access")
     public TType getTType() {
         return new TType(DefaultObjectModel.getInstance(), DefaultObjectModel.COM_OBJECTFABRIC_TOBJECT_CLASS_ID);
     }
@@ -92,7 +91,6 @@ public abstract class TObject {
         return object instanceof TObject ? ((TObject) object).getUserTObject_objectfabric() : object;
     }
 
-    @SuppressWarnings("unchecked")
     protected final <V> Future<V> getCompletedFuture_objectfabric(V result, Exception exception, AsyncCallback<V> callback, AsyncOptions asyncOptions) {
         if (callback != null || exception != null) {
             FutureWithCallback<V> async = new FutureWithCallback<V>(callback, asyncOptions);
@@ -170,8 +168,12 @@ public abstract class TObject {
             shared.setUnion(new Reference(this, false), true);
             _trunk = trunk;
 
-            if (Debug.ENABLED)
+            if (Debug.ENABLED) {
                 PlatformAdapter.assertEqualsAndHashCodeAreDefault(this);
+
+                if (Transaction.getLocalTrunk() != null && !(this instanceof DefaultObjectModel))
+                    TType.checkTType(this);
+            }
         }
 
         /*
@@ -227,7 +229,7 @@ public abstract class TObject {
              * Assert equals & hash code is not used as user can override behavior.
              */
             if (Debug.ENABLED)
-                if (!Helper.getInstance().allowEqualsOrHash(this))
+                if (!Helper.getInstance().allowEqualsOrHash())
                     Debug.fail();
 
             if (obj == getSharedVersion_objectfabric())
@@ -239,7 +241,7 @@ public abstract class TObject {
         @Override
         public int hashCode() {
             if (Debug.ENABLED)
-                if (!Helper.getInstance().allowEqualsOrHash(this))
+                if (!Helper.getInstance().allowEqualsOrHash())
                     Debug.fail();
 
             // Constant hash if object recreated after GC.
@@ -263,7 +265,7 @@ public abstract class TObject {
         }
 
         protected final void endRead_objectfabric(Transaction outer, Transaction inner) {
-            Transaction.endRead(outer, inner, this);
+            Transaction.endRead(outer, inner);
         }
 
         protected final Transaction startWrite_objectfabric(Transaction outer) {
@@ -332,18 +334,34 @@ public abstract class TObject {
             return Site.getLocal().getMethodExecutor();
         }
 
+        /**
+         * @param call
+         */
         protected void invoke_objectfabric(MethodCall call) {
             throw new IllegalStateException();
         }
 
+        /**
+         * @param methodVersion
+         * @param index
+         * @param result
+         */
         protected void setResult_objectfabric(TObject.Version methodVersion, int index, Object result) {
             throw new IllegalStateException();
         }
 
+        /**
+         * @param methodVersion
+         * @param index
+         * @param error
+         */
         protected void setError_objectfabric(TObject.Version methodVersion, int index, String error) {
             throw new IllegalStateException();
         }
 
+        /**
+         * @param call
+         */
         protected void getResultOrError_objectfabric(MethodCall call) {
             throw new IllegalStateException();
         }
@@ -376,7 +394,6 @@ public abstract class TObject {
          * Local method call, can be sent to another machine, where it will be partially
          * deserialized to a RemoteMethodCall.
          */
-        @SuppressWarnings("unchecked")
         protected static class LocalMethodCall extends MethodCall {
 
             public LocalMethodCall(UserTObject target, UserTObject method, TObject.Version methodVersion, int index, AsyncCallback callback, AsyncOptions asyncOptions) {
@@ -536,9 +553,11 @@ public abstract class TObject {
 
         public static final int MERGE_FLAG_PRIVATE = 1 << 1;
 
-        public static final int MERGE_FLAG_BY_COPY = 1 << 2;
+        public static final int MERGE_FLAG_CLONE = 1 << 2;
 
-        public static final int MERGE_FLAG_CLONE = 1 << 3;
+        public static final int MERGE_FLAG_COPY_ARRAYS = 1 << 3;
+
+        public static final int MERGE_FLAG_COPY_ARRAY_ELEMENTS = 1 << 4;
 
         /**
          * Can be either the shared version or a Reference to the object.
@@ -593,12 +612,10 @@ public abstract class TObject {
             return _union;
         }
 
-        @SuppressWarnings("static-access")
         final void setUnion(Object value, boolean privateToThread) {
             if (Debug.ENABLED)
-                if (PlatformAdapter.PLATFORM != CompileTimeSettings.PLATFORM_GWT)
-                    if (!privateToThread)
-                        Debug.assertion(PlatformThread.holdsLock(this));
+                if (!privateToThread)
+                    PlatformThread.assertHoldsLock(this);
 
             _union = value;
         }
@@ -611,8 +628,28 @@ public abstract class TObject {
             return (Reference) _union;
         }
 
+        final Descriptor getOrCreateDescriptor() {
+            if (Debug.ENABLED) {
+                Debug.assertion(isShared());
+                Debug.assertion(getUID() == null);
+            }
+
+            if (_union instanceof Descriptor)
+                return (Descriptor) _union;
+
+            UserTObject object = getReference().get();
+            Transaction trunk = object != null ? object.getTrunk() : Transaction.getDefaultTrunk();
+            return trunk.assignId(this);
+        }
+
         // Reads
 
+        /**
+         * @param map
+         * @param snapshot
+         * @param start
+         * @param stop
+         */
         public boolean validAgainst(VersionMap map, Snapshot snapshot, int start, int stop) {
             return true;
         }
@@ -622,15 +659,26 @@ public abstract class TObject {
         /**
          * At this point, we know the snapshot in which the version will be published.
          * Returns true if subsequent versions need to be fixed.
+         * 
+         * @param newSnapshot
+         * @param mapIndex
          */
         public boolean onPublishing(Snapshot newSnapshot, int mapIndex) {
             return false;
         }
 
+        /**
+         * @param newSnapshot
+         * @param mapIndex
+         * @return
+         */
         public Version onPastChanged(Snapshot newSnapshot, int mapIndex) {
             throw new IllegalStateException();
         }
 
+        /**
+         * @param transactionSnapshot
+         */
         public void onDeserialized(Snapshot transactionSnapshot) {
         }
 
@@ -639,6 +687,11 @@ public abstract class TObject {
          * and its values must override ones from this. Doing it the other way would allow
          * threads to see incomplete versions (e.g. while copying separately writes and
          * values or non-atomically a long from a version to the other).
+         * 
+         * @param target
+         * @param source
+         * @param flags
+         * @return
          */
         public Version merge(Version target, Version source, int flags) {
             return this;
@@ -665,11 +718,9 @@ public abstract class TObject {
             return source;
         }
 
-        // Optim, avoid loading data if not going to read it (e.g. lazy map)
-        public boolean visitable(Visitor visitor, int mapIndex) {
-            return true;
-        }
-
+        /**
+         * @param visitor
+         */
         public void visit(Visitor visitor) {
         }
 
@@ -692,7 +743,7 @@ public abstract class TObject {
         /**
          * No clone in GWT & removed in .NET -> copy fields.
          */
-        public final Version cloneThis(boolean reads) {
+        public final Version cloneThis(boolean reads, boolean copyArrays) {
             Version version;
 
             if (reads)
@@ -700,20 +751,23 @@ public abstract class TObject {
             else
                 version = getUnionAsVersion().createVersion();
 
-            Version test = version.merge(version, this, MERGE_FLAG_CLONE);
+            int flags = MERGE_FLAG_CLONE | (copyArrays ? MERGE_FLAG_COPY_ARRAYS : 0);
+            Version test = version.merge(version, this, flags);
 
             if (Debug.ENABLED) {
                 Debug.assertion(test == version);
 
-                Class c = getClass();
+                if (!copyArrays) {
+                    Class c = getClass();
 
-                while (c != Object.class) {
-                    if (!PlatformAdapter.shallowEquals(this, version, c, "_versionIdOnCopy", "_genericParameters")) {
-                        Debug.fail();
-                        PlatformAdapter.shallowEquals(this, version, c, "_versionIdOnCopy", "_genericParameters");
+                    while (c != Object.class) {
+                        if (!PlatformAdapter.shallowEquals(this, version, c, "_versionIdOnCopy", "_genericParameters")) {
+                            Debug.fail();
+                            PlatformAdapter.shallowEquals(this, version, c, "_versionIdOnCopy", "_genericParameters");
+                        }
+
+                        c = c.getSuperclass();
                     }
-
-                    c = c.getSuperclass();
                 }
             }
 
@@ -761,6 +815,13 @@ public abstract class TObject {
          * the local site.
          */
         public boolean isImmutable() {
+            if (Debug.ENABLED)
+                Debug.assertion(isShared());
+
+            return false;
+        }
+
+        public boolean isLazy() {
             if (Debug.ENABLED)
                 Debug.assertion(isShared());
 
@@ -1016,6 +1077,9 @@ public abstract class TObject {
             }
         }
 
+        /**
+         * @param reference
+         */
         protected void recreateUserReferences(Reference reference) {
         }
 
@@ -1092,6 +1156,9 @@ public abstract class TObject {
 
         // Debug
 
+        /**
+         * @param list
+         */
         public void getContentForDebug(List<Object> list) {
             if (!Debug.ENABLED)
                 throw new IllegalStateException();
@@ -1175,6 +1242,9 @@ public abstract class TObject {
 
             _object = object;
             // _branches = branches;
+
+            if (object != null && object.getUserReferences() != null)
+                _userReferences = new PlatformWeakReference<Object[]>(object.getUserReferences(), null);
         }
 
         // public final Version[] getBranches() {
@@ -1197,10 +1267,6 @@ public abstract class TObject {
 
         final Object[] getUserReferencesArray() {
             return _userReferences != null ? _userReferences.get() : null;
-        }
-
-        final void setUserReferencesArray(Object[] value) {
-            _userReferences = new PlatformWeakReference<Object[]>(value, null);
         }
 
         final boolean tryToPutUserReference(Object[] references, UserTObject object, boolean overrideNullMarker) {

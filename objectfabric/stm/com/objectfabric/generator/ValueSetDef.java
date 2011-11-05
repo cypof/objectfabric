@@ -96,6 +96,9 @@ public abstract class ValueSetDef {
         _enums.add(type);
     }
 
+    /**
+     * @param model
+     */
     boolean lessOr32Fields(ObjectModelDef model) {
         return getValues().size() <= 32;
     }

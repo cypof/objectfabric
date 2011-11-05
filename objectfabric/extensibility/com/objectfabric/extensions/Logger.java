@@ -13,6 +13,7 @@
 package com.objectfabric.extensions;
 
 import java.util.concurrent.Executor;
+import java.util.concurrent.Future;
 
 import com.objectfabric.AsyncOptions;
 import com.objectfabric.Privileged;
@@ -58,6 +59,8 @@ public class Logger extends Walker {
     public Logger(AsyncOptions options) {
         super(options.getForcedGranularity());
 
+        onStarting();
+
         _executor = options.getExecutor();
 
         _visitor = new Visitor();
@@ -66,13 +69,12 @@ public class Logger extends Walker {
 
         Privileged.init(_visitor, this, true);
 
-        if (!end())
-            requestRunOnce();
-
         if (Debug.THREADS) {
             ThreadAssert.exchangeGive(_run, _visitor);
             ThreadAssert.exchangeGive(_run, this);
         }
+
+        onStarted();
     }
 
     public void log(final Transaction branch) {
@@ -91,7 +93,7 @@ public class Logger extends Walker {
      * logged.
      */
     public void flush() {
-        Flush flush = _run.startFlush();
+        Future<Void> flush = _run.startFlush();
 
         if (requestRun())
             wait(flush);
@@ -140,15 +142,11 @@ public class Logger extends Walker {
     }
 
     @Override
-    protected void requestRunOnce() {
+    protected void startRun() {
         _executor.execute(_run);
     }
 
     private final class Run extends DefaultRunnable {
-
-        public Run() {
-            super(Logger.this);
-        }
 
         @Override
         protected void checkedRun() {
@@ -160,24 +158,19 @@ public class Logger extends Walker {
             if (Debug.THREADS)
                 ThreadAssert.exchangeTake(this);
 
-            for (;;) {
-                before();
+            onRunStarting();
+            runTasks();
 
-                Logger.this.walk(_visitor);
+            Logger.this.walk(_visitor);
 
-                if (Debug.ENABLED)
-                    ThreadAssert.suspend(this);
+            if (Debug.ENABLED)
+                ThreadAssert.suspend(this);
 
-                if (after()) {
-                    if (Debug.ENABLED)
-                        Debug.assertion(Transaction.getCurrent() == null);
+            setFlushes();
+            onRunEnded();
 
-                    return;
-                }
-
-                if (Debug.ENABLED)
-                    ThreadAssert.resume(this);
-            }
+            if (Debug.ENABLED)
+                Debug.assertion(Transaction.getCurrent() == null);
         }
     }
 
@@ -203,15 +196,15 @@ public class Logger extends Walker {
                 name = "Field " + index;
 
             if (getGranularity(getParent().getBranch()) == Granularity.ALL) {
-                String before = writeField(indexed, index, indexed.getOldField(index));
-                String after = writeField(indexed, index, indexed.getField(index));
+                String before = writeField(indexed.getOldField(index));
+                String after = writeField(indexed.getField(index));
                 onChange(object, name + ": " + before + " -> " + after);
             } else
-                onChange(object, name + " = " + writeField(indexed, index, indexed.getField(index)));
+                onChange(object, name + " = " + writeField(indexed.getField(index)));
 
         }
 
-        private String writeField(TGeneratedFields object, int index, Object value) {
+        private String writeField(Object value) {
             if (value != null) {
                 if (Debug.ENABLED)
                     disableEqualsOrHashCheck();

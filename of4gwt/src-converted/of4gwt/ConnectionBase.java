@@ -18,7 +18,7 @@ package of4gwt;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 abstract class ConnectionBase extends of4gwt.TGeneratedFields32 {
 
     protected ConnectionBase(of4gwt.Site target) {
@@ -49,7 +49,7 @@ abstract class ConnectionBase extends of4gwt.TGeneratedFields32 {
 
     public static final java.lang.String TARGET_NAME = "target";
 
-    public static final java.lang.Class TARGET_CLASS = of4gwt.Site.class;
+    public static final of4gwt.TType TARGET_TYPE = of4gwt.Site.TYPE;
 
     public static final int FIELD_COUNT = 1;
 
@@ -74,15 +74,15 @@ abstract class ConnectionBase extends of4gwt.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  of4gwt.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static of4gwt.TType getFieldTypeStatic(int index) {
         switch (index) {
             case TARGET_INDEX:
-                return TARGET_CLASS;
+                return TARGET_TYPE;
             default:
                 throw new IllegalArgumentException();
         }

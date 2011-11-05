@@ -15,6 +15,7 @@ package com.objectfabric;
 import java.util.NoSuchElementException;
 import java.util.concurrent.ExecutionException;
 
+import com.objectfabric.Extension.ExtensionShutdownException;
 import com.objectfabric.TObject.UserTObject;
 import com.objectfabric.TObject.UserTObject.LocalMethodCall;
 import com.objectfabric.TObject.UserTObject.Method;
@@ -24,7 +25,6 @@ import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.PlatformThreadLocal;
 import com.objectfabric.misc.RuntimeIOException;
-import com.objectfabric.misc.RuntimeIOException.StoreCloseException;
 import com.objectfabric.misc.ThreadAssert;
 
 /**
@@ -46,6 +46,13 @@ final class ExpectedExceptionThrower {
     }
 
     private ExpectedExceptionThrower() {
+    }
+
+    public static final boolean isCounterDisabled() {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
+        return _disabled;
     }
 
     public static final void disableCounter() {
@@ -114,9 +121,9 @@ final class ExpectedExceptionThrower {
         throw new RuntimeIOException();
     }
 
-    public static final void throwStoreCloseException() {
+    public static final void throwExtensionShutdownException() {
         onException();
-        throw new StoreCloseException();
+        throw new ExtensionShutdownException();
     }
 
     //
@@ -213,9 +220,15 @@ final class ExpectedExceptionThrower {
     @SuppressWarnings("unchecked")
     public static final void validateCall(Connection connection, Validator validator, UserTObject target, UserTObject method) {
         try {
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(false);
+
             validator.validateMethodCall(connection, target, ((Method) method).getName());
         } finally {
             OF.updateAsync();
+
+            if (Debug.ENABLED)
+                Helper.getInstance().setNoTransaction(true);
         }
     }
 }

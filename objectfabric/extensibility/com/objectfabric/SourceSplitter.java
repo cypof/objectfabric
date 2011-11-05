@@ -28,6 +28,12 @@ final class SourceSplitter extends Extension<SourceSplitter.State> {
     }
 
     @Override
+    protected boolean requestRun() {
+        // Called on registering a branch, ignore
+        return false;
+    }
+
+    @Override
     boolean casSnapshotWithThis(Transaction branch, Snapshot snapshot, Snapshot newSnapshot) {
         State state = new State();
         int index = -2;
@@ -68,20 +74,20 @@ final class SourceSplitter extends Extension<SourceSplitter.State> {
                 Helper.getInstance().removeWatcher(snapshot.getVersionMaps()[0], state, "casSnapshotWithThis failed");
 
             snapshot.getVersionMaps()[0].removeWatchers(branch, 1, false, null);
-        }
 
-        for (int i = snapshot.getVersionMaps().length - 2; i > index; i--) {
-            VersionMap map = snapshot.getVersionMaps()[i];
-            VersionMap next = snapshot.getVersionMaps()[i + 1];
+            for (int i = snapshot.getVersionMaps().length - 2; i > index; i--) {
+                VersionMap map = snapshot.getVersionMaps()[i];
+                VersionMap next = snapshot.getVersionMaps()[i + 1];
 
-            Connection.Version a = map.getSource() != null ? map.getSource().Connection : null;
-            Connection.Version b = next.getSource() != null ? next.getSource().Connection : null;
+                Connection.Version a = map.getSource() != null ? map.getSource().Connection : null;
+                Connection.Version b = next.getSource() != null ? next.getSource().Connection : null;
 
-            if (a != b) {
-                if (Debug.ENABLED)
-                    Helper.getInstance().removeWatcher(map, this, "casSnapshotWithThis failed" + i);
+                if (a != b) {
+                    if (Debug.ENABLED)
+                        Helper.getInstance().removeWatcher(map, this, "casSnapshotWithThis failed" + i);
 
-                map.removeWatchers(branch, 1, false, null);
+                    map.removeWatchers(branch, 1, false, null);
+                }
             }
         }
 

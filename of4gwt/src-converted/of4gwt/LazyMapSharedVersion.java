@@ -30,17 +30,6 @@ final class LazyMapSharedVersion extends TKeyedSharedVersion {
     }
 
     @Override
-    public boolean visitable(of4gwt.Visitor visitor, int mapIndex) {
-        return visitor.visitsTransients();
-    }
-
-    @Override
-    public void visit(of4gwt.Visitor visitor) {
-        if (visitor.visitsTransients())
-            super.visit(visitor);
-    }
-
-    @Override
     public int getClassId() {
         return DefaultObjectModelBase.COM_OBJECTFABRIC_LAZYMAP_CLASS_ID;
     }
@@ -120,6 +109,11 @@ final class LazyMapSharedVersion extends TKeyedSharedVersion {
     @Override
     public TObject.Version createVersion() {
         return new LazyMapVersion(this);
+    }
+
+    @Override
+    public boolean isLazy() {
+        return true;
     }
 
     // Debug

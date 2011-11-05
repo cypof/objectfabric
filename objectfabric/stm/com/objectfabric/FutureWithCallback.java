@@ -26,7 +26,7 @@ import com.objectfabric.misc.WritableFuture;
  * Combines a callback and a future. When the async event occurs, the future is set and
  * callback raised with the result.
  */
-class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<V>, Runnable {
+class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<V> {
 
     /**
      * Avoids logging an exception when it would be raised by waiting on the future.
@@ -63,15 +63,10 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
     @Override
     public void set(V value) {
         super.set(value);
-
-        if (_callback != null && _callback != NOP_CALLBACK) {
-            Executor executor = getAsyncOptions().getExecutor();
-            executor.execute(this);
-        }
     }
 
     @Override
-    protected void setException(Throwable t) {
+    protected final void setException(Throwable t) {
         setException((Exception) t);
     }
 
@@ -79,12 +74,20 @@ class FutureWithCallback<V> extends PlatformFuture<V> implements WritableFuture<
         super.setException(e);
 
         if (_callback != null) {
-            if (_callback != NOP_CALLBACK) {
-                Executor executor = getAsyncOptions().getExecutor();
-                executor.execute(this);
-            }
+            if (Debug.ENABLED)
+                Log.write(Strings.EXCEPTION_ON_USER_METHOD, e);
         } else
             Log.write(Strings.NO_CALLBACK_FOR_EXCEPTION + Utils.NEW_LINE + PlatformAdapter.getStackAsString(e));
+    }
+
+    @Override
+    protected void done() {
+        super.done();
+
+        if (_callback != null && _callback != NOP_CALLBACK) {
+            Executor executor = getAsyncOptions().getExecutor();
+            executor.execute(this);
+        }
     }
 
     @Override

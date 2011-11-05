@@ -364,8 +364,9 @@ class ImmutableReader extends BufferReader {
                 default:
                     throw new IllegalStateException();
             }
-        } else
-            return readFloatNoDebug();
+        }
+
+        return readFloatNoDebug();
     }
 
     private final float readFloatNoDebug() {
@@ -381,15 +382,15 @@ class ImmutableReader extends BufferReader {
             }
 
             return PlatformAdapter.stringToFloat(value);
-        } else {
-            if (remaining() < INTEGER_LENGTH) {
-                interrupt(null);
-                return 0;
-            }
-
-            int i = readIntegerFromBuffer();
-            return PlatformAdapter.intToFloat(i);
         }
+
+        if (remaining() < INTEGER_LENGTH) {
+            interrupt(null);
+            return 0;
+        }
+
+        int i = readIntegerFromBuffer();
+        return PlatformAdapter.intToFloat(i);
     }
 
     private static final int FLOAT_BOXED_DEBUG = -1;
@@ -480,8 +481,9 @@ class ImmutableReader extends BufferReader {
                 default:
                     throw new IllegalStateException();
             }
-        } else
-            return readDoubleNoDebug();
+        }
+
+        return readDoubleNoDebug();
     }
 
     private final double readDoubleNoDebug() {
@@ -497,14 +499,14 @@ class ImmutableReader extends BufferReader {
             }
 
             return PlatformAdapter.stringToDouble(value);
-        } else {
-            if (remaining() < LONG_LENGTH) {
-                interrupt(null);
-                return 0;
-            }
-
-            return PlatformAdapter.longToDouble(readLongFromBuffer());
         }
+
+        if (remaining() < LONG_LENGTH) {
+            interrupt(null);
+            return 0;
+        }
+
+        return PlatformAdapter.longToDouble(readLongFromBuffer());
     }
 
     private static final int DOUBLE_BOXED_DEBUG = -1;

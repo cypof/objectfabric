@@ -20,22 +20,22 @@ public class SerializationTestJava extends SerializationTest {
 
     @Test
     public void test1() {
-        run(true, true, "");
+        run(true, true);
     }
 
     @Test
     public void test2() {
-        run(true, false, "");
+        run(true, false);
     }
 
     @Test
     public void test3() {
-        run(false, true, "");
+        run(false, true);
     }
 
     @Test
     public void test4() {
-        run(false, false, "");
+        run(false, false);
     }
 
     @Override

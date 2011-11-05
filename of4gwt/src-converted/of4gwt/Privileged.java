@@ -134,14 +134,6 @@ public abstract class Privileged {
         return object instanceof UserTObject;
     }
 
-    protected static final byte[] getThreadContextBuffer() {
-        return ThreadContext.getCurrent().getBuffer();
-    }
-
-    protected static final void ensureThreadContextBufferLength(int length) {
-        ThreadContext.getCurrent().ensureBufferLength(length);
-    }
-
     protected static final <V> void wait(Future<V> future) {
         OF.getConfig().wait(future);
     }
@@ -159,6 +151,10 @@ public abstract class Privileged {
 
     protected static void assertIdle(Privileged privileged) {
         privileged.assertIdle();
+    }
+
+    protected static final void requestRun(Schedulable schedulable) {
+        schedulable.requestRun();
     }
 
     protected void assertIdle() {

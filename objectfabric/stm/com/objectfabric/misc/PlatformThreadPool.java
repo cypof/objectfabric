@@ -20,6 +20,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -37,12 +38,15 @@ public final class PlatformThreadPool {
 
     private static final ExecutorService _instance;
 
+    private static final ScheduledExecutorService _scheduler;
+
     static {
         ExecutorService instance = Executors.newCachedThreadPool(new ThreadFactory() {
 
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
-                thread.setName("ObjectFabric ThreadPool " + thread.getName());
+                String process = Debug.ProcessName.length() > 0 ? Debug.ProcessName + " " : "";
+                thread.setName(process + "ObjectFabric ThreadPool " + thread.getName());
                 thread.setDaemon(true);
                 return thread;
             }
@@ -52,6 +56,16 @@ public final class PlatformThreadPool {
             instance = new Wrapper(instance);
 
         _instance = instance;
+
+        _scheduler = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+
+            public Thread newThread(Runnable r) {
+                Thread thread = new Thread(r);
+                thread.setName("ObjectFabric Scheduler");
+                thread.setDaemon(true);
+                return thread;
+            }
+        });
     }
 
     private PlatformThreadPool() {
@@ -59,6 +73,10 @@ public final class PlatformThreadPool {
 
     public static final Executor getInstance() {
         return _instance;
+    }
+
+    public static Future schedule(Runnable command, int ms) {
+        return _scheduler.schedule(command, ms, TimeUnit.MILLISECONDS);
     }
 
     static void flush() {

@@ -37,7 +37,6 @@ final class Session extends SessionBase implements SystemClass {
 
     static final byte UID_OBJECT_ID = (byte) 0xff;
 
-    @SuppressWarnings("unused")
     private volatile int _currentId;
 
     
@@ -75,8 +74,8 @@ final class Session extends SessionBase implements SystemClass {
 
     public void setRecords(long value) {
         int i; // TODO
-//        if (Debug.ENABLED)
-//            Debug.assertion(_records == Record.NOT_STORED);
+        // if (Debug.ENABLED)
+        // Debug.assertion(_records == Record.NOT_STORED);
 
         _records = value;
     }
@@ -90,12 +89,9 @@ final class Session extends SessionBase implements SystemClass {
         return null;
     }
 
-    @SuppressWarnings("static-access")
     public Descriptor assignId(TObject.Version shared) {
         if (Debug.ENABLED) {
-            if (PlatformAdapter.PLATFORM != CompileTimeSettings.PLATFORM_GWT)
-                Debug.assertion(PlatformThread.holdsLock(shared));
-
+            PlatformThread.assertHoldsLock(shared);
             Debug.assertion(shared.getReference().getClass() == Reference.class);
         }
 

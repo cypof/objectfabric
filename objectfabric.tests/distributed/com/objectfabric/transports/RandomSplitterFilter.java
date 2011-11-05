@@ -14,6 +14,7 @@ package com.objectfabric.transports;
 
 import java.nio.ByteBuffer;
 
+import com.objectfabric.Connection;
 import com.objectfabric.Reader;
 import com.objectfabric.misc.List;
 import com.objectfabric.misc.NIOManager;
@@ -59,6 +60,10 @@ public class RandomSplitterFilter implements FilterFactory {
 
         public void setNext(Filter value) {
             _next = value;
+        }
+
+        public Connection getConnection() {
+            return _next.getConnection();
         }
 
         //

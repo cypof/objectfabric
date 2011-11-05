@@ -86,7 +86,7 @@ final class StoreReader extends Reader {
                 Debug.assertion(!(shared.getReference().get() instanceof Method));
             }
 
-            if (Record.isStored(record) && shared.visitable(this, NULL_MAP_INDEX)) {
+            if (Record.isStored(record) && !shared.isLazy()) {
                 byte[] data = _store.getRecordManager().fetch(record);
 
                 reset();
@@ -225,17 +225,27 @@ final class StoreReader extends Reader {
 
     @Override
     protected void visit(TKeyedVersion version) {
-        BTree tree = BTree.loadReadOnly(_store.getRecordManager(), getBuffer(), false);
+        BTree tree = visitTKeyed(version);
         version.setCleared(tree.getCleared());
+    }
+
+    @Override
+    protected void visit(LazyMapVersion version) {
+        throw new AssertionError();
+    }
+
+    private final BTree visitTKeyed(TKeyedBase2 version) {
+        BTree tree = BTree.loadReadOnly(_store.getRecordManager(), getBuffer(), false);
         TreeWalker walker = new TreeWalker(version);
         tree.walk(walker);
+        return tree;
     }
 
     private final class TreeWalker implements Walker {
 
-        private final TKeyedVersion _version;
+        private final TKeyedBase2 _version;
 
-        public TreeWalker(TKeyedVersion version) {
+        public TreeWalker(TKeyedBase2 version) {
             _version = version;
         }
 

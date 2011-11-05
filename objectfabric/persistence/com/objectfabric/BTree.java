@@ -154,30 +154,30 @@ final class BTree {
             _height = 1;
             _recman.update(_id, write());
             return Record.NOT_STORED;
-        } else {
-            BPage.InsertResult insert = rootPage.insert(_height, key, value);
-            boolean dirty = false;
-
-            if (insert._overflow != null) {
-                // current root page overflowed, we replace with a new root page
-                if (Debug.PERSISTENCE_LOG)
-                    Log.write("BTree.insert() replace root BPage due to overflow");
-
-                rootPage = new BPage(this, rootPage, insert._overflow);
-                _root = rootPage._recid;
-                _height += 1;
-                dirty = true;
-            }
-
-            if (insert._existing == Record.NOT_STORED)
-                dirty = true;
-
-            if (dirty)
-                _recman.update(_id, write());
-
-            // insert might have returned an existing value
-            return insert._existing;
         }
+
+        BPage.InsertResult insert = rootPage.insert(_height, key, value);
+        boolean dirty = false;
+
+        if (insert._overflow != null) {
+            // current root page overflowed, we replace with a new root page
+            if (Debug.PERSISTENCE_LOG)
+                Log.write("BTree.insert() replace root BPage due to overflow");
+
+            rootPage = new BPage(this, rootPage, insert._overflow);
+            _root = rootPage._recid;
+            _height += 1;
+            dirty = true;
+        }
+
+        if (insert._existing == Record.NOT_STORED)
+            dirty = true;
+
+        if (dirty)
+            _recman.update(_id, write());
+
+        // insert might have returned an existing value
+        return insert._existing;
     }
 
     /**

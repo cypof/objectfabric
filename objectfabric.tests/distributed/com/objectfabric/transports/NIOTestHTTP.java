@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.Test;
 
+import com.objectfabric.Connection;
 import com.objectfabric.TestsHelper;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
@@ -78,7 +79,7 @@ public class NIOTestHTTP extends TestsHelper {
 
         for (HTTPSession session : _sessions.keySet()) {
             session._algo.start();
-            session.requestWrite();
+            requestRun(session);
         }
 
         while (_sessions.size() > 0)
@@ -113,16 +114,13 @@ public class NIOTestHTTP extends TestsHelper {
 
                 @Override
                 public void requestWrite() {
-                    HTTPSession.this.requestWrite();
+                    HTTPSession.this.requestRun();
                 }
             });
 
             List<FilterFactory> list = new List<FilterFactory>();
 
             list.add(factory);
-
-            if (Debug.RANDOMIZE_TRANSFER_LENGTHS)
-                list.add(new RandomSplitterFilter());
 
             list.add(new FilterFactory() {
 
@@ -134,7 +132,17 @@ public class NIOTestHTTP extends TestsHelper {
                         }
 
                         @Override
+                        public Filter getNext() {
+                            return null;
+                        }
+
+                        @Override
                         public void setPrevious(Filter value) {
+                        }
+
+                        @Override
+                        public Connection getConnection() {
+                            return null;
                         }
 
                         @Override
@@ -176,6 +184,7 @@ public class NIOTestHTTP extends TestsHelper {
             });
 
             _filter.init(list, 0, false);
+            _algo.setConnection(this);
         }
 
         @Override
@@ -231,6 +240,10 @@ public class NIOTestHTTP extends TestsHelper {
                 throw new UnsupportedOperationException();
             }
 
+            public Connection getConnection() {
+                throw new UnsupportedOperationException();
+            }
+
             public Filter getNext() {
                 throw new UnsupportedOperationException();
             }
@@ -254,6 +267,6 @@ public class NIOTestHTTP extends TestsHelper {
         // test.socket8();
 
         for (int i = 0; i < 100; i++)
-            test.run(1, false, true);
+            test.run(1, false, false);
     }
 }

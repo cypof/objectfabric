@@ -12,11 +12,15 @@
 
 package of4gwt.transports;
 
+import of4gwt.Privileged;
+import of4gwt.Schedulable;
 import of4gwt.misc.Debug;
+import of4gwt.misc.Log;
 import of4gwt.misc.PlatformAdapter;
+import of4gwt.misc.PlatformThreadPool;
 import of4gwt.misc.Utils;
 
-public final class DataGen {
+public final class DataGen extends Privileged {
 
     private final int _readLimit, _writeLimit;
 
@@ -26,9 +30,19 @@ public final class DataGen {
 
     private Counter _read = new Counter(), _write = new Counter();
 
+    private Schedulable _connection;
+
     public DataGen(int readLimit, int writeLimit) {
         _readLimit = readLimit;
         _writeLimit = writeLimit;
+    }
+
+    public Schedulable getConnection() {
+        return _connection;
+    }
+
+    public void setConnection(Schedulable value) {
+        _connection = value;
     }
 
     public void start() {
@@ -48,6 +62,8 @@ public final class DataGen {
 
         int length = limit - offset;
         _readTotal += length;
+
+        Log.write("Read " + length);
     }
 
     public int write(byte[] buffer, int offset, int limit) {
@@ -56,7 +72,28 @@ public final class DataGen {
 
         int written = 0;
         boolean done = false;
-        int length = PlatformAdapter.getRandomInt(limit);
+
+        int length;
+
+        switch (PlatformAdapter.getRandomInt(5)) {
+            case 0:
+                length = PlatformAdapter.getRandomInt(10);
+                break;
+            case 1:
+                length = PlatformAdapter.getRandomInt(500);
+                break;
+            case 2:
+                length = PlatformAdapter.getRandomInt(2000);
+                break;
+            case 3:
+                length = PlatformAdapter.getRandomInt(10000);
+                break;
+            case 4:
+                length = limit;
+                break;
+            default:
+                throw new RuntimeException();
+        }
 
         while (offset + written < length) {
             if (_writtenTotal == _writeLimit) {
@@ -68,6 +105,24 @@ public final class DataGen {
             written++;
             _writtenTotal++;
         }
+
+        int delay = PlatformAdapter.getRandomInt(1000);
+
+        if (delay > 0) {
+            if (!done) {
+                done = true;
+
+                PlatformThreadPool.schedule(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        requestRun(_connection);
+                    }
+                }, delay);
+            }
+        }
+
+        Log.write("Write " + written);
 
         return done ? (-written - 1) : written;
     }
@@ -83,7 +138,6 @@ public final class DataGen {
         public byte next() {
             if (_index == 4) {
                 _value++;
-                // Log.write("" + _value);
                 Utils.writeInt(_bytes, 0, _value);
                 _index = 0;
             }

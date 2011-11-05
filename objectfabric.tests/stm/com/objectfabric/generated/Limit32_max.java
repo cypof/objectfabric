@@ -18,7 +18,7 @@ package com.objectfabric.generated;
 //                                                                              
 //==============================================================================
 
-@SuppressWarnings({ "hiding", "unchecked", "static-access" })
+@SuppressWarnings({ "hiding", "unchecked", "static-access", "unused" })
 public class Limit32_max extends com.objectfabric.TGeneratedFields32 {
 
     public Limit32_max() {
@@ -615,193 +615,193 @@ public class Limit32_max extends com.objectfabric.TGeneratedFields32 {
 
     public static final java.lang.String INT0_NAME = "int0";
 
-    public static final java.lang.Class INT0_CLASS = int.class;
+    public static final com.objectfabric.TType INT0_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT1_INDEX = 1;
 
     public static final java.lang.String INT1_NAME = "int1";
 
-    public static final java.lang.Class INT1_CLASS = int.class;
+    public static final com.objectfabric.TType INT1_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT2_INDEX = 2;
 
     public static final java.lang.String INT2_NAME = "int2";
 
-    public static final java.lang.Class INT2_CLASS = int.class;
+    public static final com.objectfabric.TType INT2_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT3_INDEX = 3;
 
     public static final java.lang.String INT3_NAME = "int3";
 
-    public static final java.lang.Class INT3_CLASS = int.class;
+    public static final com.objectfabric.TType INT3_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT4_INDEX = 4;
 
     public static final java.lang.String INT4_NAME = "int4";
 
-    public static final java.lang.Class INT4_CLASS = int.class;
+    public static final com.objectfabric.TType INT4_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT5_INDEX = 5;
 
     public static final java.lang.String INT5_NAME = "int5";
 
-    public static final java.lang.Class INT5_CLASS = int.class;
+    public static final com.objectfabric.TType INT5_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT6_INDEX = 6;
 
     public static final java.lang.String INT6_NAME = "int6";
 
-    public static final java.lang.Class INT6_CLASS = int.class;
+    public static final com.objectfabric.TType INT6_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT7_INDEX = 7;
 
     public static final java.lang.String INT7_NAME = "int7";
 
-    public static final java.lang.Class INT7_CLASS = int.class;
+    public static final com.objectfabric.TType INT7_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT8_INDEX = 8;
 
     public static final java.lang.String INT8_NAME = "int8";
 
-    public static final java.lang.Class INT8_CLASS = int.class;
+    public static final com.objectfabric.TType INT8_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT9_INDEX = 9;
 
     public static final java.lang.String INT9_NAME = "int9";
 
-    public static final java.lang.Class INT9_CLASS = int.class;
+    public static final com.objectfabric.TType INT9_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT10_INDEX = 10;
 
     public static final java.lang.String INT10_NAME = "int10";
 
-    public static final java.lang.Class INT10_CLASS = int.class;
+    public static final com.objectfabric.TType INT10_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT11_INDEX = 11;
 
     public static final java.lang.String INT11_NAME = "int11";
 
-    public static final java.lang.Class INT11_CLASS = int.class;
+    public static final com.objectfabric.TType INT11_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT12_INDEX = 12;
 
     public static final java.lang.String INT12_NAME = "int12";
 
-    public static final java.lang.Class INT12_CLASS = int.class;
+    public static final com.objectfabric.TType INT12_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT13_INDEX = 13;
 
     public static final java.lang.String INT13_NAME = "int13";
 
-    public static final java.lang.Class INT13_CLASS = int.class;
+    public static final com.objectfabric.TType INT13_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT14_INDEX = 14;
 
     public static final java.lang.String INT14_NAME = "int14";
 
-    public static final java.lang.Class INT14_CLASS = int.class;
+    public static final com.objectfabric.TType INT14_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT15_INDEX = 15;
 
     public static final java.lang.String INT15_NAME = "int15";
 
-    public static final java.lang.Class INT15_CLASS = int.class;
+    public static final com.objectfabric.TType INT15_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT16_INDEX = 16;
 
     public static final java.lang.String INT16_NAME = "int16";
 
-    public static final java.lang.Class INT16_CLASS = int.class;
+    public static final com.objectfabric.TType INT16_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT17_INDEX = 17;
 
     public static final java.lang.String INT17_NAME = "int17";
 
-    public static final java.lang.Class INT17_CLASS = int.class;
+    public static final com.objectfabric.TType INT17_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT18_INDEX = 18;
 
     public static final java.lang.String INT18_NAME = "int18";
 
-    public static final java.lang.Class INT18_CLASS = int.class;
+    public static final com.objectfabric.TType INT18_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT19_INDEX = 19;
 
     public static final java.lang.String INT19_NAME = "int19";
 
-    public static final java.lang.Class INT19_CLASS = int.class;
+    public static final com.objectfabric.TType INT19_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT20_INDEX = 20;
 
     public static final java.lang.String INT20_NAME = "int20";
 
-    public static final java.lang.Class INT20_CLASS = int.class;
+    public static final com.objectfabric.TType INT20_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT21_INDEX = 21;
 
     public static final java.lang.String INT21_NAME = "int21";
 
-    public static final java.lang.Class INT21_CLASS = int.class;
+    public static final com.objectfabric.TType INT21_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT22_INDEX = 22;
 
     public static final java.lang.String INT22_NAME = "int22";
 
-    public static final java.lang.Class INT22_CLASS = int.class;
+    public static final com.objectfabric.TType INT22_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT23_INDEX = 23;
 
     public static final java.lang.String INT23_NAME = "int23";
 
-    public static final java.lang.Class INT23_CLASS = int.class;
+    public static final com.objectfabric.TType INT23_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT24_INDEX = 24;
 
     public static final java.lang.String INT24_NAME = "int24";
 
-    public static final java.lang.Class INT24_CLASS = int.class;
+    public static final com.objectfabric.TType INT24_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT25_INDEX = 25;
 
     public static final java.lang.String INT25_NAME = "int25";
 
-    public static final java.lang.Class INT25_CLASS = int.class;
+    public static final com.objectfabric.TType INT25_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT26_INDEX = 26;
 
     public static final java.lang.String INT26_NAME = "int26";
 
-    public static final java.lang.Class INT26_CLASS = int.class;
+    public static final com.objectfabric.TType INT26_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT27_INDEX = 27;
 
     public static final java.lang.String INT27_NAME = "int27";
 
-    public static final java.lang.Class INT27_CLASS = int.class;
+    public static final com.objectfabric.TType INT27_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT28_INDEX = 28;
 
     public static final java.lang.String INT28_NAME = "int28";
 
-    public static final java.lang.Class INT28_CLASS = int.class;
+    public static final com.objectfabric.TType INT28_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT29_INDEX = 29;
 
     public static final java.lang.String INT29_NAME = "int29";
 
-    public static final java.lang.Class INT29_CLASS = int.class;
+    public static final com.objectfabric.TType INT29_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT30_INDEX = 30;
 
     public static final java.lang.String INT30_NAME = "int30";
 
-    public static final java.lang.Class INT30_CLASS = int.class;
+    public static final com.objectfabric.TType INT30_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int INT31_INDEX = 31;
 
     public static final java.lang.String INT31_NAME = "int31";
 
-    public static final java.lang.Class INT31_CLASS = int.class;
+    public static final com.objectfabric.TType INT31_TYPE = com.objectfabric.ImmutableClass.INTEGER.getType();
 
     public static final int FIELD_COUNT = 32;
 
@@ -888,77 +888,77 @@ public class Limit32_max extends com.objectfabric.TGeneratedFields32 {
     }
 
     @Override
-    public java.lang.Class getFieldClass(int index) {
-        return getFieldClassStatic(index);
+    public  com.objectfabric.TType getFieldType(int index) {
+        return getFieldTypeStatic(index);
     }
 
     @SuppressWarnings("static-access")
-    public static java.lang.Class getFieldClassStatic(int index) {
+    public static com.objectfabric.TType getFieldTypeStatic(int index) {
         switch (index) {
             case INT0_INDEX:
-                return INT0_CLASS;
+                return INT0_TYPE;
             case INT1_INDEX:
-                return INT1_CLASS;
+                return INT1_TYPE;
             case INT2_INDEX:
-                return INT2_CLASS;
+                return INT2_TYPE;
             case INT3_INDEX:
-                return INT3_CLASS;
+                return INT3_TYPE;
             case INT4_INDEX:
-                return INT4_CLASS;
+                return INT4_TYPE;
             case INT5_INDEX:
-                return INT5_CLASS;
+                return INT5_TYPE;
             case INT6_INDEX:
-                return INT6_CLASS;
+                return INT6_TYPE;
             case INT7_INDEX:
-                return INT7_CLASS;
+                return INT7_TYPE;
             case INT8_INDEX:
-                return INT8_CLASS;
+                return INT8_TYPE;
             case INT9_INDEX:
-                return INT9_CLASS;
+                return INT9_TYPE;
             case INT10_INDEX:
-                return INT10_CLASS;
+                return INT10_TYPE;
             case INT11_INDEX:
-                return INT11_CLASS;
+                return INT11_TYPE;
             case INT12_INDEX:
-                return INT12_CLASS;
+                return INT12_TYPE;
             case INT13_INDEX:
-                return INT13_CLASS;
+                return INT13_TYPE;
             case INT14_INDEX:
-                return INT14_CLASS;
+                return INT14_TYPE;
             case INT15_INDEX:
-                return INT15_CLASS;
+                return INT15_TYPE;
             case INT16_INDEX:
-                return INT16_CLASS;
+                return INT16_TYPE;
             case INT17_INDEX:
-                return INT17_CLASS;
+                return INT17_TYPE;
             case INT18_INDEX:
-                return INT18_CLASS;
+                return INT18_TYPE;
             case INT19_INDEX:
-                return INT19_CLASS;
+                return INT19_TYPE;
             case INT20_INDEX:
-                return INT20_CLASS;
+                return INT20_TYPE;
             case INT21_INDEX:
-                return INT21_CLASS;
+                return INT21_TYPE;
             case INT22_INDEX:
-                return INT22_CLASS;
+                return INT22_TYPE;
             case INT23_INDEX:
-                return INT23_CLASS;
+                return INT23_TYPE;
             case INT24_INDEX:
-                return INT24_CLASS;
+                return INT24_TYPE;
             case INT25_INDEX:
-                return INT25_CLASS;
+                return INT25_TYPE;
             case INT26_INDEX:
-                return INT26_CLASS;
+                return INT26_TYPE;
             case INT27_INDEX:
-                return INT27_CLASS;
+                return INT27_TYPE;
             case INT28_INDEX:
-                return INT28_CLASS;
+                return INT28_TYPE;
             case INT29_INDEX:
-                return INT29_CLASS;
+                return INT29_TYPE;
             case INT30_INDEX:
-                return INT30_CLASS;
+                return INT30_TYPE;
             case INT31_INDEX:
-                return INT31_CLASS;
+                return INT31_TYPE;
             default:
                 throw new IllegalArgumentException();
         }
