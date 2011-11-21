@@ -10,15 +10,15 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-package part06.stm;
+package part06.transactions;
 
 import java.io.IOException;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import part06.stm.generated.SimpleClass;
-import part06.stm.generated.SimpleObjectModel;
+import part06.transactions.generated.SimpleClass;
+import part06.transactions.generated.SimpleObjectModel;
 
 import com.objectfabric.FileStore;
 import com.objectfabric.Site;
@@ -140,8 +140,9 @@ public class STM_5_Trunks {
 
         /*
          * Stores can contain multiple trunks. An object from one trunk can reference an
-         * object from another. In this case, object4 will be persisted as a reference
-         * from object3 which was already in the store.
+         * object from another, but then they have to be updated in different
+         * transactions. A transaction cannot span multiple trunks. In this case, object4
+         * will be persisted as a reference from object3 which was already in the store.
          */
         trunk = Site.getLocal().createTrunk(store);
         SimpleClass object4 = new SimpleClass(trunk);

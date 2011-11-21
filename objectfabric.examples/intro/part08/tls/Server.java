@@ -22,10 +22,13 @@ import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.SeparateClassLoader;
 import com.objectfabric.transports.Server.Callback;
 import com.objectfabric.transports.filters.TLS;
+import com.objectfabric.transports.http.HTTP;
 import com.objectfabric.transports.socket.SocketServer;
 import com.objectfabric.transports.socket.SocketServer.Session;
 
 /**
+ * Please run keys/createKey script first to create keys.
+ * <nl>
  * This example shows how to use the TLS (SSL) filter to enable secure connections.
  * ObjectFabric uses the standard Java SSLEngine.
  */
@@ -54,6 +57,7 @@ public class Server {
 
         SSLContext ssl = Shared.createSSLContext();
         server.addFilter(new TLS(ssl));
+        server.addFilter(new HTTP());
         server.start();
 
         if (!isTest) {

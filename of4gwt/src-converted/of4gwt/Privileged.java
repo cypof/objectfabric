@@ -20,6 +20,7 @@ import of4gwt.TObject.Version;
 import of4gwt.Visitor.Listener;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import of4gwt.misc.Debug;
+import of4gwt.misc.List;
 import of4gwt.misc.WritableFuture;
 
 /**
@@ -157,6 +158,49 @@ public abstract class Privileged {
         schedulable.requestRun();
     }
 
+    protected static final void writeString(String text, byte[] buffer) {
+        TextWriter writer = new TextWriter(buffer);
+        writer.writeString(text);
+    }
+
+    protected static final Reader createReader() {
+        return new Reader(new List<UserTObject>());
+    }
+
+    protected static final String readString(Reader reader, byte[] buffer, int offset, int limit) {
+        if (!reader.interrupted()) {
+            reader.setFlags(buffer[offset]);
+            offset++;
+        }
+
+        reader.setBuffer(buffer);
+        reader.setOffset(offset);
+        reader.setLimit(limit);
+        return reader.readString();
+    }
+
     protected void assertIdle() {
+    }
+
+    private static final class TextWriter extends GrowableWriter {
+
+        public TextWriter(byte[] buffer) {
+            super(buffer);
+        }
+
+        @Override
+        public void writeCommand(byte command) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        boolean isKnown(Version shared) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        void setCreated(Version shared) {
+            throw new UnsupportedOperationException();
+        }
     }
 }

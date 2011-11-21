@@ -35,7 +35,7 @@ import com.smartgwt.client.types.FieldType;
 
 public abstract class OFDataSource<T extends TGeneratedFields> extends DataSource {
 
-    private static final String PRIMARY_KEY = "__OF_PRIMARY_KEY__";
+    public static final String PRIMARY_KEY = "__OF_PRIMARY_KEY__";
 
     private final TSet<T> _data;
 
@@ -43,32 +43,15 @@ public abstract class OFDataSource<T extends TGeneratedFields> extends DataSourc
         setClientOnly(true);
         setDataProtocol(DSProtocol.CLIENTCUSTOM);
         setDataFormat(DSDataFormat.CUSTOM);
-        // setCacheAllData(false);
 
         _data = data;
 
-        // _data.addListener(new KeyListener() {
-        //
-        // @Override
-        // public void onPut(Object object) {
-        // ensureCreated();
-        // add(object);
-        // }
-        //
-        // @Override
-        // public void onRemoved(Object object) {
-        // remove(object);
-        // }
-        //
-        // @Override
-        // public void onCleared() {
-        // }
-        // });
-
         ensureCreated();
+    }
 
-        // for (Object object : data)
-        // add(object);
+    @SuppressWarnings("unchecked")
+    public static <T> T getObject(Record record) {
+        return (T) record.getAttributeAsObject(PRIMARY_KEY);
     }
 
     // Class
@@ -112,6 +95,19 @@ public abstract class OFDataSource<T extends TGeneratedFields> extends DataSourc
         object.setField(index, value);
     }
 
+    private Record createRecord(T object) {
+        Record record = new Record();
+        record.setAttribute(PRIMARY_KEY, object);
+
+        for (int i = 0; i < object.getFieldCount(); i++) {
+            String name = object.getFieldName(i);
+            Object value = object.getField(i);
+            record.setAttribute(name, value);
+        }
+
+        return record;
+    }
+
     @Override
     protected Object transformRequest(DSRequest request) {
         DSResponse response = new DSResponse();
@@ -122,18 +118,8 @@ public abstract class OFDataSource<T extends TGeneratedFields> extends DataSourc
             case FETCH: {
                 ArrayList<Record> list = new ArrayList<Record>();
 
-                for (T object : _data) {
-                    Record record = new Record();
-                    record.setAttribute(PRIMARY_KEY, object);
-
-                    for (int i = 0; i < object.getFieldCount(); i++) {
-                        String name = object.getFieldName(i);
-                        Object value = object.getField(i);
-                        record.setAttribute(name, value);
-                    }
-
-                    list.add(record);
-                }
+                for (T object : _data)
+                    list.add(createRecord(object));
 
                 response.setData(list.toArray(new Record[list.size()]));
                 scheduleResponse(request.getRequestId(), response);

@@ -300,7 +300,7 @@ final class TransactionManager {
                         }
 
                         result = FUTURE_CONFLICT;
-                    } else if (branch.getConflictDetection() == ConflictDetection.READ_WRITE_CONFLICTS) {
+                    } else if (branch.getConflictDetection() == ConflictDetection.READ_WRITE) {
                         int start = lastValidatedIndex + 1;
                         int stop = snapshot.getWrites().length;
 
@@ -310,7 +310,7 @@ final class TransactionManager {
 
                             result = FUTURE_CONFLICT;
                         }
-                    } else if (branch.getConflictDetection() == ConflictDetection.WRITE_WRITE_CONFLICTS) {
+                    } else if (branch.getConflictDetection() == ConflictDetection.WRITE_WRITE) {
                         // TODO: search for conflicts
                     }
                 }

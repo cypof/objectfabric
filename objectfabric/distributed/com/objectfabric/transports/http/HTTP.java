@@ -16,9 +16,11 @@ import java.nio.ByteBuffer;
 
 import com.objectfabric.Connection;
 import com.objectfabric.Privileged;
+import com.objectfabric.Reader;
 import com.objectfabric.misc.Bits;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
+import com.objectfabric.misc.Log;
 import com.objectfabric.misc.NIOManager;
 import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.PlatformConcurrentMap;
@@ -26,6 +28,7 @@ import com.objectfabric.misc.PlatformConcurrentQueue;
 import com.objectfabric.misc.Queue;
 import com.objectfabric.misc.RuntimeIOException;
 import com.objectfabric.misc.UID;
+import com.objectfabric.misc.Utils;
 import com.objectfabric.transports.filters.Filter;
 import com.objectfabric.transports.filters.FilterFactory;
 import com.objectfabric.transports.http.HTTPSession.FilterState;
@@ -161,9 +164,13 @@ public class HTTP extends Privileged implements FilterFactory {
 
         private final byte[] _id = new byte[PlatformAdapter.UID_BYTES_COUNT];
 
-        private HTTPSession _session;
+        private HTTPSession _session, _sessionToWrite;
 
         private final PlatformConcurrentQueue<ByteBuffer> _responses = new PlatformConcurrentQueue<ByteBuffer>();
+
+        private Reader _clientLogReader;
+
+        private String _clientLogHeaders;
 
         public HTTPFilter() {
             IDLE = new FilterState(this, FilterState.STATE_IDLE);
@@ -227,7 +234,20 @@ public class HTTP extends Privileged implements FilterFactory {
         }
 
         public void read(ByteBuffer buffer) {
+            final int initialPosition = buffer.position();
+
             if (_httpCheckIndex == 0) {
+                if (buffer.remaining() == 0) {
+                    // Happens when TLS is still handshaking
+                    return;
+                }
+
+                // Uncomment to log headers
+                // byte[] temp = new byte[Math.min(400, buffer.remaining())];
+                // buffer.get(temp, 0, temp.length);
+                // buffer.position(buffer.position() - temp.length);
+                // Log.write(new String(temp));
+
                 /*
                  * Check if connection is HTTP. If not, remove filter and call startup
                  * methods that were skipped.
@@ -380,59 +400,88 @@ public class HTTP extends Privileged implements FilterFactory {
             if (buffer.remaining() == 0)
                 return;
 
-            if (_type == CometTransport.TYPE_CONNECTION) {
-                boolean first = _offset == CometTransport.FIELD_ID;
+            switch (_type) {
+                case CometTransport.TYPE_CONNECTION: {
+                    boolean first = _offset == CometTransport.FIELD_ID;
 
-                if (first) {
-                    byte[] id = PlatformAdapter.createUID();
-                    _session = new HTTPSession(HTTP.this, id, _enableCrossOriginResourceSharing, _responseEncoding);
-                    _sessions.put(new UID(id), _session);
-                    _session.init(_factories, _filterIndex, false);
-                    _offset++;
+                    if (first) {
+                        byte[] id = PlatformAdapter.createUID();
+                        _session = new HTTPSession(HTTP.this, id, _enableCrossOriginResourceSharing, _responseEncoding);
+                        _sessionToWrite = _session;
+                        _sessions.put(new UID(id), _session);
+                        _session.init(_factories, _filterIndex, false);
+                        _offset++;
+                    }
+
+                    _session.readInitialConnection(this, buffer, first);
+                    break;
                 }
+                case CometTransport.TYPE_SERVER_TO_CLIENT:
+                case CometTransport.TYPE_CLIENT_TO_SERVER: {
+                    int idRemaining = CometTransport.FIELD_ID + PlatformAdapter.UID_BYTES_COUNT - _offset;
 
-                _session.readInitialConnection(this, buffer, first);
-            } else {
-                int idRemaining = CometTransport.FIELD_ID + PlatformAdapter.UID_BYTES_COUNT - _offset;
+                    if (idRemaining > 0) {
+                        int length = Math.min(buffer.remaining(), idRemaining);
+                        buffer.get(_id, _offset - CometTransport.FIELD_ID, length);
+                        _offset += length;
 
-                if (idRemaining > 0) {
-                    int length = Math.min(buffer.remaining(), idRemaining);
-                    buffer.get(_id, _offset - CometTransport.FIELD_ID, length);
-                    _offset += length;
+                        if (_offset == CometTransport.FIELD_ID + PlatformAdapter.UID_BYTES_COUNT) {
+                            _session = _sessions.get(new UID(_id));
 
-                    if (_offset == CometTransport.FIELD_ID + PlatformAdapter.UID_BYTES_COUNT) {
-                        _session = _sessions.get(new UID(_id));
+                            /*
+                             * Session does not exist, either invalid request or timeout.
+                             */
+                            if (_session == null) {
+                                // Ignore rest of request
+                                buffer.position(buffer.limit());
+                                enqueue(TIMEOUT);
+                                endRequest();
+                                requestWrite();
+                                return;
+                            }
 
-                        /*
-                         * Session does not exist, either invalid request or timeout.
-                         */
-                        if (_session == null) {
-                            // Ignore rest of request
-                            buffer.position(buffer.limit());
-                            enqueue(TIMEOUT);
+                            if (_type == CometTransport.TYPE_SERVER_TO_CLIENT) {
+                                _sessionToWrite = _session;
+                                requestWrite();
+                            }
+                        }
+                    }
+
+                    if (_type == CometTransport.TYPE_CLIENT_TO_SERVER) {
+                        boolean done = _session.readAndReturnIfDone(this, buffer);
+
+                        if (done) {
+                            // Reset for next POST
+
+                            if (_enableCrossOriginResourceSharing)
+                                enqueue(OK_CROSS_ORIGIN);
+                            else
+                                enqueue(OK);
+
                             endRequest();
                             requestWrite();
-                            return;
                         }
-
-                        requestWrite();
                     }
+
+                    break;
                 }
-
-                if (_type == CometTransport.TYPE_CLIENT_TO_SERVER) {
-                    boolean done = _session.readAndReturnIfDone(this, buffer);
-
-                    if (done) {
-                        // Reset for next POST
-
-                        if (_enableCrossOriginResourceSharing)
-                            enqueue(OK_CROSS_ORIGIN);
-                        else
-                            enqueue(OK);
-
-                        endRequest();
-                        requestWrite();
+                case CometTransport.TYPE_LOG: {
+                    if (_clientLogReader == null) {
+                        _clientLogReader = createReader();
+                        _clientLogHeaders = new String(buffer.array(), initialPosition, buffer.position() - CometTransport.FIELD_ID - 1);
                     }
+
+                    String log = readString(_clientLogReader, buffer.array(), buffer.position(), buffer.limit());
+                    buffer.position(buffer.limit());
+
+                    if (!_clientLogReader.interrupted()) {
+                        log = Utils.NEW_LINE + _clientLogHeaders + Utils.NEW_LINE + log + Utils.NEW_LINE;
+                        Log.write("Received log from client:" + log + "End of client log.");
+                        _clientLogReader = null;
+                        _clientLogHeaders = null;
+                    }
+
+                    break;
                 }
             }
         }
@@ -451,8 +500,8 @@ public class HTTP extends Privileged implements FilterFactory {
                 addHeader(response, buffer, headers);
             }
 
-            if (_type == CometTransport.TYPE_CONNECTION || _type == CometTransport.TYPE_SERVER_TO_CLIENT)
-                return _session.write(this, buffer, headers);
+            if (_sessionToWrite != null)
+                return _sessionToWrite.write(this, buffer, headers);
 
             return true;
         }

@@ -17,7 +17,7 @@ package of4gwt;
  * and indexing/querying. A store can be used by itself, with no querying capability, and
  * keep objects e.g. in a highly efficient binary format. As an application is developed,
  * indexes can then be created to retrieve objects using various algorithms, e.g. full
- * text search, SQL on ad-hoc tables, hash maps or any other method.
+ * text search, SQL on ad-hoc tables, graph databases, hash maps or any other method.
  * <nl>
  * Indexes can be built, destroyed and rebuilt independently of stores, so they do not
  * need to be durable, and can contain only data involved in queries. E.g. if startup time

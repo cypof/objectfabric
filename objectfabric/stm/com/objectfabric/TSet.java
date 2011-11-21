@@ -35,6 +35,8 @@ import com.objectfabric.misc.List;
  * committed. In the first case the transaction will be aborted. In the second the element
  * will be removed from snapshots of the set seen by transactions started after the
  * exception has been thrown.
+ * <nl>
+ * See comment on {@link TList} about methods that read and write at the same time.
  */
 @SuppressWarnings("unchecked")
 public class TSet<E> extends TKeyed<E> implements Set<E> {

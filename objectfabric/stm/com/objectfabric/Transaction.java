@@ -60,14 +60,14 @@ public final class Transaction extends TransactionPublic implements SystemClass 
 
     /**
      * When creating a branch, you can specify a how conflicts should be detected. The
-     * default is READ_WRITE_CONFLICTS.
+     * default is {@link ConflictDetection#READ_WRITE}.
      */
     public enum ConflictDetection {
         /**
          * Default policy is to validate reads of committing transactions against writes
          * of committed ones. This offers the easiest model to work with: view-isolation.
          */
-        READ_WRITE_CONFLICTS,
+        READ_WRITE,
 
         /**
          * TODO: Do not use, not finished! Validates only writes of committing
@@ -76,7 +76,7 @@ public final class Transaction extends TransactionPublic implements SystemClass 
          * and might allow for better throughput, particularly in distributed settings,
          * but can be harder to program with.
          */
-        WRITE_WRITE_CONFLICTS,
+        WRITE_WRITE,
 
         /**
          * Does not check for conflicts. Transactions always succeed, which should allow
@@ -85,11 +85,11 @@ public final class Transaction extends TransactionPublic implements SystemClass 
         LAST_WRITE_WINS
     }
 
-    public static final ConflictDetection DEFAULT_CONFLICT_DETECTION = ConflictDetection.READ_WRITE_CONFLICTS;
+    public static final ConflictDetection DEFAULT_CONFLICT_DETECTION = ConflictDetection.READ_WRITE;
 
     /**
      * Consistency is only relevant in a distributed setting. Transactions are always
-     * fully consistent in a single process. Default is FULL.
+     * fully consistent in a single process. Default is {@link Consistency#FULL}.
      */
     public enum Consistency {
         /**

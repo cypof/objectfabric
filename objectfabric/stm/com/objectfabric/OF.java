@@ -19,7 +19,6 @@ import com.objectfabric.Extension.ExtensionShutdownException;
 import com.objectfabric.Transaction.CommitStatus;
 import com.objectfabric.misc.AsyncCallback;
 import com.objectfabric.misc.Debug;
-import com.objectfabric.misc.Log;
 import com.objectfabric.misc.PlatformAdapter;
 import com.objectfabric.misc.PlatformConcurrentMap;
 
@@ -116,10 +115,8 @@ public class OF {
          * called after the extension did a best effort to shutdown cleanly.
          */
         protected void onException(Extension extension, Exception e) {
-            if (!(e instanceof ExtensionShutdownException)) {
-                Log.write(Strings.FATAL_ERROR + " (Extension " + extension + ")", e);
-                PlatformAdapter.exit(1);
-            }
+            if (!(e instanceof ExtensionShutdownException))
+                PlatformAdapter.onFatalError(Strings.FATAL_ERROR + " (Extension " + extension + ")", e);
         }
 
         /**
@@ -129,8 +126,7 @@ public class OF {
          * corruption.
          */
         protected void onThrowable(Throwable t) {
-            Log.write(Strings.FATAL_ERROR, t);
-            PlatformAdapter.exit(1);
+            PlatformAdapter.onFatalError(Strings.FATAL_ERROR, t);
         }
 
         /**
@@ -255,8 +251,6 @@ public class OF {
     //
 
     public static interface Serializer {
-
-        boolean canSerialize(Object object);
 
         byte[] serialize(Object object);
 

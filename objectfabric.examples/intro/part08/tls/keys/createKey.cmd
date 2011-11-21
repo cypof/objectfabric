@@ -1,1 +1,2 @@
-keytool -genkey -alias mydomain -keyalg RSA -keystore keystore.jks -keysize 2048
+keytool -genkey -alias mydomain -keystore keystore.jks -keypass passphrase -storepass passphrase -dname "CN=Test"
+keytool -export -alias mydomain -keystore keystore.jks -keypass passphrase -storepass passphrase -file certificate.cer

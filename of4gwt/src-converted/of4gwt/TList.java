@@ -17,15 +17,16 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 
 import of4gwt.misc.Debug;
 
 /**
  * Transactional list. This class is designed to behave as much as possible like an
- * ArrayList. It does not implement clone().
+ * ArrayList, but does not implement clone and is not serializable.
  */
 @SuppressWarnings("unchecked")
-public class TList<E> extends TIndexed implements List<E> {
+public class TList<E> extends TIndexed implements List<E>, RandomAccess {
 
     @SuppressWarnings("hiding")
     public static final TType TYPE = new TType(DefaultObjectModel.getInstance(), DefaultObjectModel.COM_OBJECTFABRIC_TLIST_CLASS_ID);

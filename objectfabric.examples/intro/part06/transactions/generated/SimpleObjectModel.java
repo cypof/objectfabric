@@ -1,5 +1,5 @@
 
-package part06.stm.generated;
+package part06.transactions.generated;
 
 //==============================================================================
 //                                                                              
@@ -80,7 +80,7 @@ public class SimpleObjectModel extends com.objectfabric.ObjectModel {
     protected java.lang.Class getClass(int classId, com.objectfabric.TType[] genericParameters) {
         switch (classId) {
             case PART06_STM_GENERATED_SIMPLECLASS_CLASS_ID:
-                return part06.stm.generated.SimpleClass.class;
+                return part06.transactions.generated.SimpleClass.class;
         }
 
         return super.getClass(classId, genericParameters);
@@ -90,7 +90,7 @@ public class SimpleObjectModel extends com.objectfabric.ObjectModel {
     protected com.objectfabric.TObject.UserTObject createInstance(com.objectfabric.Transaction trunk, int classId, com.objectfabric.TType[] genericParameters) {
         switch (classId) {
             case PART06_STM_GENERATED_SIMPLECLASS_CLASS_ID:
-                return new part06.stm.generated.SimpleClass(trunk);
+                return new part06.transactions.generated.SimpleClass(trunk);
         }
 
         return super.createInstance(trunk, classId, genericParameters);

@@ -105,6 +105,11 @@ final class LazyMapSharedVersion extends TKeyedSharedVersion {
 
         return this;
     }
+    
+    @Override
+    public void visit(com.objectfabric.Visitor visitor) {
+        visitor.visit(this);
+    }
 
     @Override
     public TObject.Version createVersion() {

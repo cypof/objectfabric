@@ -25,9 +25,9 @@ import com.objectfabric.misc.SparseArrayHelper;
 import com.objectfabric.misc.ThreadAssert.SingleThreaded;
 
 @SingleThreaded
-final class StoreWriter extends Writer {
+final class StoreWriter extends GrowableWriter {
 
-    private static final int DEFAULT_BUFFER_LENGTH = 256;
+    private static final int DEFAULT_BUFFER_LENGTH = 1024;
 
     private static final int SKIP_BUFFER_WRITE_OFFSET = 0;
 
@@ -43,7 +43,7 @@ final class StoreWriter extends Writer {
     private Version _wrongStore;
 
     protected StoreWriter(BinaryStore store) {
-        super(true);
+        super(new byte[DEFAULT_BUFFER_LENGTH]);
 
         if (store == null)
             throw new IllegalArgumentException();
@@ -56,21 +56,11 @@ final class StoreWriter extends Writer {
         }
 
         init(_store, true);
-
-        setBuffer(new byte[DEFAULT_BUFFER_LENGTH]);
-        setLimit(getBuffer().length);
-
-        byte flags = (byte) (PlatformAdapter.SUPPORTED_SERIALIZATION_FLAGS | CompileTimeSettings.SERIALIZATION_VERSION);
-        setFlags(flags);
-        getBuffer()[0] = flags;
     }
 
     @Override
     void reset() {
         super.reset();
-
-        // 1 byte for flags
-        setOffset(1);
 
         _created.clear();
     }
@@ -81,28 +71,6 @@ final class StoreWriter extends Writer {
 
     public void resetWrongStore() {
         _wrongStore = null;
-    }
-
-    final void grow() {
-        doubleBufferLength();
-        setLimit(getBuffer().length);
-        getBuffer()[0] = getFlags();
-    }
-
-    public final void write(Object object) {
-        if (Debug.ENABLED)
-            Debug.assertion(getLimit() == getBuffer().length);
-
-        reset();
-
-        for (;;) {
-            writeObject(object);
-
-            if (!interrupted())
-                break;
-
-            grow();
-        }
     }
 
     public final void writeSnapshots() {

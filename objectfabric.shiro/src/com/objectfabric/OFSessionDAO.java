@@ -18,9 +18,6 @@ import java.util.Collection;
 import org.apache.shiro.session.Session;
 import org.apache.shiro.session.mgt.eis.AbstractSessionDAO;
 
-import com.objectfabric.ShiroStore;
-import com.objectfabric.misc.Log;
-
 final class OFSessionDAO extends AbstractSessionDAO {
 
     private final ShiroStore _store;
@@ -32,7 +29,6 @@ final class OFSessionDAO extends AbstractSessionDAO {
     @Override
     protected Serializable doCreate(Session session) {
         Serializable id = generateSessionId(session);
-        Log.write("create " +id.toString());
         assignSessionId(session, id);
         _store.getSessions().put((String) id, session);
         return id;
@@ -40,9 +36,7 @@ final class OFSessionDAO extends AbstractSessionDAO {
 
     @Override
     protected Session doReadSession(Serializable id) {
-        Log.write("read " + id.toString());
         Session session = (Session) _store.getSessions().get((String) id);
-        Log.write("session " + session);
         return session;
     }
 
@@ -52,7 +46,6 @@ final class OFSessionDAO extends AbstractSessionDAO {
 
     public void delete(Session session) {
         Serializable id = session.getId();
-Log.write("delete " +id.toString());
 
         if (id != null)
             _store.getSessions().remove((String) id);

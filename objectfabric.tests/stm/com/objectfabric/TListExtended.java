@@ -16,6 +16,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 
 import com.objectfabric.tools.ExtendedTester;
 import com.objectfabric.tools.TransactionalProxy;
@@ -37,6 +38,7 @@ public class TListExtended extends ExtendedTester {
         ExpectedExceptionThrower.enableCounter();
     }
 
+    @Ignore
     public static final class Tests extends TListTests implements ExtendedTest {
 
         private final int _threads;

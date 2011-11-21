@@ -27,9 +27,13 @@ import of4gwt.TObject;
 import of4gwt.TType;
 import of4gwt.Transaction;
 import of4gwt.Transaction.CommitStatus;
+import of4gwt.transports.http.ServerLogger;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.core.client.GWT.UncaughtExceptionHandler;
+import com.google.gwt.event.shared.UmbrellaException;
 import com.google.gwt.user.client.Random;
+import com.google.gwt.user.client.Window;
 
 public final class PlatformAdapter extends Privileged {
 
@@ -38,6 +42,16 @@ public final class PlatformAdapter extends Privileged {
     public static final boolean THREADS_CAN_BLOCK = false;
 
     public static final byte SUPPORTED_SERIALIZATION_FLAGS = CompileTimeSettings.SERIALIZATION_NONE;
+
+    static {
+        GWT.setUncaughtExceptionHandler(new UncaughtExceptionHandler() {
+
+            @Override
+            public void onUncaughtException(Throwable t) {
+                onFatalError(Strings.FATAL_ERROR, t);
+            }
+        });
+    }
 
     private PlatformAdapter() {
     }
@@ -270,11 +284,15 @@ public final class PlatformAdapter extends Privileged {
         return a == b;
     }
 
-    /**
-     * @param i
-     */
-    public static final void exit(int i) {
-        Log.write("Fatal error.");
+    public static final void onFatalError(String message, Throwable t) {
+        message += " " + t.toString();
+
+        if (t instanceof UmbrellaException)
+            for (Throwable c : ((UmbrellaException) t).getCauses())
+                message += c.toString();
+
+        ServerLogger.write(message);
+        Window.alert("An error occured, please refresh the page." + Utils.NEW_LINE + message);
     }
 
     // Debug

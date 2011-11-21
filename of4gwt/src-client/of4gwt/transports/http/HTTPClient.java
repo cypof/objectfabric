@@ -76,7 +76,9 @@ public final class HTTPClient extends HTTPClientBase {
         return createRequestStatic(url, serverToClient);
     }
 
-    public static HTTPRequestBase createRequestStatic(Object url, boolean serverToClient) {
+    static HTTPRequestBase createRequestStatic(Object url, boolean serverToClient) {
+        ServerLogger.setUrl((String) url);
+
         HTTPRequest request = GWT.create(XMLHttpRequestImpl.class);
         request.init((String) url, serverToClient);
         return request;

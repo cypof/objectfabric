@@ -5,6 +5,6 @@
 
 <web-app>
 	<welcome-file-list>
-		<welcome-file>HelloWorld.html</welcome-file>
+		<welcome-file>helloworld.html</welcome-file>
 	</welcome-file-list>
 </web-app>

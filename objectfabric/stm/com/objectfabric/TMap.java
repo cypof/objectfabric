@@ -23,7 +23,7 @@ import java.util.Set;
  * <nl>
  * - It does not support null keys.
  * <nl>
- * - It does not implement clone().
+ * - It does not implement clone.
  * <nl>
  * - Entries do not support setValue(V).
  * <nl>
@@ -35,6 +35,8 @@ import java.util.Set;
  * In the first case the transaction will be aborted. In the second the entry will be
  * removed from snapshots of the map seen by transactions started after the exception has
  * been thrown.
+ * <nl>
+ * See comment on {@link TList} about methods that read and write at the same time.
  */
 @SuppressWarnings("unchecked")
 public class TMap<K, V> extends TKeyed<K> implements Map<K, V> {

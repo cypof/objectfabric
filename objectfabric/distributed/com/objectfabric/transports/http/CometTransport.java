@@ -59,7 +59,7 @@ abstract class CometTransport extends Schedulable {
 
     public static final byte TYPE_CLIENT_TO_SERVER = 44;
 
-    public static final byte TYPE_HEARTBEAT = 45;
+    public static final byte TYPE_LOG = 45;
 
     public static final byte TYPE_MIN = 42, TYPE_MAX = 45;
 
@@ -77,7 +77,7 @@ abstract class CometTransport extends Schedulable {
     public static final byte ENCODING_PADDING = 43;
 
     /**
-     * Default encoding for POST data is to remove negative bytes so that browsers UTF8
+     * Default encoding for POST data is to remove negative bytes so that browsers text
      * encoding leaves data alone.
      */
     public static final byte ENCODING_0_127 = 44;
@@ -276,12 +276,12 @@ abstract class CometTransport extends Schedulable {
     final void requestRunAccessor() {
         requestRun();
     }
-    
+
     @Override
     protected void startRun() {
         _writer.connect();
     }
-    
+
     private final int write(byte[] buffer, boolean connection) {
         if (Debug.ENABLED)
             ThreadAssert.resume(_writer);

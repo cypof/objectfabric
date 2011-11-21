@@ -10,7 +10,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-package part06.stm.generator;
+package part06.transactions.generator;
 
 import com.objectfabric.generator.FieldDef;
 import com.objectfabric.generator.GeneratedClassDef;
@@ -28,7 +28,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
         ObjectModelDef model = new ObjectModelDef("SimpleObjectModel");
 
-        PackageDef p = new com.objectfabric.generator.PackageDef("part06.stm.generated");
+        PackageDef p = new com.objectfabric.generator.PackageDef("part06.transactions.generated");
         model.Packages.add(p);
 
         GeneratedClassDef simple = new GeneratedClassDef("SimpleClass");

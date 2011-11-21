@@ -31,7 +31,9 @@ import of4gwt.misc.TransparentExecutor;
  * <link>http://www.oracle.com/technetwork/java/hotspotfaq-138619.html#gc_softrefs</link>.
  * <nl>
  * TODO: Caching only works for map loaded from a store. It is currently disabled for maps
- * replicated from a remote site. In this case, entries will be fetched every time.
+ * replicated from a remote site. In this case, entries will be fetched every time.<br>
+ * TODO: Extract caching policy in global pluggable separate class, share it with a
+ * LazyRef class.
  */
 @SuppressWarnings("unchecked")
 public class LazyMap<K, V> extends LazyMapBase<K> {

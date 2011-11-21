@@ -27,7 +27,6 @@ import com.objectfabric.Extension.ExtensionShutdownException;
 import com.objectfabric.misc.AsyncCallback;
 import com.objectfabric.misc.Debug;
 import com.objectfabric.misc.List;
-import com.objectfabric.misc.Log;
 import com.objectfabric.misc.PlatformAdapter;
 
 /**
@@ -290,10 +289,8 @@ public class SQLiteFullTextIndex extends Index {
             super.onException(e);
 
             // TODO use OF.Config when Extension merged with Walker
-            if (!(e instanceof ExtensionShutdownException)) {
-                Log.write(Strings.FATAL_ERROR + " (" + SQLiteFullTextIndex.this + ")", e);
-                PlatformAdapter.exit(1);
-            }
+            if (!(e instanceof ExtensionShutdownException))
+                PlatformAdapter.onFatalError(Strings.FATAL_ERROR + " (" + SQLiteFullTextIndex.this + ")", e);
         }
 
         @Override

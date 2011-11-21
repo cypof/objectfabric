@@ -1066,6 +1066,10 @@ public class Visitor {
         visit((TKeyedSharedVersion) version.getShared(), version.getEntries(), false, false);
     }
 
+    protected void visit(LazyMapSharedVersion shared) {
+        visit((TKeyedSharedVersion) shared);
+    }
+
     protected void visit(TKeyedSharedVersion shared) {
         TKeyedEntry[] entries;
         boolean cleared = false;

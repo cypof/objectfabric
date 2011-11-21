@@ -18,12 +18,6 @@ import org.apache.shiro.crypto.hash.Sha512Hash;
 import org.apache.shiro.mgt.DefaultSecurityManager;
 import org.apache.shiro.session.mgt.DefaultSessionManager;
 
-import com.objectfabric.Account;
-import com.objectfabric.OF;
-import com.objectfabric.ShiroStore;
-import com.objectfabric.Strings;
-import com.objectfabric.Transaction;
-import com.objectfabric.UsernamePasswordUserManagerBase;
 import com.objectfabric.misc.JavaSerializer;
 import com.objectfabric.misc.PlatformAdapter;
 
@@ -45,6 +39,11 @@ public class UsernamePasswordUserManager extends UsernamePasswordUserManagerBase
 
     private static final int DEFAULT_HASH_ITERATIONS = 733;
 
+    /**
+     * Sessions last one month by default.
+     */
+    private static final int DEFAULT_SESSION_TIMEOUT = 30 * 24 * 3600 * 1000;
+
     private final ShiroStore _store;
 
     private final OFRealm _realm;
@@ -55,11 +54,15 @@ public class UsernamePasswordUserManager extends UsernamePasswordUserManagerBase
         this(store, DEFAULT_HASH_ITERATIONS);
     }
 
+    public UsernamePasswordUserManager(ShiroStore store, int hashIterations) {
+        this(store, hashIterations, DEFAULT_SESSION_TIMEOUT);
+    }
+
     /**
      * The number of iterations the password should be hashed. Check
      * http://www.katasoft.com/blog/2011/04/04/strong-password-hashing-apache-shiro.
      */
-    public UsernamePasswordUserManager(ShiroStore store, int hashIterations) {
+    public UsernamePasswordUserManager(ShiroStore store, int hashIterations, int sessionTimeoutMillis) {
         super(Transaction.getDefaultTrunk());
 
         _store = store;
@@ -71,7 +74,9 @@ public class UsernamePasswordUserManager extends UsernamePasswordUserManagerBase
         _realm.setCredentialsMatcher(matcher);
 
         DefaultSecurityManager securityManager = new DefaultSecurityManager(_realm);
-        ((DefaultSessionManager) securityManager.getSessionManager()).setSessionDAO(new OFSessionDAO(store));
+        DefaultSessionManager sessionManager = (DefaultSessionManager) securityManager.getSessionManager();
+        sessionManager.setSessionDAO(new OFSessionDAO(store));
+        sessionManager.setGlobalSessionTimeout(sessionTimeoutMillis);
         SecurityUtils.setSecurityManager(securityManager);
 
         if (!(OF.getCustomSerializer() instanceof JavaSerializer))
@@ -85,6 +90,8 @@ public class UsernamePasswordUserManager extends UsernamePasswordUserManagerBase
         _realm = null;
         _hashIterations = 0;
     }
+
+    // TODO remove userData in next two methods
 
     @Override
     protected void createAccountImplementation(String username, String password, Object userData) {
@@ -101,8 +108,13 @@ public class UsernamePasswordUserManager extends UsernamePasswordUserManagerBase
 
     @Override
     protected void updateAccountImplementation(String username, String oldPassword, String newPassword, Object userData) {
-        if (newPassword != null) {
-            // TODO
+        Account account = _store.getAccounts().get(username);
+
+        if (account != null) {
+            byte[] salt = PlatformAdapter.createUID();
+            Sha512Hash hash = new Sha512Hash(newPassword, salt, _hashIterations);
+            account.setSalt(salt);
+            account.setPasswordHash(hash.getBytes());
         }
     }
 

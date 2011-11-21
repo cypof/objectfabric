@@ -547,7 +547,7 @@ final class UnknownObjectSerializer {
 
         Serializer serializer = OF.getCustomSerializer();
 
-        if (serializer != null && serializer.canSerialize(object)) {
+        if (serializer != null) {
             switch (step) {
                 case CODE: {
                     writer.writeByte(FLAGS_CUSTOM, TObjectWriter.DEBUG_TAG_CODE);

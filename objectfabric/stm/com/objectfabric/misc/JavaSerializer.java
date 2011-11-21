@@ -27,10 +27,6 @@ import com.objectfabric.OF.Serializer;
  */
 public class JavaSerializer implements Serializer {
 
-    public boolean canSerialize(Object object) {
-        return true;
-    }
-
     public byte[] serialize(Object object) {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
 

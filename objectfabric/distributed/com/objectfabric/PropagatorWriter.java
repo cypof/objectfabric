@@ -414,6 +414,14 @@ final class PropagatorWriter extends DistributedWriter {
 
     //
 
+    @Override
+    protected void visit(LazyMapSharedVersion shared) {
+        // Skip
+        // TODO invalidate LazyMap client cache
+    }
+
+    //
+
     private final class PropagationWalker extends Walker {
 
         private final SourceSplitter _sourceSplitter = new SourceSplitter();

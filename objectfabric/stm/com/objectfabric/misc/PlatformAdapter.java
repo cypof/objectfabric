@@ -276,8 +276,9 @@ public final class PlatformAdapter extends Privileged {
         Log.write(Strings.USER_CODE_RAISED_AN_EXCEPTION + result.toString());
     }
 
-    public static final void exit(int code) {
-        System.exit(code);
+    public static final void onFatalError(String message, Throwable t) {
+        Log.write(message, t);
+        System.exit(1);
     }
 
     /*

@@ -30,7 +30,14 @@ public class FileStore extends BinaryStore {
     public static final String LOG_EXTENSION = ".log";
 
     public FileStore(String file) throws IOException {
-        this(file, false);
+        this(file, file + LOG_EXTENSION, false);
+    }
+
+    /**
+     * Put the log file on another disk for best performance.
+     */
+    public FileStore(String file, String log) throws IOException {
+        this(file, log, false);
     }
 
     /**
@@ -38,21 +45,19 @@ public class FileStore extends BinaryStore {
      * FileDescriptor.sync(). It should only be used when durability and consistency do
      * not matter, e.g. for off-line batch insertions.
      */
-    public FileStore(String file, boolean disableLogAheadAndSync) throws IOException {
-        this(file, disableLogAheadAndSync, PlatformThreadPool.getInstance());
+    public FileStore(String file, String log, boolean disableLogAheadAndSync) throws IOException {
+        this(file, log, disableLogAheadAndSync, PlatformThreadPool.getInstance());
     }
 
     /**
      * By default read and write operations are performed on ObjectFabric's thread pool.
      * You can specify another executor.
      */
-    public FileStore(String file, boolean disableLogAheadAndSync, Executor executor) throws IOException {
-        super(getBackend(file, disableLogAheadAndSync), true, executor);
+    public FileStore(String file, String log, boolean disableLogAheadAndSync, Executor executor) throws IOException {
+        super(getBackend(file, log, disableLogAheadAndSync), true, executor);
     }
 
-    private static final FileBackend getBackend(String file, boolean disableLogAheadAndSync) throws IOException {
-        PlatformFile data = new PlatformFile(file);
-        PlatformFile log = new PlatformFile(file + LOG_EXTENSION);
-        return new FileBackend(data, log, disableLogAheadAndSync);
+    private static final FileBackend getBackend(String file, String log, boolean disableLogAheadAndSync) throws IOException {
+        return new FileBackend(new PlatformFile(file), new PlatformFile(log), disableLogAheadAndSync);
     }
 }

@@ -10,12 +10,12 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-package part06.stm;
+package part06.transactions;
 
 import org.junit.Assert;
 import org.junit.Test;
 
-import part06.stm.generated.SimpleClass;
+import part06.transactions.generated.SimpleClass;
 
 import com.objectfabric.Transaction;
 import com.objectfabric.Transaction.CommitStatus;

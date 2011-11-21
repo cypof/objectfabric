@@ -333,7 +333,7 @@ final class InterceptorWriter extends DistributedWriter {
         protected void onVisitingBranch(Visitor visitor) {
             super.onVisitingBranch(visitor);
 
-            setVisitsReads(visitor.getBranch().getConflictDetection() == ConflictDetection.READ_WRITE_CONFLICTS);
+            setVisitsReads(visitor.getBranch().getConflictDetection() == ConflictDetection.READ_WRITE);
         }
 
         @Override

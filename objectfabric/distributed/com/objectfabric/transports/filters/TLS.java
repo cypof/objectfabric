@@ -228,13 +228,18 @@ public class TLS implements FilterFactory {
                     }
                     case NEED_WRAP: {
                         requestWrite();
-                        return;
-                    }
-                    case NEED_UNWRAP:
+
                         if (buffer.remaining() == 0)
                             return;
 
                         break;
+                    }
+                    case NEED_UNWRAP: {
+                        if (buffer.remaining() == 0)
+                            return;
+
+                        break;
+                    }
                 }
 
                 context.ReadBuffer.limit(context.ReadBuffer.position());

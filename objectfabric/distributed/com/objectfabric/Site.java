@@ -29,6 +29,8 @@ import com.objectfabric.misc.TransparentExecutor;
  * A site is a location which contains one replica of a distributed object. It usually
  * represents a process, an AppDomain in .NET, or an isolated ClassLoader in Java.
  * Site.getLocal() identifies the current site.
+ * <nl>
+ * TODO remove or internalize?
  */
 public final class Site extends SiteBase implements SystemClass {
 
@@ -109,7 +111,8 @@ public final class Site extends SiteBase implements SystemClass {
     /**
      * Methods are by default executed on the current thread for transactional objects
      * created locally (See TransparentExecutor). For transactional objects that have been
-     * created on another site, methods are run remotely on a thread pool.
+     * created on another site, methods are run remotely on a thread pool. This executor
+     * represents the thread pool on the remote process.
      */
     public final Executor getMethodExecutor() {
         return _methodExecutor;

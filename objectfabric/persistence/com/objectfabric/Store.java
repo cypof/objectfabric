@@ -62,10 +62,11 @@ public abstract class Store extends Acknowledger {
     //
 
     /**
-     * Does not influence the behavior of the store, simply allows the current thread to
-     * wait until store is done with all pending operations.
+     * Blocks current thread to until store is done with all pending operations.
      */
     public final void flush() {
+        OF.updateAsync();
+
         Future<Void> flush = _run.startFlush();
 
         if (requestRun())

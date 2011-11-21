@@ -26,9 +26,15 @@ import com.objectfabric.transports.socket.SocketServer;
 import com.objectfabric.transports.socket.SocketServer.Session;
 
 /**
- * This example invokes a method on a generated object. If the object is local, the
- * behavior is the same as a regular method. If object is a replica of an object created
- * on a remote site, then the method is executed remotely like a RPC or service call.
+ * This example defines methods on generated objects. By default, ObjectFabric methods
+ * behavior is the same as a regular method, but additional overrides are also generated.
+ * They allow execution of the method on a given executor instead of the current thread
+ * and asynchronous invocations.
+ * <nl>
+ * In addition, if the target object is a replica of an object created on a remote site,
+ * its methods are executed on the remote site instead of locally. It is recommended to
+ * use the asynchronous form of a method when invoking it remotely to avoid blocking the
+ * local thread.
  */
 public class Server {
 

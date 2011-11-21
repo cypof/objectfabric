@@ -1,5 +1,5 @@
 
-package part06.stm.generated;
+package part06.transactions.generated;
 
 //==============================================================================
 //                                                                              
@@ -22,7 +22,7 @@ public class SimpleClass extends com.objectfabric.TGeneratedFields32 {
         super(shared, trunk);
     }
 
-    public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(part06.stm.generated.SimpleObjectModel.getInstance(), part06.stm.generated.SimpleObjectModel.PART06_STM_GENERATED_SIMPLECLASS_CLASS_ID);
+    public static final com.objectfabric.TType TYPE = new com.objectfabric.TType(part06.transactions.generated.SimpleObjectModel.getInstance(), part06.transactions.generated.SimpleObjectModel.PART06_STM_GENERATED_SIMPLECLASS_CLASS_ID);
 
     public final java.lang.String getText() {
         com.objectfabric.Transaction outer = com.objectfabric.Transaction.getCurrent();
@@ -78,16 +78,16 @@ public class SimpleClass extends com.objectfabric.TGeneratedFields32 {
         endWrite_objectfabric(outer, inner);
     }
 
-    public final part06.stm.generated.SimpleClass getObject() {
+    public final part06.transactions.generated.SimpleClass getObject() {
         com.objectfabric.Transaction outer = com.objectfabric.Transaction.getCurrent();
         com.objectfabric.Transaction inner = startRead_objectfabric(outer);
         Version v = (Version) getTIndexed32Version_objectfabric(inner, OBJECT_INDEX);
-        part06.stm.generated.SimpleClass value = v != null ? (part06.stm.generated.SimpleClass) getUserTObject_objectfabric(v._object) : null;
+        part06.transactions.generated.SimpleClass value = v != null ? (part06.transactions.generated.SimpleClass) getUserTObject_objectfabric(v._object) : null;
         endRead_objectfabric(outer, inner);
         return value;
     }
 
-    public final void setObject(part06.stm.generated.SimpleClass value) {
+    public final void setObject(part06.transactions.generated.SimpleClass value) {
         com.objectfabric.Transaction outer = com.objectfabric.Transaction.getCurrent();
         com.objectfabric.Transaction inner = startWrite_objectfabric(outer);
         Version v = (Version) getOrCreateVersion_objectfabric(inner);
@@ -118,7 +118,7 @@ public class SimpleClass extends com.objectfabric.TGeneratedFields32 {
 
     public static final java.lang.String OBJECT_NAME = "object";
 
-    public static final com.objectfabric.TType OBJECT_TYPE = part06.stm.generated.SimpleClass.TYPE;
+    public static final com.objectfabric.TType OBJECT_TYPE = part06.transactions.generated.SimpleClass.TYPE;
 
     public static final int FIELD_COUNT = 4;
 
@@ -215,7 +215,7 @@ public class SimpleClass extends com.objectfabric.TGeneratedFields32 {
                     _int2 = ((java.lang.Integer) value).intValue();
                     break;
                 case OBJECT_INDEX:
-                    _object = (part06.stm.generated.SimpleClass) value;
+                    _object = (part06.transactions.generated.SimpleClass) value;
                     break;
                 default:
                     super.setAsObject(index, value);
@@ -360,13 +360,13 @@ public class SimpleClass extends com.objectfabric.TGeneratedFields32 {
 
         @Override
         public int getClassId() {
-            return part06.stm.generated.SimpleObjectModel.PART06_STM_GENERATED_SIMPLECLASS_CLASS_ID;
+            return part06.transactions.generated.SimpleObjectModel.PART06_STM_GENERATED_SIMPLECLASS_CLASS_ID;
         }
 
         @SuppressWarnings("static-access")
         @Override
         public com.objectfabric.ObjectModel getObjectModel() {
-            return part06.stm.generated.SimpleObjectModel.getInstance();
+            return part06.transactions.generated.SimpleObjectModel.getInstance();
         }
     }
 }

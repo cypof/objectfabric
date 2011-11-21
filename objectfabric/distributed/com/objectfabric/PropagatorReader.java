@@ -449,7 +449,7 @@ final class PropagatorReader extends DistributedReader {
 
                             if (Debug.ENABLED)
                                 if (transaction.getReads() != null)
-                                    Debug.assertion(getBranch().getConflictDetection() == ConflictDetection.READ_WRITE_CONFLICTS);
+                                    Debug.assertion(getBranch().getConflictDetection() == ConflictDetection.READ_WRITE);
 
                             transaction.setWrites(takeWrites());
                             Source source = new Source((Connection.Version) getEndpoint().getConnection().getSharedVersion_objectfabric(), interceptionId, false);

@@ -189,6 +189,8 @@ public class VMLazyMapClient extends Privileged {
                 }
             }
 
+            // TODO test getIfInMemory
+            
             if (_exit) {
                 _client.close();
                 PlatformAdapter.shutdown();

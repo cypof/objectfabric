@@ -10,7 +10,7 @@
  * WARRANTY OF DESIGN, MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE.
  */
 
-package part06.stm;
+package part06.transactions;
 
 import java.util.ArrayList;
 import java.util.concurrent.CyclicBarrier;
@@ -18,7 +18,7 @@ import java.util.concurrent.CyclicBarrier;
 import org.junit.Assert;
 import org.junit.Test;
 
-import part06.stm.generated.SimpleClass;
+import part06.transactions.generated.SimpleClass;
 
 import com.objectfabric.Transaction;
 import com.objectfabric.misc.PlatformAdapter;
@@ -59,8 +59,10 @@ public class STM_3_MultiThreaded {
                                 /*
                                  * A transaction is a consistent snapshot of memory. The
                                  * three fields are always updated together in a
-                                 * transaction, so they are equal even while other threads
-                                 * are updating them concurrently.
+                                 * transaction, so they are equal even as other threads
+                                 * are updating them concurrently. This does not require
+                                 * transactions to be aborted in-flight, reads are instead
+                                 * always returning the right version of a field.
                                  */
                                 Assert.assertTrue(a.getInt2() == a.getInt());
                                 Assert.assertTrue(b.getInt() == a.getInt());

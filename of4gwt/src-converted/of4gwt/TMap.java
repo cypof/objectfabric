@@ -23,7 +23,7 @@ import java.util.Set;
  * <nl>
  * - It does not support null keys.
  * <nl>
- * - It does not implement clone().
+ * - It does not implement clone.
  * <nl>
  * - Entries do not support setValue(V).
  * <nl>

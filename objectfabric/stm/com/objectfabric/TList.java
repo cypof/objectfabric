@@ -17,15 +17,35 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.NoSuchElementException;
+import java.util.RandomAccess;
 
 import com.objectfabric.misc.Debug;
 
 /**
  * Transactional list. This class is designed to behave as much as possible like an
- * ArrayList. It does not implement clone().
+ * ArrayList, but does not implement clone and is not serializable.
+ * <nl>
+ * Some methods on the List interface both read and write values. E.g. the remove(int)
+ * method returns the removed object. The implementations of those methods do not exhibit
+ * the same behavior if called in the context of a transaction, or if they have to start
+ * an implicit one. In a distributed setting, the server receives updates concurrently
+ * from several clients. The object present at the removed location will be known only
+ * once the remove is ordered amongst others changes on the server. Network operations
+ * might take a long time, and the method does not offer a way to provide an asynchronous
+ * callback to return the value later. It would be too slow to block the current thread to
+ * wait for the server on each method call. Instead, the method does not wait and always
+ * returns null.
+ * <nl>
+ * To generalize, all methods on transactional collections that return a value as a side
+ * effect of updating an object have this behavior. They return default values like false
+ * or null if not called in the context of a transaction. When called in the context of a
+ * transaction, return values are meaningful. However, the transaction will be aborted
+ * later if the server finds that another update has been made concurrently. To avoid
+ * aborts, if you do not need the return value from a method, ObjectFabric provides twin
+ * methods which do not return values, e.g. addOnly which return void.
  */
 @SuppressWarnings("unchecked")
-public class TList<E> extends TIndexed implements List<E> {
+public class TList<E> extends TIndexed implements List<E>, RandomAccess {
 
     @SuppressWarnings("hiding")
     public static final TType TYPE = new TType(DefaultObjectModel.getInstance(), DefaultObjectModel.COM_OBJECTFABRIC_TLIST_CLASS_ID);
