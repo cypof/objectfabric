@@ -1,0 +1,30 @@
+---
+layout: nil
+---
+<?xml version="1.0"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>ObjectFabric</title>
+  <link href="http://objectfabric.org/"/>
+  <link type="application/atom+xml" rel="self" href="http://objectfabric.org/atom.xml"/>
+  <updated>{{ site.time | date_to_xmlschema }}</updated>
+  <id>http://objectfabric.org</id>
+  <author>
+    <name>ObjectFabric</name>
+    <email>contact@objectfabric.com</email>
+  </author>
+
+  {% for post in site.posts %}
+  <entry>
+    <id>http://objectfabric.org{{ post.id }}</id>
+    <link type="text/html" rel="alternate" href="http://objectfabric.org{{ post.url }}"/>
+    <title>{{ post.title | xml_escape }}</title>
+    <updated>{{ post.date | date_to_xmlschema }}</updated>
+    <author>
+      <name>Cyprien Noel</name>
+      <uri>http://objectfabric.org</uri>
+    </author>
+    <content type="html">{{ post.content | xml_escape }}</content>
+  </entry>
+  {% endfor %}
+
+</feed>

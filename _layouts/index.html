@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head>
+    <!-- Adapted from Steve Smith's Minimal GitHub theme -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>{{ page.title }}</title>
+
+    <link rel="stylesheet" href="/stylesheets/styles.css">
+    <link rel="stylesheet" href="/stylesheets/pygments.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <link rel="stylesheet" href="stylesheets/jquery-ui-1.9.1.custom.css" />
+    <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+    <script src="http://code.jquery.com/ui/1.9.0/jquery-ui.js"></script>
+    <script>
+    $(function() {
+        $( "#array" ).tabs();
+        $( "#chat" ).tabs();
+    });
+    </script>
+    <script>
+      (function() {
+        var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+        po.src = 'https://apis.google.com/js/plusone.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+      })();
+    </script>
+
+    <script src="objectfabric/objectfabric.nocache.js"></script>
+  </head>
+  <body>
+	  <div id="fb-root"></div>
+	  <script>(function(d, s, id) {
+	    var js, fjs = d.getElementsByTagName(s)[0];
+	    if (d.getElementById(id)) return;
+	    js = d.createElement(s); js.id = id;
+	    js.src = "//connect.facebook.net/en_US/all.js#xfbml=1&appId=195372977192302";
+	    fjs.parentNode.insertBefore(js, fjs);
+	  }(document, 'script', 'facebook-jssdk'));</script>
+
+	  <div class="wrapper">
+			<header>
+        <img class="logo" src="images/logo.png" width="250" height="60">
+        <ul>
+          <li><a onclick="window.scrollTo(0, document.body.scrollHeight)"><strong>Try</strong></a></li>
+          <li><a href="https://github.com/objectfabric/objectfabric/wiki"><strong>Learn</strong></a></li>
+          <li><a href="https://github.com/objectfabric/objectfabric"><strong>Hack</strong></a></li>
+        </ul>
+        <br>
+        <table>
+		      <tr>
+		        <td class="rss" >
+		          <a href="/blog.html">
+		            <img class="rss" src="images/rss.png" width="16" height="16">
+		          </a>
+		        </td>
+		        <td>
+		          {% for post in site.posts offset: 0 limit: 3 %}
+		            {% include post_summary.html %}
+		          {% endfor %}
+		        </td>
+		      </tr>
+		    </table>
+		    <br>
+		    <table class="noborder">
+		      <tr>
+            <td class="noborder">
+							<a  href="https://twitter.com/share" class="twitter-share-button" data-via="ObjectFabric" data-count="none"></a>
+							<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+            </td>
+		        <td class="noborder"><div class="fb-like" data-href="http://www.facebook.com/ObjectFabric" data-send="false" data-layout="button_count" data-show-faces="true"></div></td>
+            <td class="noborder">
+              <div class="gplus">
+                <div class="g-plusone" data-size="medium" data-href="https://plus.google.com/101410778527299411372"></div>
+              </div>
+            </td>
+		      </tr>
+		    </table>
+		    <a href="https://groups.google.com/forum/?fromgroups#!forum/objectfabric">Google Group</a>
+		    &nbsp; - &nbsp;
+		    <a href="http://eepurl.com/cAN22">Newsletter</a>
+		    &nbsp; - &nbsp;
+		    <a href="mailto:contact@objectfabric.com">Contact</a>
+  	    <table class="nasa">
+          <tr>
+            <td class="nasa-img">
+              <a href="http://github.com/objectfabric/objectfabric/wiki/users">
+                <img class="users" alt="" src="images/nasa.png" width="75" height="62">
+              </a>
+            </td>
+            <td class="nasa-link">
+              <a href="http://github.com/objectfabric/objectfabric/wiki/users">Used at NASA, read more...</a>
+            </td>
+            <td/>
+          </tr>
+        </table>
+	    </header>
+		  <section class="main">
+		    {{ content }}
+		  </section>
+	  </div>
+    <script>
+      function formatNumber(num) {
+        return ("" + num).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, function($1) {
+          return $1 + "."
+        });
+      }
+
+      // Called when ObjectFabric is loaded
+      function onof(of) {
+        // Get live array of numbers through WebSocket
+        of.resolve("ws://test.objectfabric.org/array").get(function(a) {
+          // Add a listener on array, called when an element is
+          // set to a new value server side
+          a.onset(function(i) {
+            elem = document.getElementById('td' + i);
+            elem.innerHTML = formatNumber(a.get(i));
+          });
+        });
+      }
+    </script>
+	  <script src="js/scale.fix.js"></script>
+	  <script type="text/javascript">
+	    var _gaq = _gaq || [];
+	    _gaq.push(['_setAccount', 'UA-2092574-7']);
+	    _gaq.push(['_trackPageview']);
+	    (function() {
+	      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+	      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	    })();
+	  </script>
+  </body>
+</html>
