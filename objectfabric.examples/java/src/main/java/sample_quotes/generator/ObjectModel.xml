@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ObjectModel xsi:noNamespaceSchemaLocation="http://objectfabric.org/schemas/objectfabric-0.9.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Package name="sample_quotes.generated">
+    <Class name="Order">
+      <Field name="user" type="string" />
+      <Field name="instrument" type="string" />
+      <Field name="price" type="BigDecimal" />
+      <Field name="quantity" type="BigDecimal" />
+      <Field name="type" type="int" />
+      <Field name="comment" type="string" />
+    </Class>
+  </Package>
+</ObjectModel>

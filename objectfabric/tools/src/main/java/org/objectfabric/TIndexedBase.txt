@@ -1,0 +1,62 @@
+    /*
+     * %name%.
+     */
+
+    protected final TIndexed.Version%name% getVersion%name%_(Transaction current, int index) {
+        TIndexed.Version%name% version = (TIndexed.Version%name%) current.getVersion(this);
+
+        /*
+         * If we have already written to this field, use this.
+         */
+        if (version != null && version.getBit(index))
+            return version;
+
+        version = findPrivateVersion%name%(current.getPrivateSnapshotVersions(), index);
+
+        /*
+         * Same if it was in a private snapshot.
+         */
+        if (version != null)
+            return version;
+
+        /*
+         * Otherwise keep track of read and find previous value.
+         */
+        if (!current.ignoreReads()) {
+            TIndexed%name%Read read = (TIndexed%name%Read) current.getRead(this);
+
+            if (read == null) {
+                read = (TIndexed%name%Read) createRead();
+                current.putRead(read);
+            }
+
+            read.setBit(index);
+        }
+
+        return findPublicVersion%name%(current, index);
+    }
+
+    private final TIndexed.Version%name% findPrivateVersion%name%(Version[][] versions, int index) {
+        if (versions != null) {
+            for (int i = versions.length - 1; i >= 0; i--) {
+                TIndexed.Version%name% version = (TIndexed.Version%name%) TransactionBase.getVersion(versions[i], this);
+
+                if (version != null && version.getBit(index))
+                    return version;
+            }
+        }
+
+        return null;
+    }
+
+    final TIndexed.Version%name% findPublicVersion%name%(Transaction transaction, int index) {
+        for (int i = transaction.getPublicSnapshotVersions().length - 1; i > TransactionManager.OBJECTS_VERSIONS_INDEX; i--) {
+            TObject.Version[] delta = transaction.getPublicSnapshotVersions()[i];
+            TIndexed.Version%name% version = (TIndexed.Version%name%) TransactionBase.getVersion(delta, this);
+
+            if (version != null && version.getBit(index))
+                return version;
+        }
+
+        return (TIndexed.Version%name%) shared_();
+    }

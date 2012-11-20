@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+<head>
+<script src="external/jquery-1.7.1.min.js"></script>
+<script src="external/jquery.mousewheel-min.js"></script>
+<script src="external/jquery.terminal-0.4.17.min.js"></script>
+<link href="external/jquery.terminal.css" rel="stylesheet" />
+<script src="objectfabric/objectfabric.nocache.js"></script>
+</head>
+<body>
+	<script>
+		function onof(of) {
+			var me = "";
+
+			of.resolve("ws://localhost:8888/room1").get(function(messages) {
+				messages.add("New user");
+				
+				jQuery(document).ready(function($) {
+					$('body').terminal(function(line, term) {
+						// This callback is invoked when user enters text, first
+						// the name 'me', then messages to add to the set
+						if (me == "") {
+							me = line;
+							messages.add("New user: " + me);
+						} else
+							messages.add(me + ": " + line);
+					}, {
+						greetings : "JavaScript Chat\nmy name? "
+					});
+				});
+
+				// Display messages that get added to the set
+				messages.onadd(function(item) {
+					$('body').terminal().echo(item);
+				});
+			});
+		}
+	</script>
+</body>
+</html>

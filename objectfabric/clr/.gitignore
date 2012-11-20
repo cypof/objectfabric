@@ -1,0 +1,5 @@
+converted/
+bin/
+obj/
+*.suo
+*.user

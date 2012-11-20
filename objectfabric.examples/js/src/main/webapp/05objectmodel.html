@@ -1,0 +1,109 @@
+<html>
+<head>
+<script src="objectfabric/objectfabric.nocache.js"></script>
+</head>
+<body>
+	<h1>JavaScript - ObjectModel</h1>
+	<div id="text">Loading...</div>
+	<script>
+		function write(s) {
+			document.getElementById('text').innerHTML += '<br>' + s;
+		}
+
+		// OF for JS supports the same built-in types as other platforms, but
+		// currently no custom objects
+		function onof(of) {
+			var uri = "ws://localhost:8888";
+
+			// Immutables, not all types (C.f. Java class Immutable) are supported
+
+			of.resolve(uri + "/string").get(function(s) {
+				write("/string: " + s);
+			});
+
+			of.resolve(uri + "/int").get(function(i) {
+				write("/int: " + i);
+			});
+
+			// Sets
+
+			of.resolve(uri + "/set").get(function(set) {
+				set.each(function(e) {
+					write("/set: " + e);
+				});
+
+				// Listen for changes
+
+				set.onadd(function(e) {
+					write("/set: added " + e);
+				});
+
+				set.onremove(function(e) {
+					write("/set: removed " + e);
+				});
+
+				// Update
+
+				set.add("e");
+				set.remove("e");
+			});
+
+			// Maps
+
+			of.resolve(uri + "/map").get(function(map) {
+				map.each(function(key) {
+					write("/map: " + key + "=" + map.get(key));
+				});
+
+				// Listen for changes
+
+				map.onput(function(key) {
+					write("/map: put " + key + "=" + map.get(key));
+				});
+
+				map.onremove(function(key) {
+					write("/map: removed " + key);
+				});
+
+				// Update
+
+				map.put("a", "b");
+				map.remove("a");
+			});
+
+			// Arrays
+
+			of.resolve(uri + "/arrayOfInt").get(function(array) {
+				write("/array: [0]=" + array.get(0));
+				write("/array: [5]=" + array.get(5));
+				write("/array: [8]=" + array.get(8));
+
+				// Listen for changes
+
+				array.onset(function(i) {
+					write("/array: set " + i + "=" + array.get(i));
+				});
+
+				// Update
+				array.set(10, 2);
+			});
+
+			// Counters
+
+			of.resolve(uri + "/counter").get(function(counter) {
+				write("/counter: " + counter.get());
+
+				// Listen for changes
+
+				// TODO
+				// 				counter.onadd(function(delta) {
+				// 					write("/array: set " + value);
+				// 				});
+
+				// Update
+				counter.add(1);
+			});
+		}
+	</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+<html>
+<head>
+  <script src="jquery-1.7.1.min.js"></script>
+  <script src="jquery.mousewheel-min.js"></script>
+  <script src="jquery.terminal-0.4.17.min.js"></script>
+  <link href="jquery.terminal.css" rel="stylesheet" />
+  <script src="examples.app/examples.app.nocache.js"></script>
+</head>
+<body>
+  <script>
+    jQuery(document).ready(function($) {
+      $('body').terminal(function(command, term) {
+        if (typeof (gwtTerminal) !== 'undefined')
+          gwtTerminal(command);
+      }, {
+        greetings : "GWT Chat"
+      });
+    });
+  </script>
+</body>
+</html>

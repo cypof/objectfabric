@@ -1,0 +1,33 @@
+JS samples connect to the Java ExamplesServer:
+
+objectfabric.examples/java/src/main/java/launchfirst/ExamplesServer.java
+
+It can be launched using Maven from folder objectfabric.examples/java:
+
+mvn exec:java
+
+JS samples require objectfabric-js, which is produced using GWT &
+gwt-exporter. The GWT compiler produces specialized JS for each
+browser, and a loader named 'objectfabric.nocache.js'. You first need
+to build OF using Maven ('mvn' in the root folder). objectfabric-js
+should then be located at:
+
+objectfabric/js/target/objectfabric-js-{version}
+
+The pom file for this project is already configured to serve both
+html files and objectfabric-js so from the project folder (js), call:
+
+mvn jetty:run
+
+and try:
+
+http://localhost:8080/01helloworld.html
+
+It is possible to debug the underlying GWT code by calling
+
+mvn gwt:run-codeserver
+
+in the objectfabric-js folder (objectfabric/js) and follow the Super
+Dev Mode instructions:
+
+https://developers.google.com/web-toolkit/articles/superdevmode

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ObjectModel xsi:noNamespaceSchemaLocation="http://objectfabric.org/schemas/objectfabric-0.9.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Package name="part05.generated">
+    <Class name="Car">
+      <Field name="brand" type="String" readonly="true" />
+      <Field name="field" type="String" />
+    </Class>
+  </Package>
+</ObjectModel>

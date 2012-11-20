@@ -1,0 +1,285 @@
+<project name="objectfabric-clr" default="release">
+  <target name="debug" depends="1.convert-debug, 2.javac, 3.ikvm, 4.csharp" />
+  <target name="release" depends="1.convert-release, 2.javac, 3.ikvm, 4.csharp" />
+
+  <target name="1.convert-debug">
+    <antcall target="convert" />
+    <copy todir="src/main/converted/org/objectfabric">
+      <fileset dir="../api/src/main/misc/org/objectfabric" includes="Debug.java, Stats.java" />
+      <filterchain>
+        <replacestring from="public static final boolean TESTING = false;" to="public static final boolean TESTING = true;" />
+        <replacestring from="public static final boolean ENABLED = false;" to="public static final boolean ENABLED = true;" />
+      </filterchain>
+    </copy>
+  </target>
+  <target name="1.convert-release">
+    <antcall target="convert" />
+    <copy todir="src/main/converted/org/objectfabric">
+      <fileset dir="../api/src/main/misc/org/objectfabric" includes="Debug.java, Stats.java" />
+      <filterchain>
+        <replacestring from="public static final boolean TESTING = true;" to="public static final boolean TESTING = false;" />
+        <replacestring from="public static final boolean ENABLED = true;" to="public static final boolean ENABLED = false;" />
+      </filterchain>
+    </copy>
+  </target>
+
+  <target name="convert">
+    <mkdir dir="src/main/converted" />
+    <mkdir dir="src/test/converted" />
+    <delete failonerror="true">
+      <fileset dir="src/main/converted" includes="**/*.java" />
+      <fileset dir="src/test/converted" includes="**/*.java" />
+    </delete>
+    <copy todir="src/main/converted">
+      <fileset dir="../api/src/main/java" includes="**/*.java" excludes="
+                **/DefaultObjectModel.java" />
+      <fileset dir="../api/src/main/generated" includes="**/*.java" excludes="
+                **/TArray*
+                **/TArrayVersion*" />
+      <fileset dir="../api/src/main/extensibility" includes="**/*.java" excludes="" />
+      <fileset dir="../api/src/main/io" includes="**/*.java" excludes="" />
+      <fileset dir="../api/src/main/misc" includes="**/*.java" excludes="
+                **/Platform*.java
+                **/CompletedFuture.java" />
+      <fileset dir="../api/src/main/external" includes="**/*.java" excludes="" />
+    </copy>
+    <copy todir="src/main/converted/org/objectfabric" overwrite="true">
+      <fileset dir="../api/src/main/java/org/objectfabric"
+        includes="
+        				BuiltInClass.java
+        				TIndexedNVersion.java
+        				MethodCall.java
+        				TransactionManager.java
+                ObjectModel.java
+        				TObject.java
+                View.java
+                TType.java" />
+      <filterchain>
+        <replacestring from="public final class TType {" to="public class TType {" />
+        <replacestring from="FutureWithCallback&lt;V&gt; async = new FutureWithCallback&lt;V&gt;(callback, asyncOptions);" to="" />
+        <replacestring from="AsyncCallback callback, AsyncOptions asyncOptions" to="java.util.concurrent.Future callback, cli.System.Threading.CancellationToken asyncOptions" />
+        <replacestring from="async.set(result);" to="" />
+        <replacestring from="return async;" to="throw new IllegalStateException();" />
+        <replacestring from="return this; // Different for .NET" to="return getWritableFuture();" />
+        <replacestring from="java.lang.Class" to="cli.System.Type" />
+      </filterchain>
+    </copy>
+    <copy todir="src/main/converted" overwrite="true">
+      <fileset dir="../jvm/src/main/generator" includes="**/*.java" excludes="
+                **/Generator.java
+                **/PlatformGenerator.java
+                **/XMLSerializer.java" />
+      <filterchain>
+        <replacestring from="java.lang.Class " to="cli.System.Type " />
+        <replacestring from="JVMPlatform.init();" to="// JVMPlatform.init();" />
+        <replacestring from="@Xml" to="// @Xml" />
+        <replacestring from="import javax.xml.bind.annotation.Xml" to="// import javax.xml.bind.annotation.Xml" />
+        <replacestring from="java.util.ArrayList" to="List" />
+        <replacestring from="java.util.List" to="List" />
+        <replacestring from="java.util.Set" to="PlatformSet" />
+      </filterchain>
+    </copy>
+    <copy todir="src/main/converted/org/objectfabric" overwrite="true">
+      <fileset dir="../api/src/main/misc/org/objectfabric" includes="
+                Bits.java" />
+      <filterchain>
+        <replacestring from="abstract class Bits {" to="public abstract class Bits {" />
+        <replacestring from="public static final class Entry {" to="public static class Entry {" />
+      </filterchain>
+    </copy>
+    <copy todir="src/main/converted/org/objectfabric" overwrite="true">
+      <fileset dir="../api/src/main/io/org/objectfabric"
+        includes="
+                Buff.java
+                Connection.java
+                Message.java
+                Watcher.java
+                Headers.java
+                URI.java
+        				ImmutableWriter.java
+        				ImmutableReader.java
+        				UnknownObjectSerializer.java
+        				TObjectWriter.java"
+        excludes="" />
+      <filterchain>
+        <replacestring from="java.lang.Class" to="cli.System.Type" />
+        <replacestring from="java.util.ArrayList" to="List" />
+        <replacestring from="java.util.List" to="List" />
+        <replacestring from="java.util.Set" to="PlatformSet" />
+        <replacestring from="public final class URI" to="public abstract class URI" />
+        <replacestring from="abstract class Connection" to="public abstract class Connection" />
+
+        <!-- Converters -->
+
+        <replacestring from="(value == null) // Marker" to="(!value.get_HasValue())" />
+        <replacestring from="(value == null); // Marker" to="(!value.get_HasValue());" />
+        <replacestring from="(value); // Marker" to="(value.get_Value());" />
+
+        <replacestring from="writeByteBoxed(Byte value)" to="writeByteBoxed(cli.ObjectFabric.ByteConverter value)" />
+        <replacestring from="Byte readByteBoxed()" to="cli.ObjectFabric.ByteConverter readByteBoxed()" />
+        <replacestring from="new Byte(value)" to="new cli.ObjectFabric.ByteConverter(true, value)" />
+        <replacestring from="return null; // Marker Byte" to="return new cli.ObjectFabric.ByteConverter(false, (byte) 0);" />
+        <replacestring from="object instanceof Byte" to="object instanceof cli.System.Byte" />
+        <replacestring from="writer.writeByte(((Byte) object).byteValue());" to="writer.writeByte(cli.ObjectFabric.ByteConverter.Unbox(object));" />
+        <replacestring from="return reader.readByte();" to="return cli.ObjectFabric.ByteConverter.Box(reader.readByte());" />
+
+        <replacestring from="writeBooleanBoxed(Boolean value)" to="writeBooleanBoxed(cli.ObjectFabric.BooleanConverter value)" />
+        <replacestring from="Boolean readBooleanBoxed()" to="cli.ObjectFabric.BooleanConverter readBooleanBoxed()" />
+        <replacestring from="new Boolean(getBoolean())" to="new cli.ObjectFabric.BooleanConverter(true, getBoolean())" />
+        <replacestring from="return null; // Marker Boolean" to="return new cli.ObjectFabric.BooleanConverter(false, false);" />
+        <replacestring from="object instanceof Boolean" to="object instanceof cli.System.Boolean" />
+        <replacestring from="writer.writeBoolean(((Boolean) object).booleanValue());" to="writer.writeBoolean(cli.ObjectFabric.BooleanConverter.Unbox(object));" />
+        <replacestring from="return reader.readBoolean();" to="return cli.ObjectFabric.BooleanConverter.Box(reader.readBoolean());" />
+
+        <replacestring from="writeShortBoxed(Short value)" to="writeShortBoxed(cli.ObjectFabric.ShortConverter value)" />
+        <replacestring from="Short readShortBoxed()" to="cli.ObjectFabric.ShortConverter readShortBoxed()" />
+        <replacestring from="new Short(_buff.getShort())" to="new cli.ObjectFabric.ShortConverter(true, _buff.getShort())" />
+        <replacestring from="return null; // Marker Short" to="return new cli.ObjectFabric.ShortConverter(false, (short) 0);" />
+        <replacestring from="object instanceof Short" to="object instanceof cli.System.Int16" />
+        <replacestring from="writer.writeShort(((Short) object).shortValue());" to="writer.writeShort(cli.ObjectFabric.ShortConverter.Unbox(object));" />
+        <replacestring from="return reader.readShort();" to="return cli.ObjectFabric.ShortConverter.Box(reader.readShort());" />
+
+        <replacestring from="writeCharacterBoxed(Character value)" to="writeCharacterBoxed(cli.ObjectFabric.CharacterConverter value)" />
+        <replacestring from="Character readCharacterBoxed()" to="cli.ObjectFabric.CharacterConverter readCharacterBoxed()" />
+        <replacestring from="new Character(_buff.getChar())" to="new cli.ObjectFabric.CharacterConverter(true, _buff.getChar())" />
+        <replacestring from="return null; // Marker Character" to="return new cli.ObjectFabric.CharacterConverter(false, (char) 0);" />
+        <replacestring from="object instanceof Character" to="object instanceof cli.System.Char" />
+        <replacestring from="writer.writeCharacter(((Character) object).charValue());" to="writer.writeCharacter(cli.ObjectFabric.CharacterConverter.Unbox(object));" />
+        <replacestring from="return reader.readCharacter();" to="return cli.ObjectFabric.CharacterConverter.Box(reader.readCharacter());" />
+
+        <replacestring from="writeIntegerBoxed(Integer value)" to="writeIntegerBoxed(cli.ObjectFabric.IntegerConverter value)" />
+        <replacestring from="Integer readIntegerBoxed()" to="cli.ObjectFabric.IntegerConverter readIntegerBoxed()" />
+        <replacestring from="new Integer(_buff.getInt())" to="new cli.ObjectFabric.IntegerConverter(true, _buff.getInt())" />
+        <replacestring from="return null; // Marker Integer" to="return new cli.ObjectFabric.IntegerConverter(false, 0);" />
+        <replacestring from="object instanceof Integer" to="object instanceof cli.System.Int32" />
+        <replacestring from="writer.writeInteger(((Integer) object).intValue());" to="writer.writeInteger(cli.ObjectFabric.IntegerConverter.Unbox(object));" />
+        <replacestring from="return reader.readInteger();" to="return cli.ObjectFabric.IntegerConverter.Box(reader.readInteger());" />
+
+        <replacestring from="writeLongBoxed(Long value)" to="writeLongBoxed(cli.ObjectFabric.LongConverter value)" />
+        <replacestring from="Long readLongBoxed()" to="cli.ObjectFabric.LongConverter readLongBoxed()" />
+        <replacestring from="new Long(_buff.getLong())" to="new cli.ObjectFabric.LongConverter(true, _buff.getLong())" />
+        <replacestring from="return null; // Marker Long" to="return new cli.ObjectFabric.LongConverter(false, 0);" />
+        <replacestring from="object instanceof Long" to="object instanceof cli.System.Int64" />
+        <replacestring from="writer.writeLong(((Long) object).longValue());" to="writer.writeLong(cli.ObjectFabric.LongConverter.Unbox(object));" />
+        <replacestring from="return reader.readLong();" to="return cli.ObjectFabric.LongConverter.Box(reader.readLong());" />
+
+        <replacestring from="writeFloatBoxed(Float value)" to="writeFloatBoxed(cli.ObjectFabric.FloatConverter value)" />
+        <replacestring from="Float readFloatBoxed" to="cli.ObjectFabric.FloatConverter readFloatBoxed" />
+        <replacestring from="new Float(value); // Converter" to="new cli.ObjectFabric.FloatConverter(true, value);" />
+        <replacestring from="return null; // Marker Float" to="return new cli.ObjectFabric.FloatConverter(false, 0);" />
+        <replacestring from="object instanceof Float" to="object instanceof cli.System.Single" />
+        <replacestring from="writer.writeFloat(((Float) object).floatValue());" to="writer.writeFloat(cli.ObjectFabric.FloatConverter.Unbox(object));" />
+        <replacestring from="return new Float(value); // Box" to="return cli.ObjectFabric.FloatConverter.Box(value);" />
+
+        <replacestring from="writeDoubleBoxed(Double value)" to="writeDoubleBoxed(cli.ObjectFabric.DoubleConverter value)" />
+        <replacestring from="Double readDoubleBoxed" to="cli.ObjectFabric.DoubleConverter readDoubleBoxed" />
+        <replacestring from="new Double(value); // Converter" to="new cli.ObjectFabric.DoubleConverter(true, value);" />
+        <replacestring from="return null; // Marker Double" to="return new cli.ObjectFabric.DoubleConverter(false, 0);" />
+        <replacestring from="object instanceof Double" to="object instanceof cli.System.Double" />
+        <replacestring from="writer.writeDouble(((Double) object).doubleValue());" to="writer.writeDouble(cli.ObjectFabric.DoubleConverter.Unbox(object));" />
+        <replacestring from="return new Double(value); // Box" to="return cli.ObjectFabric.DoubleConverter.Box(value);" />
+
+        <replacestring from="java.util.Date readDate" to="cli.ObjectFabric.DateConverter readDate" />
+        <replacestring from="writeDate(java.util.Date value)" to="writeDate(cli.ObjectFabric.DateConverter value)" />
+        <replacestring from="object instanceof java.util.Date" to="object instanceof cli.System.DateTime" />
+        <replacestring from="new java.util.Date((ticks - 621355968000000000L) / 10000)" to="new cli.ObjectFabric.DateConverter(true, ticks)" />
+        <replacestring from="value.getTime() * 10000 + 621355968000000000L" to="value.get_Ticks()" />
+        <replacestring from="return null; // Marker Date" to="return new cli.ObjectFabric.DateConverter(false, 0);" />
+        <replacestring from="writer.writeDate((java.util.Date) object);" to="writer.writeDate(new cli.ObjectFabric.DateConverter(true, ((cli.System.DateTime) object).get_Ticks()));" />
+        <replacestring from="return reader.readDate();" to="return cli.ObjectFabric.DateConverter.op_Implicit(reader.readDate());" />
+
+        <replacestring from="writeBigInteger(java.math.BigInteger value)" to="writeBigInteger(cli.ObjectFabric.BigIntegerConverter value)" />
+        <replacestring from="java.math.BigInteger readBigInteger" to="cli.ObjectFabric.BigIntegerConverter readBigInteger" />
+        <replacestring from="return new java.math.BigInteger(data);" to="return cli.ObjectFabric.BigIntegerConverter.fromBytes(data);" />
+        <replacestring from="return null; // Marker BigInteger" to="return new cli.ObjectFabric.BigIntegerConverter(false, null);" />
+        <replacestring from="writeBinary(value.toByteArray(), Immutable.BIG_INTEGER_INDEX);" to="writeBinary(value.toBytes(), Immutable.BIG_INTEGER_INDEX);" />
+        <replacestring from="if (object instanceof java.math.BigInteger) {" to="if (object instanceof cli.System.Numerics.BigInteger) {" />
+        <replacestring from="writer.writeBigInteger((java.math.BigInteger) object);" to="writer.writeBigInteger(new cli.ObjectFabric.BigIntegerConverter(true, (cli.System.Numerics.BigInteger) object));" />
+        <replacestring from="java.math.BigInteger value = reader.readBigInteger();" to="cli.ObjectFabric.BigIntegerConverter value = reader.readBigInteger();" />
+        <replacestring from="return value; // BigInteger" to="return cli.ObjectFabric.BigIntegerConverter.op_Implicit(value);" />
+
+        <replacestring from="writeDecimal(java.math.BigDecimal value)" to="writeDecimal(cli.ObjectFabric.DecimalConverter value)" />
+        <replacestring from="java.math.BigDecimal readDecimal" to="cli.ObjectFabric.DecimalConverter readDecimal" />
+        <replacestring from="return new java.math.BigDecimal(new java.math.BigInteger(b), scale);" to="return new cli.ObjectFabric.DecimalConverter(true, b, scale);" />
+        <replacestring from="return null; // Marker BigDecimal" to="return new cli.ObjectFabric.DecimalConverter(false, null, 0);" />
+        <replacestring from="byte[] t = value.unscaledValue().toByteArray();" to="byte[] t = value.get_Unscaled();" />
+        <replacestring from="int scale = value.scale();" to="int scale = value.get_Scale();" />
+        <replacestring from="if (object instanceof java.math.BigDecimal) {" to="if (object instanceof cli.System.Decimal) {" />
+        <replacestring from="writer.writeDecimal((java.math.BigDecimal) object);" to="writer.writeDecimal(new cli.ObjectFabric.DecimalConverter((cli.System.Decimal) object));" />
+        <replacestring from="java.math.BigDecimal value = reader.readDecimal();" to="cli.ObjectFabric.DecimalConverter value = reader.readDecimal();" />
+        <replacestring from="return value; // BigDecimal" to="return cli.ObjectFabric.DecimalConverter.op_Implicit(value);" />
+
+        <replacestring from="// Marker" to="Replace failed" />
+      </filterchain>
+    </copy>
+
+    <copy todir="src/test/converted">
+      <fileset dir="../jvm/src/test/java" includes="**/*.java"
+        excludes="
+                **/TListVersionTest.java
+                **/SerializationTestGenerator.java
+                **/load/**
+                **/UserReferencesTest.java
+                **/Types**
+                **/TArrayTest.java" />
+      <fileset dir="../jvm/src/test/serialization" includes="**/*.java"
+        excludes="
+                **/SerializationTestReader**
+                **/SerializationTestWriter**
+                **/SerializationTestJava**" />
+      <fileset dir="../jvm/src/test/io" includes="**/*.java" excludes="
+                **/FileSystem**" />
+    </copy>
+    <copy todir="src/test/converted/org/objectfabric/generated" overwrite="true">
+      <fileset dir="../jvm/src/test/java/org/objectfabric/generated" includes="**/*.java" excludes="
+                **/Types*" />
+      <filterchain>
+        <replacestring from="java.lang.Class" to="cli.System.Type" />
+        <replacestring from="org.objectfabric.generated.SimpleClass.class" to="cli.System.Type.GetType(&quot;org.objectfabric.generated.SimpleClass&quot;)" />
+        <replacestring from="org.objectfabric.generated.Limit32.class" to="cli.System.Type.GetType(&quot;org.objectfabric.generated.Limit32&quot;)" />
+        <replacestring from="org.objectfabric.generated.Limit32_max.class" to="cli.System.Type.GetType(&quot;org.objectfabric.generated.Limit32_max&quot;)" />
+        <replacestring from="org.objectfabric.generated.LimitN.class" to="cli.System.Type.GetType(&quot;org.objectfabric.generated.LimitN&quot;)" />
+        <replacestring from="org.objectfabric.generated.LimitN_min.class" to="cli.System.Type.GetType(&quot;org.objectfabric.generated.LimitN_min&quot;)" />
+      </filterchain>
+    </copy>
+  </target>
+
+  <target name="2.javac">
+    <mkdir dir="target/javac" />
+    <delete includeemptydirs="true" failonerror="true">
+      <fileset dir="target/javac" />
+    </delete>
+    <mkdir dir="target/javac/classes" />
+    <mkdir dir="target/javac/tests" />
+    <javac srcdir="src/main/clr;src/main/converted" debug="true" includeantruntime="false" destdir="target/javac/classes"
+      classpath="lib/mscorlib.jar;lib/System.jar;lib/IKVM.OpenJDK.Core.jar;lib/System.Numerics.jar;lib/Shared1.jar">
+      <compilerarg value="-g" />
+    </javac>
+    <javac srcdir="src/test/converted" debug="true" includeantruntime="false" destdir="target/javac/tests" classpath="lib/mscorlib.jar;lib/System.jar;lib/junit.jar;lib/Shared1.jar;target/javac/classes;">
+      <compilerarg value="-g" />
+    </javac>
+  </target>
+
+  <target name="3.ikvm">
+    <sync todir="target/step1">
+      <fileset dir="ikvm" includes="ICSharpCode.SharpZipLib.dll IKVM.OpenJDK.Core.dll IKVM.Reflection.dll IKVM.Runtime.dll ikvmc.exe ikvmc.exe.config" />
+    </sync>
+    <delete failonerror="true">
+      <fileset dir="target/step1/" includes="Java.dll Java.pdb Tests.dll Test.pdb" />
+    </delete>
+    <exec executable="target/step1/ikvmc.exe" failonerror="true">
+      <arg
+        line="-out:target/step1/Java.dll -target:library -strictfinalfieldsemantics -noautoserialization -opt:fields -debug -reference:mscorlib.dll -reference:System.dll -reference:System.Numerics.dll -reference:lib/Shared1.dll -recurse:target/javac/classes/*.class" />
+    </exec>
+    <exec executable="target/step1/ikvmc.exe" failonerror="true">
+      <arg
+        line="-out:target/step1/Tests.dll -target:library -strictfinalfieldsemantics -noautoserialization -opt:fields -debug -reference:mscorlib.dll -reference:System.dll -reference:System.Numerics.dll -reference:lib/Shared1.dll lib/hamcrest.jar lib/junit.jar -recurse:target/javac/classes/*.class -recurse:target/javac/tests/*.class" />
+    </exec>
+  </target>
+
+  <target name="4.csharp">
+    <!-- <exec executable="${dotnet}/MSBuild.exe" failonerror="true"> <arg line="Shared2/Shared2.csproj" /> </exec> -->
+  </target>
+
+  <!-- TODO linker, merge dlls, sign, peverify -->
+</project>

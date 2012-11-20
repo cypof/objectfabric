@@ -1,0 +1,32 @@
+<!doctype html>
+<html>
+<head>
+</head>
+<body>
+  World Population:
+  <div id='div0'></div>
+  Internet Users:
+  <div id='div1'></div>
+  <script src="objectfabric/objectfabric.nocache.js"></script>
+  <script>
+      function formatNumber(num) {
+        return ("" + num).replace(/(\d)(?=(\d\d\d)+(?!\d))/g, function($1) {
+          return $1 + "."
+        });
+      }
+
+      // Called when ObjectFabric is loaded
+      function onof(of) {
+        // Get live array of numbers through WebSocket
+        of.resolve("ws://test.objectfabric.org/array").get(function(a) {
+          // Add a listener on array, called when an element is
+          // set to a new value server side
+          a.onset(function(i) {
+            elem = document.getElementById('div' + i);
+            elem.innerHTML = formatNumber(a.get(i));
+          });
+        });
+      }
+    </script>
+</body>
+</html>

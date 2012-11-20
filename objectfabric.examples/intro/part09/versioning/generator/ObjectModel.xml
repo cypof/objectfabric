@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ObjectModel xsi:noNamespaceSchemaLocation="http://objectfabric.com/schemas/objectfabric-0.8.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-	<Package name="part09.versioning.generated">
-		<Class name="SimpleClass">
-			<Field name="value" type="int" />
-		</Class>
-	</Package>
-</ObjectModel>

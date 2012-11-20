@@ -1,5 +1,0 @@
-ObjectFabric is a lightweight Java server that can establish bidirectional connections with Web, mobile, and desktop applications. Check http://objectfabric.com for more information.
-
-Most of the code is packaged as a set of Eclipse projects. The best way to get started is to run the Java samples (objectfabric.examples) which are self documented through comments on every step.
-
-ObjectFabric is licensed under the Apache License, Version 2.0 (http://www.apache.org/licenses/LICENSE-2.0.html).

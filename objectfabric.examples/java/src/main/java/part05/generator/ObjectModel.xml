@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<ObjectModel name="MyObjectModel" xsi:noNamespaceSchemaLocation="http://objectfabric.org/schemas/objectfabric-0.9.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Package name="part05.generated">
+    <Class name="Car">
+      <!-- Primitive types can be either boxed or true primitives -->
+      <Field name="text" type="String" />
+
+      <!-- Primitive types can be true primitives or boxed -->
+      <Field name="field" type="int" />
+      <Field name="boxed" type="Integer" />
+
+      <!-- Java enums can be used as primitives -->
+      <Field name="color" type="part05.Color" />
+
+      <!-- Referencing a generated class -->
+      <Field name="driver" type="User" />
+
+      <!-- Read-only fields must be passed to the constructor and then cannot be changed -->
+      <Field name="brand" type="String" readonly="true" />
+
+      <!-- Generic types can be specified using parenthesis instead of <> for XML compatibility -->
+      <Field name="doors" type="TSet(Door)" />
+
+      <!-- Read-only collection fields are set by one of the constructors to empty collection -->
+      <Field name="settings" type="TMap(User, Settings)" readonly="true" />
+      <Field name="log" type="TMap(User, TSet(String))" readonly="true" />
+
+      <Field name="child" type="ElectricCar" />
+      <Field name="tag" type="Object" comment="Value can only be immutable class or TObject." />
+
+      <!-- Broken, removed for now -->
+      <!-- Method name="start"> <Argument name="key" type="Key" /> <ReturnValue type="Vroom" /> </Method -->
+    </Class>
+    <Class name="Key" />
+    <Class name="Vroom" />
+
+    <!-- Class inheritance is supported -->
+    <Class name="ElectricCar" parent="Car">
+      <Field name="battery" type="Battery" />
+    </Class>
+    <Class name="User">
+      <Field name="name" type="String" />
+    </Class>
+    <Class name="Door">
+    </Class>
+    <Class name="Settings">
+      <Field name="seatHeight" type="int" />
+    </Class>
+    <Class name="Battery">
+      <Field name="capacity" type="int" readonly="true" />
+      <Field name="remaining" type="int" />
+      <!-- Method name="eject" comment="Watch your feet." / -->
+    </Class>
+  </Package>
+  <Package name="part05.generated.subPackage">
+    <Class name="OtherCar" />
+  </Package>
+</ObjectModel>

@@ -1,0 +1,1 @@
+NuGet Pack ObjectFabric.nuspec -Symbols

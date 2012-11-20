@@ -1,0 +1,25 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>ObjectFabric</id>
+    <version>0.9.0.2</version>
+    <authors>ObjectFabric</authors>
+    <projectUrl>http://objectfabric.org</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>ObjectFabric for .NET</description>
+  </metadata>
+  <files>
+    <file src="DotNet\bin\Debug\IKVM.OpenJDK.Core.dll" target="lib\net45" />
+    <file src="DotNet\bin\Debug\IKVM.Runtime.dll" target="lib\net45" />
+    <file src="DotNet\bin\Debug\Java.dll" target="lib\net45" />
+    <file src="DotNet\bin\Debug\Java.pdb" target="lib\net45" />
+    <file src="DotNet\bin\Debug\ObjectFabric.dll" target="lib\net45" />
+    <file src="DotNet\bin\Debug\ObjectFabric.pdb" target="lib\net45" />
+    <file src="DotNet\bin\Debug\Shared1.dll" target="lib\net45" />
+    <file src="DotNet\bin\Debug\Shared1.pdb" target="lib\net45" />
+    <file src="DotNet\bin\Debug\Shared2.dll" target="lib\net45" />
+    <file src="DotNet\bin\Debug\Shared2.pdb" target="lib\net45" />
+    <file src="**\*.java" target="src" />
+    <file src="**\*.cs" target="src" />
+  </files>
+</package>
