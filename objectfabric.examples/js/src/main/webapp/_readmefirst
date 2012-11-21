@@ -9,8 +9,8 @@ mvn exec:java
 JS samples require objectfabric-js, which is produced using GWT &
 gwt-exporter. The GWT compiler produces specialized JS for each
 browser, and a loader named 'objectfabric.nocache.js'. You first need
-to build OF using Maven ('mvn' in the root folder). objectfabric-js
-should then be located at:
+to build OF using Maven (running 'mvn package' in the root folder).
+objectfabric-js should then be located at:
 
 objectfabric/js/target/objectfabric-js-{version}
 

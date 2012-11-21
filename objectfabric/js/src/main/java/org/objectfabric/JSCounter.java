@@ -29,21 +29,22 @@ public class JSCounter implements Exportable {
 
         @Override
         public Exportable getOrCreateJS() {
-            if (_js == null)
-                _js = new JSCounter(this);
+            if (_js == null) {
+                _js = new JSCounter();
+                _js._internal = this;
+            }
 
             return _js;
         }
     }
 
-    private final CounterInternal _internal;
+    private CounterInternal _internal;
 
     public JSCounter(JSResource resource) {
-        this(new CounterInternal(resource._internal));
+        _internal = new CounterInternal(resource._internal);
     }
 
-    JSCounter(CounterInternal internal) {
-        _internal = internal;
+    private JSCounter() {
     }
 
     public void add(long delta) {

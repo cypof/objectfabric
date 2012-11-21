@@ -15,11 +15,13 @@ package org.objectfabric.generated;
 import org.objectfabric.Closure;
 import org.objectfabric.IndexListener;
 import org.objectfabric.Internal;
+import org.objectfabric.JSResource;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayFloat;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
 import org.timepedia.exporter.client.Exportable;
+import org.timepedia.exporter.client.NoExport;
 
 //==============================================================================
 //
@@ -43,17 +45,23 @@ public class JSArrayFloat implements Exportable {
 
         @Override
         public Exportable getOrCreateJS() {
-            if (_js == null)
-                _js = new JSArrayFloat(this);
+            if (_js == null) {
+                _js = new JSArrayFloat();
+                _js._internal = this;
+            }
 
             return _js;
         }
     }
 
-    private final ArrayInternal _internal;
+    private ArrayInternal _internal;
 
-    JSArrayFloat(ArrayInternal internal) {
-        _internal = internal;
+    public JSArrayFloat(JSResource resource, int length) {
+        _internal = new ArrayInternal(resource.internal(), length);
+    }
+
+    @NoExport
+    public JSArrayFloat() {
     }
 
     public float get(int index) {
@@ -73,7 +81,7 @@ public class JSArrayFloat implements Exportable {
 
             @Override
             public void onSet(int index) {
-                closure.runPrimitive(index);
+                closure.runImmutable(index);
             }
         });
     }

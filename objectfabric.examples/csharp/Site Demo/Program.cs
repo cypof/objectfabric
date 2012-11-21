@@ -15,11 +15,22 @@ namespace Examples
 
             // Get live array of numbers through WebSocket
             string uri = "ws://test.objectfabric.org/array";
-            TArray<long> a = (TArray<long>) w.resolve(uri).get();
+            TArray<long> a = (TArray<long>) w.Resolve(uri).Get();
 
             // Add a listener on array, called when an element is
             // set to a new value server side
-            a.Set += i => { Console.WriteLine(a[i]); };
+            a.Set += i =>
+            {
+                switch (i)
+                {
+                    case 0:
+                        Console.WriteLine("World population: " + a[i]);
+                        break;
+                    case 1:
+                        Console.WriteLine("Internet Users: " + a[i]);
+                        break;
+                }
+            };
         }
     }
 }

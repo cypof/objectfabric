@@ -314,14 +314,6 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
                     break;
                 }
                 case 40: {
-                    writeString("$^%£¨µ%£¨%£¨µ%µ");
-
-                    if (interrupted())
-                        return;
-
-                    break;
-                }
-                case 41: {
                     writeString("ffqsdfqfezghrtghrgrfgzefzeqfzeqfqzefqzefqzefqzeefqzefqzefsdqfsdghfgzegqzefqsdfqzefqezfqzefqze'");
 
                     if (interrupted())
@@ -329,28 +321,28 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 42: {
+                case 41: {
                     if (!canWriteDate())
                         return;
 
                     writeDate(null);
                     break;
                 }
-                case 43: {
+                case 42: {
                     if (!canWriteDate())
                         return;
 
                     writeDate(new java.util.Date(4558621531843L));
                     break;
                 }
-                case 44: {
+                case 43: {
                     if (!canWriteDate())
                         return;
 
                     writeDate(new java.util.Date(0));
                     break;
                 }
-                case 45: {
+                case 44: {
                     writeBigInteger(null);
 
                     if (interrupted())
@@ -358,7 +350,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 46: {
+                case 45: {
                     writeBigInteger(new java.math.BigInteger("0"));
 
                     if (interrupted())
@@ -366,7 +358,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 47: {
+                case 46: {
                     writeBigInteger(new java.math.BigInteger("-0"));
 
                     if (interrupted())
@@ -374,7 +366,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 48: {
+                case 47: {
                     writeBigInteger(new java.math.BigInteger("45"));
 
                     if (interrupted())
@@ -382,7 +374,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 49: {
+                case 48: {
                     writeBigInteger(new java.math.BigInteger("-45"));
 
                     if (interrupted())
@@ -390,7 +382,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 50: {
+                case 49: {
                     writeBigInteger(new java.math.BigInteger("1237987"));
 
                     if (interrupted())
@@ -398,7 +390,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 51: {
+                case 50: {
                     writeBigInteger(new java.math.BigInteger("-1237987"));
 
                     if (interrupted())
@@ -406,7 +398,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 52: {
+                case 51: {
                     writeBigInteger(new java.math.BigInteger("1237987898798797464864181688684513518313131813113513"));
 
                     if (interrupted())
@@ -414,7 +406,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 53: {
+                case 52: {
                     writeBigInteger(new java.math.BigInteger("-1237987898798797464864181688684513518313131813113513"));
 
                     if (interrupted())
@@ -422,7 +414,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 54: {
+                case 53: {
                     writeDecimal(null);
 
                     if (interrupted())
@@ -430,7 +422,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 55: {
+                case 54: {
                     writeDecimal(new java.math.BigDecimal( "0"));
 
                     if (interrupted())
@@ -438,7 +430,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 56: {
+                case 55: {
                     writeDecimal(new java.math.BigDecimal( "-0"));
 
                     if (interrupted())
@@ -446,7 +438,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 57: {
+                case 56: {
                     writeDecimal(new java.math.BigDecimal( "45"));
 
                     if (interrupted())
@@ -454,7 +446,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 58: {
+                case 57: {
                     writeDecimal(new java.math.BigDecimal( "-45"));
 
                     if (interrupted())
@@ -462,7 +454,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 59: {
+                case 58: {
                     writeDecimal(new java.math.BigDecimal( "123798789879879.456464"));
 
                     if (interrupted())
@@ -470,7 +462,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 60: {
+                case 59: {
                     writeDecimal(new java.math.BigDecimal( "-123798789879879.456464"));
 
                     if (interrupted())
@@ -478,7 +470,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 61: {
+                case 60: {
                     writeDecimal(new java.math.BigDecimal( "0.000000000000078"));
 
                     if (interrupted())
@@ -486,7 +478,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 62: {
+                case 61: {
                     writeDecimal(new java.math.BigDecimal( "-0.000000000000078"));
 
                     if (interrupted())
@@ -494,7 +486,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 63: {
+                case 62: {
                     writeDecimal(new java.math.BigDecimal( "2.0e5"));
 
                     if (interrupted())
@@ -502,7 +494,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 64: {
+                case 63: {
                     writeDecimal(new java.math.BigDecimal( "-2.0e5"));
 
                     if (interrupted())
@@ -510,7 +502,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 65: {
+                case 64: {
                     writeDecimal(new java.math.BigDecimal( "789.046544654846468789486e13"));
 
                     if (interrupted())
@@ -518,7 +510,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 66: {
+                case 65: {
                     writeDecimal(new java.math.BigDecimal( "-789.046544654846468789486e13"));
 
                     if (interrupted())
@@ -526,7 +518,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 67: {
+                case 66: {
                     writeDecimal(new java.math.BigDecimal( "789.046544654846468789486e-13"));
 
                     if (interrupted())
@@ -534,7 +526,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 68: {
+                case 67: {
                     writeDecimal(new java.math.BigDecimal( "-789.046544654846468789486e-13"));
 
                     if (interrupted())
@@ -542,7 +534,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 69: {
+                case 68: {
                     writeBinary(null);
 
                     if (interrupted())
@@ -550,7 +542,7 @@ public class SerializationTestWriter extends org.objectfabric.SerializationTest.
 
                     break;
                 }
-                case 70: {
+                case 69: {
                     writeBinary(new byte[] { 45, 88 });
 
                     if (interrupted())

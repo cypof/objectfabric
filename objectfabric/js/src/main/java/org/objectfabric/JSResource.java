@@ -41,6 +41,10 @@ public class JSResource implements Exportable {
         _internal = internal;
     }
 
+    public Resource internal() {
+        return _internal;
+    }
+
     public Permission getPermission() {
         return _internal.permission();
     }
@@ -50,12 +54,10 @@ public class JSResource implements Exportable {
 
             @Override
             public void onSuccess(Object result) {
-                Object js = Main.map(result);
-
-                if (js instanceof Exportable)
-                    closure.runExportable((Exportable) js);
+                if (result instanceof Internal)
+                    closure.runExportable(((Internal) result).getOrCreateJS());
                 else
-                    closure.runPrimitive(js);
+                    closure.runImmutable(result);
             }
 
             @Override

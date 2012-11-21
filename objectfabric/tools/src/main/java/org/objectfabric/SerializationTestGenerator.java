@@ -66,7 +66,6 @@ public class SerializationTestGenerator extends FileGenerator {
             values.add("\"\\u0AFF\"");
             values.add("\"\\u7FFF\"");
             values.add("\"\\uFFFF\"");
-            values.add("\"$^%£¨µ%£¨%£¨µ%µ\"");
             values.add("\"ffqsdfqfezghrtghrgrfgzefzeqfzeqfqzefqzefqzefqzeefqzefqzefsdqfsdghfgzegqzefqsdfqzefqezfqzefqze'\"");
         } else if (c == Immutable.BIG_INTEGER) {
             String type = g().isJava() ? "new java.math.BigInteger" : "System.Numerics.BigInteger.Parse";
@@ -259,7 +258,7 @@ public class SerializationTestGenerator extends FileGenerator {
         generator.write(new SerializationTestGenerator(generator, packg, true, true));
         generator.write(new SerializationTestGenerator(generator, packg, false, true));
 
-        generator.folder("../clr/VS/JavaTests/Generated");
+        generator.folder("../clr/JUnit/Generated");
         generator.target(Target.CSHARP);
         generator.write(new SerializationTestGenerator(generator, packg, true, false));
         generator.write(new SerializationTestGenerator(generator, packg, false, false));

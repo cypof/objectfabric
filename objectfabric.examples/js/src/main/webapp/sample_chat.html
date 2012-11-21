@@ -8,33 +8,35 @@
 <script src="objectfabric/objectfabric.nocache.js"></script>
 </head>
 <body>
-	<script>
-		function onof(of) {
-			var me = "";
+  <script>
+      function onof(of) {
+        // Get a room
+        of.resolve("ws://localhost:8888/room1").get(function(messages) {
+          var me = "";
 
-			of.resolve("ws://localhost:8888/room1").get(function(messages) {
-				messages.add("New user");
-				
-				jQuery(document).ready(function($) {
-					$('body').terminal(function(line, term) {
-						// This callback is invoked when user enters text, first
-						// the name 'me', then messages to add to the set
-						if (me == "") {
-							me = line;
-							messages.add("New user: " + me);
-						} else
-							messages.add(me + ": " + line);
-					}, {
-						greetings : "JavaScript Chat\nmy name? "
-					});
-				});
+          jQuery(document).ready(function($) {
+            $('body').terminal(function(line, term) {
+              // This callback is invoked when user enters text, first
+              // the name 'me', then messages
+              if (me == "") {
+                me = line;
+                // A room is a set of messages. Adding a message to a
+                // set raises the 'onadd' callback on all clients who
+                // share the the same URI
+                messages.add("New user: " + me);
+              } else
+                messages.add(me + ": " + line);
+            }, {
+              greetings : "JavaScript Chat\nmy name? "
+            });
+          });
 
-				// Display messages that get added to the set
-				messages.onadd(function(item) {
-					$('body').terminal().echo(item);
-				});
-			});
-		}
-	</script>
+          // Display messages that get added to the set
+          messages.onadd(function(item) {
+            $('body').terminal().echo(item);
+          });
+        });
+      }
+    </script>
 </body>
 </html>

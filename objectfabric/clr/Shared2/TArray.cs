@@ -138,35 +138,16 @@ namespace ObjectFabric
             remove { removeListener(new Listener(value)); }
         }
 
-        class Listener : org.objectfabric.IndexListener
+        class Listener : Listener<Action<int>>, org.objectfabric.IndexListener
         {
-            readonly Action<int> _handler;
-
-            public Listener(Action<int> handler)
+            public Listener(Action<int> d)
+                : base(d)
             {
-                _handler = handler;
             }
 
             public void onSet(int i)
             {
-                _handler(i);
-            }
-
-            //
-
-            public override bool Equals(object obj)
-            {
-                Listener other = obj as Listener;
-
-                if (other != null)
-                    return _handler.Equals(other._handler);
-
-                return false;
-            }
-
-            public override int GetHashCode()
-            {
-                return _handler.GetHashCode();
+                _delegate(i);
             }
         }
 
@@ -178,37 +159,19 @@ namespace ObjectFabric
             remove { removeListener(new CollectionListener(this, value)); }
         }
 
-        class CollectionListener : org.objectfabric.IndexListener
+        class CollectionListener : Listener<NotifyCollectionChangedEventHandler>, org.objectfabric.IndexListener
         {
             readonly TArray<T> _object;
-            readonly NotifyCollectionChangedEventHandler _handler;
 
             public CollectionListener(TArray<T> o, NotifyCollectionChangedEventHandler handler)
+                : base(handler)
             {
                 _object = o;
-                _handler = handler;
             }
 
             public void onSet(int i)
             {
-                _handler(_object, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, _object[i], null, i));
-            }
-
-            //
-
-            public override bool Equals(object obj)
-            {
-                CollectionListener other = obj as CollectionListener;
-
-                if (other != null)
-                    return _handler.Equals(other._handler);
-
-                return false;
-            }
-
-            public override int GetHashCode()
-            {
-                return _handler.GetHashCode();
+                _delegate(_object, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, _object[i], null, i));
             }
         }
     }

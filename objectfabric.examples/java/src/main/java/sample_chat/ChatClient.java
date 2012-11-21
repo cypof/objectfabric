@@ -42,6 +42,10 @@ public class ChatClient {
         Resource resource = w.resolve("ws://localhost:8888/room1");
         final TSet<String> messages = (TSet) resource.get();
 
+        // A room is a set of messages. Adding a message to a
+        // set raises the 'onPut' callback on all clients who
+        // share the the same URI
+
         // Display messages that get added to the set
         messages.addListener(new AbstractKeyListener<String>() {
 
@@ -51,8 +55,8 @@ public class ChatClient {
             }
         });
 
-        // Listen for typed messages and add them to the set.
-        System.out.println("my name? ");
+        // Listen for typed messages and add them to the set
+        System.out.print("my name? ");
         String me = console.readLine();
         messages.add("New user: " + me);
 

@@ -1,11 +1,19 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.sonatype.oss</groupId>
+    <artifactId>oss-parent</artifactId>
+    <version>7</version>
+  </parent>
+
   <groupId>org.objectfabric</groupId>
   <artifactId>objectfabric</artifactId>
   <version>0.9-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>ObjectFabric</name>
+  <name>objectfabric</name>
+  <description>An attempt to add real-time and off-line synchronization to REST resources.</description>
   <url>http://objectfabric.org</url>
 
   <licenses>
@@ -16,16 +24,24 @@
     </license>
   </licenses>
 
+  <scm>
+    <connection>scm:git:git@github.com:objectfabric/objectfabric.git</connection>
+    <developerConnection>scm:git:git@github.com:objectfabric/objectfabric.git</developerConnection>
+    <url>git@github.com:objectfabric/objectfabric.git</url>
+  </scm>
+
+  <developers>
+    <developer>
+      <id>cypof</id>
+      <name>Cyprien Noel</name>
+      <email>cyprien.noel@objectfabric.com</email>
+    </developer>
+  </developers>
+
   <properties>
     <java.version>1.6</java.version>
     <gwt.version>2.5.0</gwt.version>
   </properties>
-
-  <scm>
-    <url>https://github.com/ObjectFabric/ObjectFabric</url>
-    <connection>scm:git:git://github.com/ObjectFabric/ObjectFabric.git</connection>
-    <developerConnection>scm:git:git@github.com:ObjectFabric/ObjectFabric.git</developerConnection>
-  </scm>
 
   <modules>
     <module>android</module>
@@ -37,4 +53,23 @@
     <module>jvm</module>
     <module>tools</module>
   </modules>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-gpg-plugin</artifactId>
+        <version>1.4</version>
+        <executions>
+          <execution>
+            <id>sign-artifacts</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>sign</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
 </project>

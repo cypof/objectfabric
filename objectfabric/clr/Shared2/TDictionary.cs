@@ -268,6 +268,81 @@ namespace ObjectFabric
 
         // Events
 
+        public event Action<K> Added
+        {
+            add { addListener(new AddedListener(value)); }
+            remove { removeListener(new AddedListener(value)); }
+        }
+
+        class AddedListener : Listener<Action<K>>, org.objectfabric.KeyListener
+        {
+            public AddedListener(Action<K> d)
+                : base(d)
+            {
+            }
+
+            public void onPut(object obj)
+            {
+                _delegate((K) obj);
+            }
+
+            public void onRemove(object obj) { }
+
+            public void onClear() { }
+        }
+
+        //
+
+        public event Action<K> Removed
+        {
+            add { addListener(new RemovedListener(value)); }
+            remove { removeListener(new RemovedListener(value)); }
+        }
+
+        class RemovedListener : Listener<Action<K>>, org.objectfabric.KeyListener
+        {
+            public RemovedListener(Action<K> d)
+                : base(d)
+            {
+            }
+
+            public void onPut(object obj) { }
+
+            public void onRemove(object obj)
+            {
+                _delegate((K) obj);
+            }
+
+            public void onClear() { }
+        }
+
+        //
+
+        public event Action Cleared
+        {
+            add { addListener(new ClearedListener(value)); }
+            remove { removeListener(new ClearedListener(value)); }
+        }
+
+        class ClearedListener : Listener<Action>, org.objectfabric.KeyListener
+        {
+            public ClearedListener(Action d)
+                : base(d)
+            {
+            }
+
+            public void onPut(object obj) { }
+
+            public void onRemove(object obj) { }
+
+            public void onClear()
+            {
+                _delegate();
+            }
+        }
+
+        //
+
         public event PropertyChangedEventHandler PropertyChanged
         {
             add { addListener(new DictionaryCountListener(this, value)); }

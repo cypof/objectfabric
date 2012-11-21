@@ -41,26 +41,27 @@
   <ItemGroup>
     <Reference Include="IKVM.OpenJDK.Core, Version=7.1.4532.2, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ObjectFabric.0.9.0.2\lib\net45\IKVM.OpenJDK.Core.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime, Version=7.1.4532.2, Culture=neutral, PublicKeyToken=13235d27fcbfff58, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ObjectFabric.0.9.0.2\lib\net45\IKVM.Runtime.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Java, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ObjectFabric.0.9.0.2\lib\net45\Java.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\Java.dll</HintPath>
     </Reference>
-    <Reference Include="ObjectFabric">
-      <HintPath>..\packages\ObjectFabric.0.9.0.2\lib\net45\ObjectFabric.dll</HintPath>
+    <Reference Include="ObjectFabric, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\ObjectFabric.dll</HintPath>
     </Reference>
     <Reference Include="Shared1, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ObjectFabric.0.9.0.2\lib\net45\Shared1.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\Shared1.dll</HintPath>
     </Reference>
     <Reference Include="Shared2, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\ObjectFabric.0.9.0.2\lib\net45\Shared2.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\Shared2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
   </ItemGroup>

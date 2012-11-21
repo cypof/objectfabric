@@ -15,11 +15,13 @@ package org.objectfabric.generated;
 import org.objectfabric.Closure;
 import org.objectfabric.IndexListener;
 import org.objectfabric.Internal;
+import org.objectfabric.JSResource;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayBigInteger;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
 import org.timepedia.exporter.client.Exportable;
+import org.timepedia.exporter.client.NoExport;
 
 //==============================================================================
 //
@@ -43,17 +45,23 @@ public class JSArrayBigInteger implements Exportable {
 
         @Override
         public Exportable getOrCreateJS() {
-            if (_js == null)
-                _js = new JSArrayBigInteger(this);
+            if (_js == null) {
+                _js = new JSArrayBigInteger();
+                _js._internal = this;
+            }
 
             return _js;
         }
     }
 
-    private final ArrayInternal _internal;
+    private ArrayInternal _internal;
 
-    JSArrayBigInteger(ArrayInternal internal) {
-        _internal = internal;
+    public JSArrayBigInteger(JSResource resource, int length) {
+        _internal = new ArrayInternal(resource.internal(), length);
+    }
+
+    @NoExport
+    public JSArrayBigInteger() {
     }
 
     public java.math.BigInteger get(int index) {
@@ -73,7 +81,7 @@ public class JSArrayBigInteger implements Exportable {
 
             @Override
             public void onSet(int index) {
-                closure.runPrimitive(index);
+                closure.runImmutable(index);
             }
         });
     }

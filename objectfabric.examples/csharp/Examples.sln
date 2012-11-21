@@ -16,6 +16,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample Images", "Sample Ima
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Site Demo", "Site Demo\Site Demo.csproj", "{C299E1C3-5933-4AFD-BAD3-6E77A197E5B8}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sample Chat", "Sample Chat\Sample Chat.csproj", "{DBD895AC-83C1-4A97-87D3-837F2D81257F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -66,6 +68,16 @@ Global
 		{C299E1C3-5933-4AFD-BAD3-6E77A197E5B8}.Release|Mixed Platforms.Build.0 = Release|x86
 		{C299E1C3-5933-4AFD-BAD3-6E77A197E5B8}.Release|x86.ActiveCfg = Release|x86
 		{C299E1C3-5933-4AFD-BAD3-6E77A197E5B8}.Release|x86.Build.0 = Release|x86
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{DBD895AC-83C1-4A97-87D3-837F2D81257F}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

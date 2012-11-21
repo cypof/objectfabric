@@ -3,15 +3,15 @@
 <script src="objectfabric/objectfabric.nocache.js"></script>
 </head>
 <body>
-	<h1>JavaScript - HelloWord</h1>
-	<div id="text">Loading...</div>
-	<script>
-		// Called when ObjectFabric is loaded
-		function onof(of) {
-			of.resolve("ws://localhost:8888/helloworld").get(function(value) {
-				document.getElementById('text').innerHTML += '<br>' + value;
-			});
-		}
-	</script>
+  <h1>JavaScript - HelloWord</h1>
+  <div id="text">Loading...</div>
+  <script>
+      // Called when ObjectFabric is loaded
+      function onof(of) {
+        of.resolve("ws://localhost:8888/helloworld").get(function(value) {
+          document.getElementById('text').innerHTML += '<br>' + value;
+        });
+      }
+    </script>
 </body>
 </html>

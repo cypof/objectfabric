@@ -27,93 +27,80 @@ namespace ObjectFabric
         }
     }
 
-    class DictionaryCountListener : KeyListener
+    class Listener<T>
     {
-        readonly object _object;
-        readonly PropertyChangedEventHandler _handler;
+        protected readonly T _delegate;
 
-        public DictionaryCountListener(object o, PropertyChangedEventHandler handler)
+        public Listener(T d)
         {
-            _object = o;
-            _handler = handler;
+            _delegate = d;
         }
-
-        //
-
-        public void onPut(object obj)
-        {
-            _handler(_object, new PropertyChangedEventArgs("Count"));
-        }
-
-        public void onRemove(object obj)
-        {
-            _handler(_object, new PropertyChangedEventArgs("Count"));
-        }
-
-        public void onClear()
-        {
-            _handler(_object, new PropertyChangedEventArgs("Count"));
-        }
-
-        //
 
         public override bool Equals(object obj)
         {
-            DictionaryCountListener other = obj as DictionaryCountListener;
+            Listener<T> other = obj as Listener<T>;
 
             if (other != null)
-                return _handler.Equals(other._handler);
+                return _delegate.Equals(other._delegate);
 
             return false;
         }
 
         public override int GetHashCode()
         {
-            return _handler.GetHashCode();
+            return _delegate.GetHashCode();
         }
     }
 
-    class DictionaryListener : KeyListener
+    class DictionaryCountListener : Listener<PropertyChangedEventHandler>, KeyListener
     {
         readonly object _object;
-        readonly NotifyCollectionChangedEventHandler _handler;
 
-        public DictionaryListener(object parent, NotifyCollectionChangedEventHandler handler)
+        public DictionaryCountListener(object o, PropertyChangedEventHandler handler)
+            : base(handler)
         {
-            _object = parent;
-            _handler = handler;
+            _object = o;
         }
 
         public void onPut(object obj)
         {
-            _handler(_object, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, obj, null));
+            _delegate(_object, new PropertyChangedEventArgs("Count"));
         }
 
         public void onRemove(object obj)
         {
-            _handler(_object, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, obj));
+            _delegate(_object, new PropertyChangedEventArgs("Count"));
         }
 
         public void onClear()
         {
-            _handler(_object, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            _delegate(_object, new PropertyChangedEventArgs("Count"));
+        }
+    }
+
+    class DictionaryListener : Listener<NotifyCollectionChangedEventHandler>, KeyListener
+    {
+        readonly object _object;
+
+        public DictionaryListener(object parent, NotifyCollectionChangedEventHandler handler)
+            : base(handler)
+        {
+            _object = parent;
         }
 
-        //
-
-        public override bool Equals(object obj)
+        public void onPut(object obj)
         {
-            DictionaryListener other = obj as DictionaryListener;
-
-            if (other != null)
-                return _handler.Equals(other._handler);
-
-            return false;
+            _delegate(_object, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, obj, null));
         }
 
-        public override int GetHashCode()
+        public void onRemove(object obj)
         {
-            return _handler.GetHashCode();
+            _delegate(_object, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, obj));
+        }
+
+        public void onClear()
+        {
+            _delegate(_object, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
     }
 }

@@ -241,16 +241,16 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals("$^%£¨µ%£¨%£¨µ%µ"));
+                    org.objectfabric.Debug.assertAlways(value.Equals("ffqsdfqfezghrtghrgrfgzefzeqfzeqfqzefqzefqzefqzeefqzefqzefsdqfsdghfgzegqzefqsdfqzefqezfqzefqze'"));
                     break;
                 }
                 case 41: {
-                    string value = (string) org.objectfabric.UnknownObjectSerializer.read(this);
+                    System.DateTime? value = (System.DateTime?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals("ffqsdfqfezghrtghrgrfgzefzeqfzeqfqzefqzefqzefqzeefqzefqzefsdqfsdghfgzegqzefqsdfqzefqezfqzefqze'"));
+                    org.objectfabric.Debug.assertAlways(value == (null));
                     break;
                 }
                 case 42: {
@@ -259,7 +259,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value == (null));
+                    org.objectfabric.Debug.assertAlways(value.Equals(new System.DateTime( 4558621531843L * 10000L + 621355968000000000L, System.DateTimeKind.Utc )));
                     break;
                 }
                 case 43: {
@@ -268,16 +268,16 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(new System.DateTime( 4558621531843L * 10000L + 621355968000000000L, System.DateTimeKind.Utc )));
+                    org.objectfabric.Debug.assertAlways(value.Equals(System.DateTime.Parse( "1/1/1970 00:00:00", null, System.Globalization.DateTimeStyles.AssumeUniversal )));
                     break;
                 }
                 case 44: {
-                    System.DateTime? value = (System.DateTime?) org.objectfabric.UnknownObjectSerializer.read(this);
+                    System.Numerics.BigInteger? value = (System.Numerics.BigInteger?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(System.DateTime.Parse( "1/1/1970 00:00:00", null, System.Globalization.DateTimeStyles.AssumeUniversal )));
+                    org.objectfabric.Debug.assertAlways(value == (null));
                     break;
                 }
                 case 45: {
@@ -286,7 +286,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value == (null));
+                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("0")));
                     break;
                 }
                 case 46: {
@@ -295,7 +295,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("0")));
+                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("-0")));
                     break;
                 }
                 case 47: {
@@ -304,7 +304,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("-0")));
+                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("45")));
                     break;
                 }
                 case 48: {
@@ -313,7 +313,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("45")));
+                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("-45")));
                     break;
                 }
                 case 49: {
@@ -322,7 +322,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("-45")));
+                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("1237987")));
                     break;
                 }
                 case 50: {
@@ -331,7 +331,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("1237987")));
+                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("-1237987")));
                     break;
                 }
                 case 51: {
@@ -340,7 +340,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("-1237987")));
+                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("1237987898798797464864181688684513518313131813113513")));
                     break;
                 }
                 case 52: {
@@ -349,19 +349,10 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("1237987898798797464864181688684513518313131813113513")));
-                    break;
-                }
-                case 53: {
-                    System.Numerics.BigInteger? value = (System.Numerics.BigInteger?) org.objectfabric.UnknownObjectSerializer.read(this);
-
-                    if (interrupted())
-                        return;
-
                     org.objectfabric.Debug.assertAlways(value.Equals(System.Numerics.BigInteger.Parse("-1237987898798797464864181688684513518313131813113513")));
                     break;
                 }
-                case 54: {
+                case 53: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -370,7 +361,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value == (null));
                     break;
                 }
-                case 55: {
+                case 54: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -379,7 +370,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(0m));
                     break;
                 }
-                case 56: {
+                case 55: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -388,7 +379,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(-0m));
                     break;
                 }
-                case 57: {
+                case 56: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -397,7 +388,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(45m));
                     break;
                 }
-                case 58: {
+                case 57: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -406,7 +397,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(-45m));
                     break;
                 }
-                case 59: {
+                case 58: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -415,7 +406,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(123798789879879.456464m));
                     break;
                 }
-                case 60: {
+                case 59: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -424,7 +415,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(-123798789879879.456464m));
                     break;
                 }
-                case 61: {
+                case 60: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -433,7 +424,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(0.000000000000078m));
                     break;
                 }
-                case 62: {
+                case 61: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -442,7 +433,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(-0.000000000000078m));
                     break;
                 }
-                case 63: {
+                case 62: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -451,7 +442,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(2.0e5m));
                     break;
                 }
-                case 64: {
+                case 63: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -460,7 +451,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(-2.0e5m));
                     break;
                 }
-                case 65: {
+                case 64: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -469,7 +460,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(789.046544654846468789486e13m));
                     break;
                 }
-                case 66: {
+                case 65: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -478,7 +469,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(-789.046544654846468789486e13m));
                     break;
                 }
-                case 67: {
+                case 66: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -487,7 +478,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(789.046544654846468789486e-13m));
                     break;
                 }
-                case 68: {
+                case 67: {
                     decimal? value = (decimal?) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -496,7 +487,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(value.Equals(-789.046544654846468789486e-13m));
                     break;
                 }
-                case 69: {
+                case 68: {
                     byte[] value = (byte[]) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -505,7 +496,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
                     org.objectfabric.Debug.assertAlways(java.util.Arrays.equals(value, null));
                     break;
                 }
-                case 70: {
+                case 69: {
                     byte[] value = (byte[]) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -523,7 +514,7 @@ public class SerializationTestReaderUnknown : org.objectfabric.SerializationTest
     }
 
     public override bool isDone() {
-        return _index == 71;
+        return _index == 70;
     }
 }
 }

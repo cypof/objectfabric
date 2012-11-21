@@ -22,7 +22,7 @@
           // Add a listener on array, called when an element is
           // set to a new value server side
           a.onset(function(i) {
-            elem = document.getElementById('div' + i);
+            elem = document.getElementById('td' + i);
             elem.innerHTML = formatNumber(a.get(i));
           });
         });

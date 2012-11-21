@@ -4,3 +4,5 @@
 .externalToolBuilders
 target
 temp
+*.releaseBackup
+*.versionsBackup

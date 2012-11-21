@@ -31,21 +31,22 @@ public class JSMap implements Exportable {
 
         @Override
         public Exportable getOrCreateJS() {
-            if (_js == null)
-                _js = new JSMap(this);
+            if (_js == null) {
+                _js = new JSMap();
+                _js._internal = this;
+            }
 
             return _js;
         }
     }
 
-    private final MapInternal _internal;
+    private MapInternal _internal;
 
     public JSMap(JSResource resource) {
-        this(new MapInternal(resource._internal, null, null));
+        _internal = new MapInternal(resource._internal, null, null);
     }
 
-    JSMap(MapInternal internal) {
-        _internal = internal;
+    private JSMap() {
     }
 
     public Object get(Object key) {
@@ -62,12 +63,10 @@ public class JSMap implements Exportable {
 
     public void each(Closure closure) {
         for (Object key : _internal.keySet()) {
-            Object js = Main.map(key);
-
-            if (js instanceof Exportable)
-                closure.runExportable((Exportable) js);
+            if (key instanceof Internal)
+                closure.runExportable(((Internal) key).getOrCreateJS());
             else
-                closure.runPrimitive(js);
+                closure.runImmutable(key);
         }
     }
 
@@ -86,12 +85,10 @@ public class JSMap implements Exportable {
 
             @Override
             public void onPut(Object key) {
-                Object js = Main.map(key);
-
-                if (js instanceof Exportable)
-                    closure.runExportable((Exportable) js);
+                if (key instanceof Internal)
+                    closure.runExportable(((Internal) key).getOrCreateJS());
                 else
-                    closure.runPrimitive(js);
+                    closure.runImmutable(key);
             }
         });
     }
@@ -101,12 +98,10 @@ public class JSMap implements Exportable {
 
             @Override
             public void onRemove(Object key) {
-                Object js = Main.map(key);
-
-                if (js instanceof Exportable)
-                    closure.runExportable((Exportable) js);
+                if (key instanceof Internal)
+                    closure.runExportable(((Internal) key).getOrCreateJS());
                 else
-                    closure.runPrimitive(js);
+                    closure.runImmutable(key);
             }
         });
     }

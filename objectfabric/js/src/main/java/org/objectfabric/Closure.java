@@ -22,5 +22,5 @@ public interface Closure extends Exportable {
 
     void runExportable(Exportable value);
 
-    void runPrimitive(Object value);
+    void runImmutable(Object value);
 }

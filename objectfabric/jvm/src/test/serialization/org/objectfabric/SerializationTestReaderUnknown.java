@@ -254,16 +254,16 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals("$^%£¨µ%£¨%£¨µ%µ"));
+                    org.objectfabric.Debug.assertAlways(value.equals("ffqsdfqfezghrtghrgrfgzefzeqfzeqfqzefqzefqzefqzeefqzefqzefsdqfsdghfgzegqzefqsdfqzefqezfqzefqze'"));
                     break;
                 }
                 case 41: {
-                    java.lang.String value = (java.lang.String) org.objectfabric.UnknownObjectSerializer.read(this);
+                    java.util.Date value = (java.util.Date) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals("ffqsdfqfezghrtghrgrfgzefzeqfzeqfqzefqzefqzefqzeefqzefqzefsdqfsdghfgzegqzefqsdfqzefqezfqzefqze'"));
+                    org.objectfabric.Debug.assertAlways(value == (null));
                     break;
                 }
                 case 42: {
@@ -272,7 +272,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value == (null));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.util.Date(4558621531843L)));
                     break;
                 }
                 case 43: {
@@ -281,16 +281,16 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.util.Date(4558621531843L)));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.util.Date(0)));
                     break;
                 }
                 case 44: {
-                    java.util.Date value = (java.util.Date) org.objectfabric.UnknownObjectSerializer.read(this);
+                    java.math.BigInteger value = (java.math.BigInteger) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.util.Date(0)));
+                    org.objectfabric.Debug.assertAlways(value == (null));
                     break;
                 }
                 case 45: {
@@ -299,7 +299,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value == (null));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("0")));
                     break;
                 }
                 case 46: {
@@ -308,7 +308,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("0")));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("-0")));
                     break;
                 }
                 case 47: {
@@ -317,7 +317,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("-0")));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("45")));
                     break;
                 }
                 case 48: {
@@ -326,7 +326,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("45")));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("-45")));
                     break;
                 }
                 case 49: {
@@ -335,7 +335,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("-45")));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("1237987")));
                     break;
                 }
                 case 50: {
@@ -344,7 +344,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("1237987")));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("-1237987")));
                     break;
                 }
                 case 51: {
@@ -353,7 +353,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("-1237987")));
+                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("1237987898798797464864181688684513518313131813113513")));
                     break;
                 }
                 case 52: {
@@ -362,19 +362,10 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     if (interrupted())
                         return;
 
-                    org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("1237987898798797464864181688684513518313131813113513")));
-                    break;
-                }
-                case 53: {
-                    java.math.BigInteger value = (java.math.BigInteger) org.objectfabric.UnknownObjectSerializer.read(this);
-
-                    if (interrupted())
-                        return;
-
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigInteger("-1237987898798797464864181688684513518313131813113513")));
                     break;
                 }
-                case 54: {
+                case 53: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -383,7 +374,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value == (null));
                     break;
                 }
-                case 55: {
+                case 54: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -392,7 +383,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "0")));
                     break;
                 }
-                case 56: {
+                case 55: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -401,7 +392,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "-0")));
                     break;
                 }
-                case 57: {
+                case 56: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -410,7 +401,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "45")));
                     break;
                 }
-                case 58: {
+                case 57: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -419,7 +410,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "-45")));
                     break;
                 }
-                case 59: {
+                case 58: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -428,7 +419,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "123798789879879.456464")));
                     break;
                 }
-                case 60: {
+                case 59: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -437,7 +428,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "-123798789879879.456464")));
                     break;
                 }
-                case 61: {
+                case 60: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -446,7 +437,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "0.000000000000078")));
                     break;
                 }
-                case 62: {
+                case 61: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -455,7 +446,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "-0.000000000000078")));
                     break;
                 }
-                case 63: {
+                case 62: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -464,7 +455,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "2.0e5")));
                     break;
                 }
-                case 64: {
+                case 63: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -473,7 +464,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "-2.0e5")));
                     break;
                 }
-                case 65: {
+                case 64: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -482,7 +473,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "789.046544654846468789486e13")));
                     break;
                 }
-                case 66: {
+                case 65: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -491,7 +482,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "-789.046544654846468789486e13")));
                     break;
                 }
-                case 67: {
+                case 66: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -500,7 +491,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "789.046544654846468789486e-13")));
                     break;
                 }
-                case 68: {
+                case 67: {
                     java.math.BigDecimal value = (java.math.BigDecimal) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -509,7 +500,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(value.equals(new java.math.BigDecimal( "-789.046544654846468789486e-13")));
                     break;
                 }
-                case 69: {
+                case 68: {
                     byte[] value = (byte[]) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -518,7 +509,7 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
                     org.objectfabric.Debug.assertAlways(java.util.Arrays.equals(value, null));
                     break;
                 }
-                case 70: {
+                case 69: {
                     byte[] value = (byte[]) org.objectfabric.UnknownObjectSerializer.read(this);
 
                     if (interrupted())
@@ -537,6 +528,6 @@ public class SerializationTestReaderUnknown extends org.objectfabric.Serializati
 
     @Override
     public boolean isDone() {
-        return _index == 71;
+        return _index == 70;
     }
 }

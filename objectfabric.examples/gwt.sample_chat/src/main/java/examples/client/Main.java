@@ -40,11 +40,7 @@ public class Main implements EntryPoint {
         Log.set(Terminal.getInstance());
 
         Workspace workspace = new GWTWorkspace();
-
-        if (WebSocketURIHandler.isSupported())
-            workspace.addURIHandler(new WebSocketURIHandler());
-        // else // TODO
-        // workspace.addURIHandler(new CometURIHandler());
+        workspace.addURIHandler(new WebSocketURIHandler());
 
         Resource resource = workspace.resolve("ws://localhost:8888/room1");
 

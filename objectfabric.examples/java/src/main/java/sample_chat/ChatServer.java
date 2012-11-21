@@ -22,6 +22,7 @@ import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
 import org.jboss.netty.handler.codec.http.HttpRequestDecoder;
 import org.jboss.netty.handler.codec.http.HttpResponseEncoder;
+import org.objectfabric.Immutable;
 import org.objectfabric.JVMServer;
 import org.objectfabric.JVMWorkspace;
 import org.objectfabric.Memory;
@@ -45,7 +46,8 @@ public class ChatServer {
          * Create a chat room.
          */
         Resource resource = workspace.resolve("/room1");
-        resource.set(new TSet(resource));
+        // Add generic type for .NET (runtime generics)
+        resource.set(new TSet(resource, Immutable.STRING.type()));
         workspace.close();
 
         /*

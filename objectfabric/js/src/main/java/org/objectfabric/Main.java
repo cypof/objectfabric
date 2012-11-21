@@ -15,7 +15,6 @@ package org.objectfabric;
 import org.timepedia.exporter.client.ExporterUtil;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.JavaScriptObject;
 
 /**
  * Exports ObjectFabric as a JavaScript library. For simplicity the JavaScript version of
@@ -36,19 +35,5 @@ public class Main implements EntryPoint {
     private native void onLoad() /*-{
 		if ($wnd.onof)
 			$wnd.onof($wnd.org.objectfabric.JSWorkspace.create());
-    }-*/;
-
-    static Object map(Object object) {
-        if (object instanceof String)
-            return map((String) object);
-
-        if (object instanceof Internal)
-            return ((Internal) object).getOrCreateJS();
-
-        throw new RuntimeException(Strings.UNSUPPORTED_TYPE + object);
-    }
-
-    private static native JavaScriptObject map(String value) /*-{
-		return value;
     }-*/;
 }
