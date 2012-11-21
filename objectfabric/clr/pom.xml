@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.objectfabric</groupId>
     <artifactId>objectfabric</artifactId>
-    <version>0.9</version>
+    <version>0.9.1-SNAPSHOT</version>
   </parent>
 
   <artifactId>objectfabric-clr</artifactId>
