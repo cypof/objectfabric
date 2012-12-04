@@ -46,9 +46,9 @@ public class TSetExtended extends ExtendedTester {
 
         private final int _flags;
 
-        private final TSet _set = new TSet(Workspace.resolve(""));
+        private final TSet _set = new TSet(Workspace.open(""));
 
-        private final TSet _set2 = new TSet(Workspace.resolve(""));
+        private final TSet _set2 = new TSet(Workspace.open(""));
 
         private final Set _wrapper;
 

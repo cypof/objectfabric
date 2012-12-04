@@ -37,25 +37,25 @@ public class SchemesClient {
         /*
          * Get resource over socket.
          */
-        value = workspace.resolve("tcp://localhost:1850/test").get();
+        value = workspace.open("tcp://localhost:1850/test").get();
         Assert.assertEquals("data", value);
 
         /*
          * Get resource over secure socket.
          */
-        value = workspace.resolve("ssl://localhost:1853/test").get();
+        value = workspace.open("ssl://localhost:1853/test").get();
         Assert.assertEquals("data", value);
 
         /*
          * Get resource over WebSocket.
          */
-        value = workspace.resolve("ws://localhost:8888/test").get();
+        value = workspace.open("ws://localhost:8888/test").get();
         Assert.assertEquals("data", value);
 
         /*
          * Get resource over secure WebSocket.
          */
-        value = workspace.resolve("wss://localhost:8883/test").get();
+        value = workspace.open("wss://localhost:8883/test").get();
         Assert.assertEquals("data", value);
 
         System.out.println("Done!");

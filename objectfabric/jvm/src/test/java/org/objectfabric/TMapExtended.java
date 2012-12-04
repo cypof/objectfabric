@@ -46,9 +46,9 @@ public class TMapExtended extends ExtendedTester {
 
         private final int _flags;
 
-        private final TMap _map = new TMap(Workspace.resolve(""));
+        private final TMap _map = new TMap(Workspace.open(""));
 
-        private final TMap _map2 = new TMap(Workspace.resolve(""));
+        private final TMap _map2 = new TMap(Workspace.open(""));
 
         private final Map _wrapper;
 

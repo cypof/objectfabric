@@ -50,9 +50,9 @@ public class SecurityServer {
         Memory memory = new Memory(false);
         Workspace workspace = new JVMWorkspace();
         workspace.addURIHandler(memory);
-        workspace.resolve("/internal").set("data");
-        workspace.resolve("/read-only").set("data");
-        workspace.resolve("/read-write").set("data");
+        workspace.open("/internal").set("data");
+        workspace.open("/read-only").set("data");
+        workspace.open("/read-write").set("data");
         workspace.close();
 
         final Server server = new JVMServer() {
@@ -75,13 +75,13 @@ public class SecurityServer {
                     @Override
                     public void onRequest(URI uri, PermissionCallback callback) {
                         if (!from.getAddress().getHostAddress().equals("127.0.0.1")) {
-                            callback.set(Permission.REJECT);
+                            callback.set(Permission.NONE);
                             return;
                         }
 
                         if (headers != null) {
                             if (!"me".equals(headers.get("user")) || !"pw".equals(headers.get("pass"))) {
-                                callback.set(Permission.REJECT);
+                                callback.set(Permission.NONE);
                                 return;
                             }
 
@@ -96,7 +96,7 @@ public class SecurityServer {
                             }
                         }
 
-                        callback.set(Permission.REJECT);
+                        callback.set(Permission.NONE);
                     }
 
                     @Override

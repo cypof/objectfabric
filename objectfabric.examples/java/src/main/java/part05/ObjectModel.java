@@ -57,13 +57,13 @@ public class ObjectModel {
          * Immutable types. (C.f. Immutable for full list)
          */
 
-        String string = (String) workspace.resolve(uri + "/string").get();
+        String string = (String) workspace.open(uri + "/string").get();
         Assert.assertEquals("{\"key\": \"value\"}", string);
 
-        int i = (Integer) workspace.resolve(uri + "/int").get();
+        int i = (Integer) workspace.open(uri + "/int").get();
         Assert.assertEquals(1, i);
 
-        byte[] binary = (byte[]) workspace.resolve(uri + "/bin").get();
+        byte[] binary = (byte[]) workspace.open(uri + "/bin").get();
         Assert.assertEquals(0, binary[0]);
         Assert.assertEquals(1, binary[1]);
 
@@ -71,13 +71,13 @@ public class ObjectModel {
          * Collections & arrays.
          */
 
-        Set<String> set = (TSet) workspace.resolve(uri + "/set").get();
+        Set<String> set = (TSet) workspace.open(uri + "/set").get();
         Assert.assertTrue(set.contains("blah"));
 
-        Map<String, Integer> map = (TMap) workspace.resolve(uri + "/map").get();
+        Map<String, Integer> map = (TMap) workspace.open(uri + "/map").get();
         Assert.assertEquals(42, (int) map.get("example key"));
 
-        TArrayInteger ints = (TArrayInteger) workspace.resolve(uri + "/arrayOfInt").get();
+        TArrayInteger ints = (TArrayInteger) workspace.open(uri + "/arrayOfInt").get();
         Assert.assertEquals(10, ints.length());
         Assert.assertEquals(0, ints.get(0));
         Assert.assertEquals(1, ints.get(5));
@@ -87,7 +87,7 @@ public class ObjectModel {
          * Counters.
          */
 
-        Counter counter = (Counter) workspace.resolve(uri + "/counter").get();
+        Counter counter = (Counter) workspace.open(uri + "/counter").get();
         Assert.assertEquals(1, counter.get());
 
         /*
@@ -97,7 +97,7 @@ public class ObjectModel {
 
         MyObjectModel.register();
 
-        Car car = (Car) workspace.resolve(uri + "/car").get();
+        Car car = (Car) workspace.open(uri + "/car").get();
 
         // Object fields can be of any of the supported types
         Assert.assertEquals("DeLorean", car.brand());
@@ -137,6 +137,8 @@ public class ObjectModel {
              */
             Car newCar = new Car(oldCar.resource(), oldCar.brand());
             newCar.field(Integer.parseInt(oldCar.field()));
+
+            // TODO try http://modelmapper.org
         }
 
         System.out.println("Done!");
@@ -144,7 +146,7 @@ public class ObjectModel {
     }
 
     private static TObject loadDataOfUnknownVersion(Workspace workspace) {
-        Resource local = workspace.resolve("");
+        Resource local = workspace.open("");
         part05.generated.v1.Car object = new part05.generated.v1.Car(local, "test");
         object.field("42");
         return object;

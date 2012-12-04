@@ -54,7 +54,7 @@ public class TObject {
 
     private PlatformSet<Object> _listeners;
 
-    public TObject(Resource resource) {
+    TObject(Resource resource) {
         this(resource, new Version());
     }
 
@@ -295,10 +295,8 @@ public class TObject {
                 String default_ = Platform.get().defaultToString(this);
                 String id = null;
 
-                if (_range != null) {
-                    id = new UID(_range.uid()).toString();
-                    id += "-" + Utils.padLeft(Integer.toHexString(id()), 2, '0');
-                }
+                if (_range != null)
+                    id += _range.id() + "-" + Utils.padLeft(Integer.toHexString(id()), 2, '0');
 
                 String value = default_ + (id != null ? " (" + id + ")" : "");
                 Helper.instance().enableEqualsOrHashCheck();

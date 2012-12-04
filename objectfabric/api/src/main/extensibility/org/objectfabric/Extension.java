@@ -710,6 +710,11 @@ abstract class Extension extends Visitor {
 
     //
 
+    // Not interruptible
+    void onVisitingResources(Resources resources) {
+        OverrideAssert.set(this);
+    }
+
     void onVisitingResource(Resource resource) {
         if (!interrupted())
             OverrideAssert.set(this);
@@ -734,8 +739,15 @@ abstract class Extension extends Visitor {
         if (interrupted()) {
             index = resumeInt();
             step = (VisitURIStep) resume();
-        } else
+        } else {
             index = _resources.size() - 1;
+
+            if (index >= 0) {
+                OverrideAssert.add(this);
+                onVisitingResources(_resources);
+                OverrideAssert.end(this);
+            }
+        }
 
         for (; index >= 0; index--) {
             Resource resource = _resources.get(index);

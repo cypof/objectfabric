@@ -29,22 +29,22 @@ public class FileSystem extends Origin implements URIHandler {
         JVMPlatform.loadClass();
     }
 
-    private final String _filePath;
+    private final String _rootPath;
 
     private final File _root;
 
-    private final FileQueue _queue = new FileQueue(this);
+    private final FileSystemQueue _queue = new FileSystemQueue(this);
 
-    public FileSystem(String filePath) {
+    public FileSystem(String root) {
         super(false);
 
-        _filePath = filePath;
+        _rootPath = root;
 
         if (Debug.PERSISTENCE_LOG)
-            Log.write("Folder open " + _filePath);
+            Log.write("Folder open " + _rootPath);
 
         try {
-            _root = new File(_filePath).getCanonicalFile();
+            _root = new File(_rootPath).getCanonicalFile();
 
             if (_root.exists()) {
                 if (!_root.canWrite())
@@ -69,7 +69,7 @@ public class FileSystem extends Origin implements URIHandler {
             File file = new File(_root, uri.path()).getCanonicalFile();
 
             if (file.getPath().startsWith(_root.getPath()))
-                return new FileView(this, file, _queue);
+                return new FileSystemView(this, file, _queue);
         } catch (IOException ex) {
             Log.write(ex);
         }
@@ -79,7 +79,7 @@ public class FileSystem extends Origin implements URIHandler {
 
     @Override
     public String toString() {
-        return "file://" + _filePath;
+        return "file://" + _rootPath;
     }
 
     // Debug

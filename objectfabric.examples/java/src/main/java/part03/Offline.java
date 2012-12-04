@@ -12,14 +12,16 @@
 
 package part03;
 
+import java.io.File;
+
 import org.junit.Assert;
 import org.objectfabric.ClientURIHandler;
-import org.objectfabric.FileSystemCache;
 import org.objectfabric.JVMWorkspace;
 import org.objectfabric.NettyURIHandler;
 import org.objectfabric.Remote;
 import org.objectfabric.Remote.Status;
 import org.objectfabric.Resource;
+import org.objectfabric.SQLite;
 import org.objectfabric.TMap;
 import org.objectfabric.Workspace;
 
@@ -32,10 +34,11 @@ public class Offline {
 
     public static void main(String[] args) throws Exception {
         /*
-         * Create a file based cache. Clear it to get a predictable test.
+         * Create a SQLite-based cache. Delete first to get a predictable test.
          */
-        FileSystemCache cache = new FileSystemCache("temp/offline");
-        cache.clear();
+        File file = new File("temp/offline");
+        file.delete();
+        SQLite cache = new SQLite(file, true);
 
         /*
          * Get a resource from server and store it in a local cache.
@@ -48,7 +51,7 @@ public class Offline {
              * Register the cache and get the resource.
              */
             workspace.addCache(cache);
-            workspace.resolve("ws://localhost:8888/map").get();
+            workspace.open("ws://localhost:8888/map").get();
 
             // Wait for data to get cached (no API for this yet)
             Thread.sleep(500);
@@ -72,7 +75,7 @@ public class Offline {
             /*
              * Then resolve resource and check its origin is actually disconnected.
              */
-            Resource resource = workspace.resolve("ws://localhost:8888/map");
+            Resource resource = workspace.open("ws://localhost:8888/map");
             Remote remote = (Remote) resource.origin();
             Assert.assertEquals(Status.DISCONNECTED, remote.status());
 
@@ -96,7 +99,7 @@ public class Offline {
 
             ClientURIHandler.enableNetwork();
 
-            workspace.resolve("ws://localhost:8888/map").get();
+            workspace.open("ws://localhost:8888/map").get();
 
             // Wait for data to get sent (no API for this yet)
             Thread.sleep(500);
@@ -109,11 +112,13 @@ public class Offline {
          * load resource again from server.
          */
         {
-            cache.clear();
+            cache.close();
+            file.delete();
+            cache = new SQLite(file, true);
 
             Workspace workspace = new JVMWorkspace();
             workspace.addURIHandler(new NettyURIHandler());
-            TMap<String, Integer> map = (TMap) workspace.resolve("ws://localhost:8888/map").get();
+            TMap<String, Integer> map = (TMap) workspace.open("ws://localhost:8888/map").get();
             Assert.assertEquals(42, (int) map.get("example key"));
             Assert.assertEquals(43, (int) map.get("offline update"));
             workspace.close();

@@ -12,11 +12,14 @@
 
 package org.objectfabric;
 
+import org.objectfabric.JS.External;
+import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.Exportable;
+import org.timepedia.exporter.client.NoExport;
 
 @Export
-public class JSResource implements Exportable {
+public class JSResource implements External {
 
     static final class ResourceInternal extends Resource implements Internal {
 
@@ -27,43 +30,54 @@ public class JSResource implements Exportable {
         }
 
         @Override
-        public Exportable getOrCreateJS() {
-            if (_js == null)
-                _js = new JSResource(this);
+        public External external() {
+            if (_js == null) {
+                _js = new JSResource();
+                _js._internal = this;
+            }
 
             return _js;
         }
     }
 
-    final ResourceInternal _internal;
+    ResourceInternal _internal;
 
-    JSResource(ResourceInternal internal) {
-        _internal = internal;
+    @NoExport
+    public JSResource() {
     }
 
-    public Resource internal() {
+    @Override
+    public Internal internal() {
         return _internal;
     }
 
-    public Permission getPermission() {
-        return _internal.permission();
+    public String permission() {
+        switch (_internal.permission()) {
+            case NONE:
+                return "none";
+            case READ:
+                return "read";
+            case WRITE:
+                return "write";
+            default:
+                throw new IllegalStateException();
+        }
     }
 
-    public void get(final Closure closure) {
-        _internal.getAsync(new AsyncCallback<Object>() {
+    public Exportable getObject() {
+        Object value = _internal.get();
+        return ((Internal) value).external();
+    }
 
-            @Override
-            public void onSuccess(Object result) {
-                if (result instanceof Internal)
-                    closure.runExportable(((Internal) result).getOrCreateJS());
-                else
-                    closure.runImmutable(result);
-            }
+    public Object getImmutable() {
+        return _internal.get();
+    }
 
-            @Override
-            public void onFailure(Exception e) {
-                Log.write("Could not get " + _internal, e);
-            }
-        });
+    public Object get() {
+        return JS.out(_internal.get());
+    }
+
+    public void set(Object value) {
+        _internal.set(JS.in(value));
     }
 }

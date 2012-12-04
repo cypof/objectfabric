@@ -20,7 +20,7 @@ public class TArrayTest extends TestsHelper {
     @Test
     public void run1() {
         Workspace workspace = Platform.newTestWorkspace();
-        TArrayInteger array = new TArrayInteger(workspace.resolve(""), 100);
+        TArrayInteger array = new TArrayInteger(workspace.open(""), 100);
         TArrayVersionInteger version = (TArrayVersionInteger) array.createVersion_();
         Assert.assertTrue(version.getValues() == null);
 
@@ -56,7 +56,7 @@ public class TArrayTest extends TestsHelper {
     @Test
     public void run2() {
         Workspace workspace = Platform.newTestWorkspace();
-        TArrayInteger array = new TArrayInteger(workspace.resolve(""), 100);
+        TArrayInteger array = new TArrayInteger(workspace.open(""), 100);
         TArrayVersionInteger version = (TArrayVersionInteger) array.createVersion_();
         int[] ref = new int[256];
 
@@ -89,7 +89,7 @@ public class TArrayTest extends TestsHelper {
     public void run3() {
         final int LENGTH = (int) 1e4;
         Workspace workspace = Platform.newTestWorkspace();
-        TArrayDouble array = new TArrayDouble(workspace.resolve(""), LENGTH);
+        TArrayDouble array = new TArrayDouble(workspace.open(""), LENGTH);
         TArrayVersionDouble version = (TArrayVersionDouble) array.createVersion_();
 
         double[] test = new double[LENGTH];

@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import org.objectfabric.Actor.Flush;
 import org.objectfabric.CloseCounter.Callback;
 import org.objectfabric.Notifier.CustomExecutorListener;
+import org.objectfabric.Range.Id;
 import org.objectfabric.Snapshot.SlowChanging;
 import org.objectfabric.TObject.Transaction;
 
@@ -91,9 +92,6 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
         ALL
     }
 
-    // Prevents GC of opened workspaces. TODO reference only non acknowledged writes.
-    private static final PlatformConcurrentMap<Workspace, Workspace> _workspaces = new PlatformConcurrentMap<Workspace, Workspace>();
-
     private static volatile Serializer _serializer;
 
     private final AtomicReference<Snapshot> _snapshot = new AtomicReference<Snapshot>();
@@ -118,7 +116,7 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
     // TODO use weak references + GCQueue or a CustomConcurrentHashMap
     // TODO partition in security domains
     // TODO per URI?
-    private final PlatformConcurrentMap<UID, Range> _ranges = new PlatformConcurrentMap<UID, Range>();
+    private final PlatformConcurrentMap<Id, Range> _ranges = new PlatformConcurrentMap<Id, Range>();
 
     private final Watcher _watcher;
 
@@ -146,31 +144,11 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
         _resolver = new URIResolver();
         _callbackExecutor = createCallbackExecutor();
 
-        _workspaces.put(this, this);
-
         if (Debug.ENABLED && Platform.get().value() == Platform.JVM) {
             for (int i = 0; i < BuiltInClass.ALL.length; i++) {
                 Debug.assertion(BuiltInClass.ALL[i].id() == i);
                 String name = Platform.get().name(Platform.get().defaultObjectModel().getClass(i, null));
                 Debug.assertion(name.replace('$', '.').equals(BuiltInClass.ALL[i].name()));
-            }
-        }
-    }
-
-    /**
-     * Closes opened workspaces to flush pending data and maximize UID reuse.
-     */
-    protected static final void onShutdown() {
-        List<Future<Void>> futures = new List<Future<Void>>();
-
-        for (Workspace workspace : _workspaces.keySet())
-            futures.add(workspace.closeAsync((AsyncCallback<Void>) null));
-
-        for (int i = 0; i < futures.size(); i++) {
-            try {
-                futures.get(i).get();
-            } catch (Exception e) {
-                Log.write(e);
             }
         }
     }
@@ -221,12 +199,28 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
     }
 
     /**
-     * Resolves URI using the registered set of {@link URIHandler}. The empty URI ("") can
-     * be used for in-memory only objects that do not need to be part of a resource.
+     * Establishes connections to origin and caches, and loads resource in the workspace
+     * so that its content can be accessed, modified, or listened to for changes. Caller
+     * thread blocks until resource has been loaded. The empty URI ("") can be used for
+     * in-memory only objects that do not need to be part of a resource.
      */
-    public Resource resolve(String uri) {
+    public Resource open(String uri) {
         if (uri.length() == 0)
             return _emptyResource;
+
+        @SuppressWarnings("unchecked")
+        Future<Resource> future = openAsync(uri, FutureWithCallback.NOP_CALLBACK);
+
+        try {
+            return future.get();
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    public Future<Resource> openAsync(String uri, AsyncCallback<Resource> callback) {
+        if (uri.length() == 0)
+            return new CompletedFuture<Resource>(_emptyResource);
 
         URI resolved = Platform.get().resolve(uri, _resolver);
 
@@ -234,7 +228,10 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
             throw new RuntimeException(Strings.URI_UNRESOLVED + uri);
 
         startWatcher();
-        return resolved.getOrCreate(this);
+        FutureWithCallbacks<Resource> future = resolved.open(this);
+        Executor executor = callbackExecutor();
+        future.addCallback(callback, executor);
+        return future;
     }
 
     final void startWatcher() {
@@ -293,9 +290,6 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
 
                 @Override
                 public void set(Object value) {
-                    // Make sure done only after flush to prevent workspace GC
-                    _workspaces.remove(this);
-
                     if (!_watching.get())
                         set();
                     else {
@@ -336,7 +330,7 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
                     Flush flush = new Flush() {
 
                         @Override
-                        void onSuccess() {
+                        void done() {
                             if (Debug.THREADS)
                                 ThreadAssert.assertCurrentIsEmpty();
 
@@ -349,11 +343,6 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
                                 ThreadAssert.removePrivate(notifier);
 
                             startFlush(future_);
-                        }
-
-                        @Override
-                        void onException(Exception e) {
-                            future_.setException(e);
                         }
                     };
 
@@ -458,13 +447,8 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
             Flush flush = new Flush() {
 
                 @Override
-                void onSuccess() {
+                void done() {
                     future.set(null);
-                }
-
-                @Override
-                void onException(Exception e) {
-                    future.setException(e);
                 }
             };
 
@@ -869,12 +853,12 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
 
     //
 
-    final Range getOrCreateRange(UID uid) {
-        Range range = _ranges.get(uid);
+    final Range getOrCreateRange(Id id) {
+        Range range = _ranges.get(id);
 
         if (range == null) {
-            range = new Range(this, uid.getBytes());
-            Range previous = _ranges.putIfAbsent(uid, range);
+            range = new Range(this, id);
+            Range previous = _ranges.putIfAbsent(id, range);
 
             if (previous != null)
                 range = previous;
@@ -883,11 +867,13 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
         return range;
     }
 
-    final Range createRange() {
-        byte[] uid = Platform.get().newUID();
-        Range range = new Range(this, uid);
-        _ranges.put(new UID(uid), range);
-        return range;
+    // TODO Fallback to save ids in cookie or something if nothing else possible
+    Clock newDefaultClock() {
+        Clock clock = new Clock(_watcher);
+        Peer peer = Peer.get(new UID(Platform.get().newUID()));
+        long time = Clock.time(0, false);
+        clock.init(peer, time, 0);
+        return clock;
     }
 
     /*

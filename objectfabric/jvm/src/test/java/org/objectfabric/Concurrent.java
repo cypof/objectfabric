@@ -172,7 +172,7 @@ public class Concurrent extends TestsHelper {
 
     public void run(final int threadCount, final int writeCount, final int clientFlags, final Granularity granularity) {
         final Workspace workspace = Platform.get().newTestWorkspace(granularity);
-        setSimpleClass(new SimpleClass(workspace.resolve("")));
+        setSimpleClass(new SimpleClass(workspace.open("")));
 
         if ((clientFlags & ConcurrentClient.TRANSFER) != 0)
             _simple.int0(Transfer.TOTAL);

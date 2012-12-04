@@ -102,8 +102,6 @@ abstract class Platform {
 
     //
 
-    abstract void initializeUIDGenerator(byte[] uid);
-
     final byte[] newUID() {
         byte[] bytes = newUID_();
 

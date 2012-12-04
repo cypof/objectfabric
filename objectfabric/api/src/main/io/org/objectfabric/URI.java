@@ -70,141 +70,122 @@ public final class URI { // TODO pool?
         return index(refs, workspace) >= 0;
     }
 
-    final Resource getOrCreate(Workspace workspace) {
+    final FutureWithCallbacks<Resource> open(final Workspace workspace) {
         ResourceRef[] refs = _resources;
         int i = index(refs, workspace);
         Resource resource = i >= 0 ? refs[i].get() : null;
+        FutureWithCallbacks<Resource> future;
 
-        if (resource == null) {
+        if (resource != null) {
+            if (refs[i] instanceof LoadedRef) {
+                future = new FutureWithCallbacks<Resource>(FutureWithCallback.NOP_CALLBACK, null);
+                future.set(resource);
+            } else
+                future = ((LoadingRef) refs[i]).Future;
+        } else {
             Resource created = workspace.newResource(this);
+            boolean load = false;
 
             synchronized (this) {
                 refs = _resources;
                 i = index(refs, workspace);
                 resource = i >= 0 ? refs[i].get() : null;
 
-                if (resource == null) {
+                if (resource != null) {
+                    if (refs[i] instanceof LoadedRef) {
+                        future = new FutureWithCallbacks<Resource>(FutureWithCallback.NOP_CALLBACK, null);
+                        future.set(resource);
+                    } else
+                        future = ((LoadingRef) refs[i]).Future;
+                } else {
                     if (Debug.ENABLED)
                         Helper.instance().Resources.put(created, created);
 
                     resource = created;
-                    ResourceRef ref = new ClosedRef(resource);
 
-                    if (i >= 0)
-                        replace(refs, i, ref, workspace);
-                    else {
+                    LoadingRef ref = new LoadingRef(resource, //
+                            new FutureWithCallbacks<Resource>(FutureWithCallback.NOP_CALLBACK, null) {
+
+                                @Override
+                                public boolean cancel(boolean mayInterruptIfRunning) {
+                                    URI.this.cancel(workspace);
+                                    return super.cancel(mayInterruptIfRunning);
+                                }
+                            });
+
+                    if (i >= 0) {
+                        refs[i].clear();
+                        refs[i] = ref;
+                    } else {
                         if (refs != null) {
                             ResourceRef[] temp = new ResourceRef[refs.length + 1];
                             System.arraycopy(refs, 0, temp, 0, refs.length);
                             temp[temp.length - 1] = ref;
                             refs = temp;
-                        } else
+                        } else {
                             refs = new ResourceRef[] { ref };
+
+                            getOrCreate(_origin).open(this);
+                            Location[] caches = workspace.caches();
+
+                            if (caches != null)
+                                for (int t = 0; t < caches.length; t++)
+                                    getOrCreate(caches[t]).open(this);
+                        }
 
                         _resources = refs;
                     }
+
+                    future = ref.Future;
+                    load = true;
                 }
             }
-        }
 
-        return resource;
-    }
+            if (load) {
+                Object key;
 
-    private static int index(ResourceRef[] refs, Workspace workspace) {
-        for (int i = 0; refs != null && i < refs.length; i++)
-            if (refs[i].Workspace == workspace)
-                return i;
+                if (Debug.THREADS)
+                    ThreadAssert.suspend(key = new Object());
 
-        return -1;
-    }
+                getKnown(resource);
 
-    final FutureWithCallbacks<Object> open(final Resource resource) {
-        FutureWithCallbacks<Object> future = null;
-        boolean opened = false;
-
-        synchronized (this) {
-            ResourceRef[] refs = _resources;
-            int i = index(refs, resource.workspaceImpl());
-
-            if (refs[i] instanceof LoadedRef) {
-                if (Debug.ENABLED)
-                    Debug.assertion(resource.getFromMemory() != null);
-            } else {
-                if (refs[i] instanceof LoadingRef)
-                    future = ((LoadingRef) refs[i]).Future;
-                else {
-                    LoadingRef update = new LoadingRef(resource, //
-                            new FutureWithCallbacks<Object>(FutureWithCallback.NOP_CALLBACK, null) {
-
-                                @Override
-                                public boolean cancel(boolean mayInterruptIfRunning) {
-                                    URI.this.cancel(resource.workspaceImpl());
-                                    return super.cancel(mayInterruptIfRunning);
-                                }
-                            });
-
-                    replace(refs, i, update, resource.workspaceImpl());
-                    future = update.Future;
-                    opened = true;
-                }
+                if (Debug.THREADS)
+                    ThreadAssert.resume(key);
             }
-        }
-
-        if (opened) {
-            Object key;
-
-            if (Debug.THREADS)
-                ThreadAssert.suspend(key = new Object());
-
-            getKnown(resource);
-
-            if (Debug.THREADS)
-                ThreadAssert.resume(key);
         }
 
         return future;
     }
 
     final void onCancel(Resource resource, Exception exception) {
-        FutureWithCallbacks<Object> future = cancel(resource.workspaceImpl());
+        FutureWithCallbacks<Resource> future = cancel(resource.workspaceImpl());
 
         if (future != null)
             future.setException(exception);
     }
 
-    private final FutureWithCallbacks<Object> cancel(Workspace workspace) {
-        synchronized (this) {
-            ResourceRef[] refs = _resources;
-            int i = index(refs, workspace);
-
-            if (i >= 0 && refs[i] instanceof LoadingRef) {
-                LoadingRef ref = (LoadingRef) refs[i];
-                replace(refs, i, new ClosedRef(ref.get()), workspace);
-                return ref.Future;
-            }
-
-            return null;
-        }
-    }
-
-    final FutureWithCallbacks<Object> markLoaded(Resource resource) {
+    final void markLoaded(Resource resource) {
         synchronized (this) {
             ResourceRef[] refs = _resources;
             int i = index(refs, resource.workspaceImpl());
 
-            if (refs[i] instanceof LoadingRef) {
+            if (i >= 0 && refs[i] instanceof LoadingRef) {
                 LoadingRef ref = (LoadingRef) refs[i];
-                replace(refs, i, new LoadedRef(resource), resource.workspaceImpl());
-                return ref.Future;
-            }
 
-            if (refs[i] instanceof ClosedRef) {
-                replace(refs, i, new LoadedRef(resource), resource.workspaceImpl());
-                return new FutureWithCallbacks<Object>(null, null);
-            }
+                if (Debug.ENABLED)
+                    Debug.assertion(ref.Resource == resource);
 
-            return null;
+                refs[i].clear();
+                refs[i] = new LoadedRef(resource);
+                ref.Future.set(resource);
+            }
         }
+    }
+
+    final ResourceRef getRef(Workspace workspace) {
+        ResourceRef[] refs = _resources;
+        int i = index(refs, workspace);
+        return i >= 0 ? refs[i] : null;
     }
 
     final void onClose(Workspace workspace) {
@@ -224,6 +205,26 @@ public final class URI { // TODO pool?
         }
     }
 
+    final void runIf(Runnable runnable, boolean open) {
+        synchronized (this) {
+            ResourceRef[] refs = _resources;
+            boolean current = refs != null;
+
+            if (current == open)
+                runnable.run();
+        }
+    }
+
+    //
+
+    private static int index(ResourceRef[] refs, Workspace workspace) {
+        for (int i = 0; refs != null && i < refs.length; i++)
+            if (refs[i].Workspace == workspace)
+                return i;
+
+        return -1;
+    }
+
     private final void onGCed(ResourceRef ref) {
         synchronized (this) {
             ResourceRef[] refs = _resources;
@@ -237,20 +238,19 @@ public final class URI { // TODO pool?
         }
     }
 
-    //
+    private final FutureWithCallbacks<Resource> cancel(Workspace workspace) {
+        synchronized (this) {
+            ResourceRef[] refs = _resources;
+            int i = index(refs, workspace);
 
-    private final void replace(ResourceRef[] refs, int i, ResourceRef update, Workspace workspace) {
-        boolean a = refs[i] instanceof ClosedRef;
-        boolean b = update instanceof ClosedRef;
+            if (i >= 0 && refs[i] instanceof LoadingRef) {
+                LoadingRef ref = (LoadingRef) refs[i];
+                remove(refs, i);
+                return ref.Future;
+            }
 
-        refs[i].clear();
-        refs[i] = update;
-
-        if (a && !b)
-            open(refs, i, workspace);
-
-        if (!a && b)
-            close(refs);
+            return null;
+        }
     }
 
     private final void remove(ResourceRef[] refs, int i) {
@@ -261,57 +261,12 @@ public final class URI { // TODO pool?
             if (t != i)
                 update[n++] = refs[t];
 
-        boolean closing = !(refs[i] instanceof ClosedRef);
         refs[i].clear();
         refs = update.length != 0 ? update : null;
         _resources = refs;
 
-        if (closing)
-            close(refs);
-    }
-
-    private final void open(ResourceRef[] refs, int i, Workspace workspace) {
-        boolean alreadyOpen = false;
-
-        for (int t = 0; t < refs.length; t++) {
-            if (t != i && !(refs[t] instanceof ClosedRef)) {
-                alreadyOpen = true;
-                break;
-            }
-        }
-
-        if (!alreadyOpen) {
-            getOrCreate(_origin).open(this);
-
-            Location[] caches = workspace.caches();
-
-            if (caches != null)
-                for (int t = 0; t < caches.length; t++)
-                    if (caches[t].caches(this))
-                        getOrCreate(caches[t]).open(this);
-        }
-    }
-
-    private final void close(ResourceRef[] refs) {
-        for (int t = 0; refs != null && t < refs.length; t++)
-            if (!(refs[t] instanceof ClosedRef))
-                return;
-
-        getOrCreate(_origin).close(this);
-    }
-
-    final void runIf(Runnable runnable, boolean open) {
-        synchronized (this) {
-            ResourceRef[] refs = _resources;
-            boolean current = false;
-
-            for (int t = 0; refs != null && t < refs.length; t++)
-                if (!(refs[t] instanceof ClosedRef))
-                    current = true;
-
-            if (current == open)
-                runnable.run();
-        }
+        if (refs == null)
+            getOrCreate(_origin).close(this);
     }
 
     /*
@@ -531,7 +486,7 @@ public final class URI { // TODO pool?
 
     //
 
-    Exception onBlock(Object source, long tick, Buff[] buffs, long[] removals, boolean requested, Connection connection, boolean sendAck) {
+    Exception onBlock(Object source, long tick, Buff[] buffs, long[] removals, boolean requested, Connection connection, boolean sendAck, Location cache) {
         if (Debug.ENABLED) {
             Debug.assertion(buffs.length > 0);
             Debug.assertion(source instanceof View || source instanceof Resource);
@@ -563,13 +518,13 @@ public final class URI { // TODO pool?
             Get get = InFlight.onBlock(this, tick, connection);
 
             if (get != null) {
-                if (get.From instanceof Object[]) {
-                    Object[] from = (Object[]) get.From;
+                if (get.Requesters instanceof Object[]) {
+                    Object[] requesters = (Object[]) get.Requesters;
 
-                    for (int i = 0; i < from.length; i++)
-                        onBlock(source, tick, buffs, removals, from[i], resources);
+                    for (int i = 0; i < requesters.length; i++)
+                        onBlock(tick, buffs, removals, requesters[i], resources);
                 } else
-                    onBlock(source, tick, buffs, removals, get.From, resources);
+                    onBlock(tick, buffs, removals, get.Requesters, resources);
             }
         } else {
             if (connection != null && sendAck)
@@ -587,7 +542,7 @@ public final class URI { // TODO pool?
             View[] views = _views;
 
             for (int i = 0; views != null && i < views.length; i++)
-                if (views[i] != source)
+                if (views[i] != source && views[i].location() != cache)
                     views[i].onBlock(this, tick, buffs, removals, requested);
         }
 
@@ -599,6 +554,15 @@ public final class URI { // TODO pool?
         if (Debug.ENABLED)
             for (int i = 0; i < buffs.length; i++)
                 Debug.assertion(buffs[i].remaining() > 0);
+
+        if (Stats.ENABLED) {
+            int bytes = 0;
+
+            for (int i = 0; i < buffs.length; i++)
+                bytes += buffs[i].remaining();
+
+            Stats.max(Stats.Instance.BlockMaxBytes, bytes);
+        }
 
         Exception exception = null;
 
@@ -635,7 +599,7 @@ public final class URI { // TODO pool?
                 context.getReader().clean();
 
                 for (int i = 0; i < resources.size(); i++)
-                    resources.get(i).onFailed(source, tick);
+                    resources.get(i).onFailed(tick);
             }
 
             if (Debug.ENABLED)
@@ -654,7 +618,7 @@ public final class URI { // TODO pool?
         return exception;
     }
 
-    private final void onBlock(Object source, long tick, Buff[] buffs, long[] removals, Object requester, List<Resource> resources) {
+    private final void onBlock(long tick, Buff[] buffs, long[] removals, Object requester, List<Resource> resources) {
         if (requester instanceof View) {
             View view = (View) requester;
             view.onBlock(this, tick, buffs, removals, true);
@@ -694,13 +658,16 @@ public final class URI { // TODO pool?
         return _origin + _path;
     }
 
-    private abstract class ResourceRef extends PlatformRef<Resource> {
+    abstract class ResourceRef extends PlatformRef<Resource> {
+
+        final Resource Resource; // For GC
 
         final Workspace Workspace;
 
         ResourceRef(Resource resource) {
             super(resource, Platform.get().getReferenceQueue());
 
+            Resource = resource;
             Workspace = resource.workspaceImpl();
             resource.onReferenced(this);
         }
@@ -711,18 +678,11 @@ public final class URI { // TODO pool?
         }
     }
 
-    private final class ClosedRef extends ResourceRef {
-
-        ClosedRef(Resource resource) {
-            super(resource);
-        }
-    }
-
     private final class LoadingRef extends ResourceRef {
 
-        final FutureWithCallbacks<Object> Future;
+        final FutureWithCallbacks<Resource> Future;
 
-        LoadingRef(Resource resource, FutureWithCallbacks<Object> future) {
+        LoadingRef(Resource resource, FutureWithCallbacks<Resource> future) {
             super(resource);
 
             Future = future;

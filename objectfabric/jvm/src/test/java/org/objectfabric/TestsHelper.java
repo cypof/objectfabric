@@ -105,69 +105,14 @@ public class TestsHelper {
     }
 
     static void setUID1(Workspace workspace) {
-        workspace.addURIHandler(new TestLocation() {
-
-            @Override
-            void start(WorkspaceLoad load) {
-                long tick = Tick.get(Peer.get(new UID(UID_1)).index(), 1);
-                load.onResponse(tick, Platform.get().newUID(), (byte) 0);
-            }
-        });
+        workspace.watcher().clock().init(Peer.get(new UID(UID_1)), Clock.time(0, false), 0);
     }
 
     static void setUID2(Workspace workspace) {
-        workspace.addURIHandler(new TestLocation() {
-
-            @Override
-            void start(WorkspaceLoad load) {
-                long tick = Tick.get(Peer.get(new UID(UID_2)).index(), 1);
-                load.onResponse(tick, Platform.get().newUID(), (byte) 0);
-            }
-        });
+        workspace.watcher().clock().init(Peer.get(new UID(UID_2)), Clock.time(0, false), 0);
     }
 
     static void setUID3(Workspace workspace) {
-        workspace.addURIHandler(new TestLocation() {
-
-            @Override
-            void start(WorkspaceLoad load) {
-                long tick = Tick.get(Peer.get(new UID(UID_3)).index(), 1);
-                load.onResponse(tick, Platform.get().newUID(), (byte) 0);
-            }
-        });
-    }
-
-    private static class TestLocation extends Origin implements URIHandler {
-
-        TestLocation() {
-            super(false);
-        }
-
-        @Override
-        public URI handle(Address address, String path) {
-            return null;
-        }
-
-        @Override
-        View newView(URI _) {
-            return new View(TestLocation.this) {
-
-                @Override
-                void getKnown(URI uri) {
-                }
-
-                @Override
-                void onKnown(URI uri, long[] ticks) {
-                }
-
-                @Override
-                void getBlock(URI uri, long tick) {
-                }
-
-                @Override
-                void onBlock(URI uri, long tick, Buff[] buffs, long[] removals, boolean requested) {
-                }
-            };
-        }
+        workspace.watcher().clock().init(Peer.get(new UID(UID_3)), Clock.time(0, false), 0);
     }
 }

@@ -16,6 +16,7 @@ import org.objectfabric.AbstractKeyListener;
 import org.objectfabric.AsyncCallback;
 import org.objectfabric.GWTWorkspace;
 import org.objectfabric.IndexListener;
+import org.objectfabric.IndexedDB;
 import org.objectfabric.Remote;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayDouble;
@@ -48,8 +49,6 @@ import com.google.gwt.user.client.ui.Widget;
 @SuppressWarnings("unchecked")
 public class Main implements EntryPoint {
 
-    private final Resource resource;
-
     private TSet<TArrayDouble> positions;
 
     private Button button;
@@ -58,7 +57,7 @@ public class Main implements EntryPoint {
 
     private int _left, _top;
 
-    Main() {
+    public void onModuleLoad() {
         Workspace workspace = new GWTWorkspace();
 
         if (WebSocketURIHandler.isSupported())
@@ -66,15 +65,14 @@ public class Main implements EntryPoint {
         // else // TODO
         // workspace.addURIHandler(new CometURIHandler());
 
-        resource = workspace.resolve("ws://localhost:8888/images");
-    }
+        if (IndexedDB.isSupported())
+            workspace.addCache(new IndexedDB());
 
-    public void onModuleLoad() {
-        resource.getAsync(new AsyncCallback<Object>() {
+        workspace.openAsync("ws://localhost:8888/images", new AsyncCallback<Resource>() {
 
             @Override
-            public void onSuccess(Object result) {
-                positions = (TSet<TArrayDouble>) result;
+            public void onSuccess(Resource result) {
+                positions = (TSet<TArrayDouble>) result.get();
                 onReceivedImages();
             }
 
@@ -86,7 +84,7 @@ public class Main implements EntryPoint {
         button = new Button("New Image");
         button.setWidth("200px");
         button.setEnabled(false);
-        RootPanel.get().add(button, 120, 200);
+        RootPanel.get().add(button, 20, 100);
 
         button.addClickHandler(new ClickHandler() {
 
@@ -97,15 +95,43 @@ public class Main implements EntryPoint {
                 positions.add(position);
             }
         });
+    }
+
+    private void onReceivedImages() {
+        button.setEnabled(true);
+
+        /*
+         * Register a listener on the shared object to be notified when an ImageInfo is
+         * shared. When this happen, add an image to the UI.
+         */
+        positions.addListener(new AbstractKeyListener<TArrayDouble>() {
+
+            @Override
+            public void onPut(TArrayDouble key) {
+                addImage(key);
+            }
+        });
+
+        /*
+         * Some images might already be shared, show them. Iterators on transactional
+         * collections provide a stable view of the collection.
+         */
+        positions.atomicRead(new Runnable() {
+
+            public void run() {
+                for (TArrayDouble position : positions)
+                    addImage(position);
+            }
+        });
 
         final Image disconnected = new Image("sync-disconnected-24.png");
         final Image ongoing = new Image("sync-24.gif");
         final Image complete = new Image("sync-complete-24.png");
         final Label label = new Label();
-        RootPanel.get().add(disconnected, 200, 170);
-        RootPanel.get().add(ongoing, 200, 170);
-        RootPanel.get().add(complete, 200, 170);
-        RootPanel.get().add(label, 230, 170);
+        RootPanel.get().add(disconnected, 20, 130);
+        RootPanel.get().add(ongoing, 20, 130);
+        RootPanel.get().add(complete, 20, 130);
+        RootPanel.get().add(label, 50, 130);
 
         new Timer() {
 
@@ -115,7 +141,7 @@ public class Main implements EntryPoint {
                 ongoing.setVisible(false);
                 complete.setVisible(false);
 
-                switch (((Remote) resource.origin()).status()) {
+                switch (((Remote) positions.resource().origin()).status()) {
                     case DISCONNECTED:
                         disconnected.setVisible(true);
                         label.setText("Disconnected");
@@ -139,34 +165,6 @@ public class Main implements EntryPoint {
                 }
             }
         }.scheduleRepeating(100);
-    }
-
-    private void onReceivedImages() {
-        button.setEnabled(true);
-
-        /*
-         * Register a listener on the shared object to be notified when an ImageInfo is
-         * shared. When this happen, add an image to the UI.
-         */
-        positions.addListener(new AbstractKeyListener<TArrayDouble>() {
-
-            @Override
-            public void onPut(TArrayDouble key) {
-                addImage(key);
-            }
-        });
-
-        /*
-         * Some images might already be shared, show them. Iterators on transactional
-         * collections provide a stable view of the collection.
-         */
-        resource.atomicRead(new Runnable() {
-
-            public void run() {
-                for (TArrayDouble position : positions)
-                    addImage(position);
-            }
-        });
     }
 
     private void addImage(final TArrayDouble position) {

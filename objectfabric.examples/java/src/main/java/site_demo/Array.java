@@ -34,7 +34,7 @@ public class Array {
 
         // Get live array of numbers through WebSocket
         String uri = "ws://test.objectfabric.org/array";
-        final TArrayLong a = (TArrayLong) w.resolve(uri).get();
+        final TArrayLong a = (TArrayLong) w.open(uri).get();
         final NumberFormat format = NumberFormat.getIntegerInstance();
 
         // Add a listener on array, called when an element is

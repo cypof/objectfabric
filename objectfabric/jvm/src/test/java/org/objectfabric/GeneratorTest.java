@@ -28,7 +28,7 @@ public class GeneratorTest {
     public void run() {
         JVMPlatform.loadClass();
         Workspace workspace = Platform.newTestWorkspace();
-        Resource _ = workspace.resolve("");
+        Resource _ = workspace.open("");
 
         Assert.assertTrue(((TObject) new Limit32(_)).createVersion_() instanceof Version32);
         Assert.assertTrue(((TObject) new Limit32_max(_)).createVersion_() instanceof Version32);

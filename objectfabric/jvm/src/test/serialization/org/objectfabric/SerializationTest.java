@@ -51,13 +51,12 @@ public abstract class SerializationTest extends TestsHelper {
                     int read = Platform.get().randomInt(limit - buff.position() + 1);
                     buff.limit(buff.position() + read);
                     buff.position(buff.position() - leftoverSize);
-                    buff.putBytes(leftover, 0, leftoverSize);
-                    buff.position(buff.position() - leftoverSize);
+                    buff.putImmutably(leftover, 0, leftoverSize);
 
                     reader.run();
 
                     leftoverSize = buff.remaining();
-                    buff.getBytes(leftover, 0, leftoverSize);
+                    buff.getImmutably(leftover, 0, leftoverSize);
                 }
             }
 

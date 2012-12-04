@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.objectfabric.CloseCounter.Callback;
 
-final class FileQueue extends BlockQueue implements Runnable {
+final class FileSystemQueue extends BlockQueue implements Runnable {
 
     // TODO limit pending reads too?
     private static final int MAX_ONGOING = 100;
@@ -29,7 +29,7 @@ final class FileQueue extends BlockQueue implements Runnable {
 
     private final ConcurrentHashMap<String, Object> _ongoing = new ConcurrentHashMap<String, Object>();
 
-    FileQueue(Location location) {
+    FileSystemQueue(Location location) {
         _location = location;
 
         if (Debug.THREADS)
@@ -76,75 +76,66 @@ final class FileQueue extends BlockQueue implements Runnable {
             if (Debug.THREADS)
                 ThreadAssert.exchangeTake(this);
 
-            runMessages();
+            runMessages(false);
 
-            if (_ongoing.size() < MAX_ONGOING) {
-                for (;;) {
-                    final Block block = nextBlock();
+            while (_ongoing.size() < MAX_ONGOING) {
+                final Block block = nextBlock();
 
-                    if (block == null)
-                        break;
+                if (block == null)
+                    break;
 
-                    final FileView view = (FileView) block.URI.getOrCreate(_location);
-                    final File file = new File(view.folder(), Utils.getTickHex(block.Tick));
-                    final Object write = new Object();
-                    _ongoing.put(file.getPath(), write);
+                final FileSystemView view = (FileSystemView) block.URI.getOrCreate(_location);
+                final File file = new File(view.folder(), Utils.getTickHex(block.Tick));
+                final Object write = new Object();
+                _ongoing.put(file.getPath(), write);
 
-                    if (Debug.THREADS)
-                        for (int i = 0; i < block.Buffs.length; i++)
-                            ThreadAssert.exchangeGive(block, block.Buffs[i]);
+                if (Debug.THREADS)
+                    for (int i = 0; i < block.Buffs.length; i++)
+                        ThreadAssert.exchangeGive(block, block.Buffs[i]);
 
-                    ThreadPool.getInstance().execute(new Runnable() {
+                ThreadPool.getInstance().execute(new Runnable() {
 
-                        @Override
-                        public void run() {
-                            if (Debug.THREADS)
-                                ThreadAssert.exchangeTake(block);
+                    @Override
+                    public void run() {
+                        if (Debug.THREADS)
+                            ThreadAssert.exchangeTake(block);
 
-                            if (Debug.ENABLED) {
-                                Debug.assertion(block.Buffs.length > 0);
-                                Debug.assertion(block.Buffs[0].remaining() > 0);
-                            }
-
-                            if (Debug.THREADS)
-                                ThreadAssert.exchangeTake(block.Buffs);
-
-                            boolean ok = write(view, file, block.Buffs, block.Removals);
-
-                            if (ok) {
-                                block.URI.onAck(view, block.Tick);
-                                view.add(block.Tick, block.Removals);
-                            }
-
-                            _ongoing.remove(file.getPath(), write);
-
-                            // In case blocks left in queue
-                            requestRun();
+                        if (Debug.ENABLED) {
+                            Debug.assertion(block.Buffs.length > 0);
+                            Debug.assertion(block.Buffs[0].remaining() > 0);
                         }
-                    });
-                }
+
+                        if (Debug.THREADS)
+                            ThreadAssert.exchangeTake(block.Buffs);
+
+                        boolean ok = write(view, file, block.Buffs, block.Removals);
+
+                        if (ok) {
+                            block.URI.onAck(view, block.Tick);
+                            view.add(block.Tick, block.Removals);
+                        }
+
+                        _ongoing.remove(file.getPath(), write);
+
+                        // In case blocks left in queue
+                        requestRun();
+                    }
+                });
             }
 
             if (Debug.ENABLED)
                 ThreadAssert.suspend(this);
 
-            onRunEnded();
+            onRunEnded(false);
         }
     }
 
-    private boolean write(FileView view, File file, Buff[] buffs, long[] removals) {
+    private boolean write(FileSystemView view, File file, Buff[] buffs, long[] removals) {
         if (Debug.PERSISTENCE_LOG)
             Log.write("File write " + file.getPath());
 
-        if (Stats.ENABLED) {
-            Stats.Instance.FileWriteCount.incrementAndGet();
-            int bytes = 0;
-
-            for (int i = 0; i < buffs.length; i++)
-                bytes += buffs[i].remaining();
-
-            Stats.Instance.FileWriteBytes.addAndGet(bytes);
-        }
+        if (Stats.ENABLED)
+            Stats.Instance.BlockWriteCount.incrementAndGet();
 
         RandomAccessFile raf = null;
         boolean ok = false;

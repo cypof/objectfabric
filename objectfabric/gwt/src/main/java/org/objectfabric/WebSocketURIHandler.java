@@ -53,7 +53,7 @@ public class WebSocketURIHandler extends ClientURIHandler {
 
                     @Override
                     public void cancel() {
-                        connection.disconnect();
+                        connection.requestClose(null);
                     }
                 };
             }

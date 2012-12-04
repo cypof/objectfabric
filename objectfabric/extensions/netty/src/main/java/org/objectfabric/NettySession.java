@@ -143,7 +143,7 @@ public class NettySession extends SimpleChannelUpstreamHandler {
     @Override
     public void channelClosed(ChannelHandlerContext ctx, ChannelStateEvent e) throws Exception {
         if (_connection != null)
-            _connection.disconnect();
+            _connection.requestClose(null);
     }
 
     @Override

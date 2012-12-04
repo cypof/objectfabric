@@ -12,13 +12,11 @@
 
 package org.objectfabric;
 
-import java.util.Map.Entry;
-
 import org.objectfabric.CloseCounter.Callback;
-import org.objectfabric.Serialization.WorkspaceState;
+import org.objectfabric.InFlight.Provider;
 
 @SuppressWarnings({ "serial", "rawtypes" })
-abstract class Connection extends BlockQueue implements Runnable {
+abstract class Connection extends BlockQueue implements Runnable, Provider {
 
     // Per resource commands
 
@@ -49,12 +47,6 @@ abstract class Connection extends BlockQueue implements Runnable {
 
     static final byte COMMAND_ADDRESS = 11;
 
-    static final byte COMMAND_GET_WORKSPACE = 12;
-
-    static final byte COMMAND_ON_WORKSPACE = 13;
-
-    static final byte COMMAND_ACK_WORKSPACE = 14;
-
     private static final Permission[] PERMISSIONS = Permission.values();
 
     //
@@ -64,12 +56,6 @@ abstract class Connection extends BlockQueue implements Runnable {
     private Session _session;
 
     private Headers _headers;
-
-    // TODO remove?
-
-    private final PlatformConcurrentMap<Peer, WorkspaceSave> _saves = new PlatformConcurrentMap<Peer, WorkspaceSave>();
-
-    private final PlatformConcurrentQueue<WorkspaceLoad> _loads = new PlatformConcurrentQueue<WorkspaceLoad>();
 
     // Read thread
 
@@ -139,22 +125,6 @@ abstract class Connection extends BlockQueue implements Runnable {
             _subscribed = new PlatformMap<URI, ServerView>();
 
         requestRun();
-    }
-
-    final void disconnect() {
-        for (Entry<Peer, WorkspaceSave> entry : _saves.entrySet())
-            entry.getValue().done();
-
-        for (;;) {
-            WorkspaceLoad load = _loads.poll();
-
-            if (load == null)
-                break;
-
-            load.onResponseNull();
-        }
-
-        requestClose(null);
     }
 
     @Override
@@ -275,7 +245,7 @@ abstract class Connection extends BlockQueue implements Runnable {
 
             @Override
             void run(Connection connection) {
-                if (InFlight.sending(uri, tick, connection))
+                if (InFlight.starting(uri, tick, connection))
                     connection.write(COMMAND_GET_BLOCK, uri.path(), tick, null);
             }
         });
@@ -284,7 +254,8 @@ abstract class Connection extends BlockQueue implements Runnable {
             Stats.Instance.BlockRequestsSent.incrementAndGet();
     }
 
-    final void postCancel(final URI uri, final long tick) {
+    @Override
+    public final void cancel(final URI uri, final long tick) {
         post(new Write() {
 
             @Override
@@ -397,8 +368,7 @@ abstract class Connection extends BlockQueue implements Runnable {
                 _reader.startRead();
             else {
                 buff.position(buff.position() - _leftoverSize);
-                buff.putBytes(_leftover, 0, _leftoverSize);
-                buff.position(buff.position() - _leftoverSize);
+                buff.putImmutably(_leftover, 0, _leftoverSize);
             }
 
             if (Debug.ENABLED)
@@ -407,7 +377,8 @@ abstract class Connection extends BlockQueue implements Runnable {
             readImpl();
 
             _leftoverSize = buff.remaining();
-            buff.getBytes(_leftover, 0, _leftoverSize);
+            buff.getImmutably(_leftover, 0, _leftoverSize);
+            buff.position(buff.limit());
         }
     }
 
@@ -499,8 +470,12 @@ abstract class Connection extends BlockQueue implements Runnable {
                                 return;
                             }
 
-                            if (uri != null)
+                            if (uri != null) {
+                                if (ticks == null)
+                                    ticks = Tick.EMPTY;
+
                                 onKnown(uri, ticks);
+                            }
 
                             break;
                         }
@@ -591,7 +566,7 @@ abstract class Connection extends BlockQueue implements Runnable {
 
                                         @Override
                                         public void set(Permission permission) {
-                                            if (permission == Permission.REJECT)
+                                            if (permission == Permission.NONE)
                                                 postPermission(uri_, permission, true);
                                             else
                                                 onPermission(uri_, permission);
@@ -657,72 +632,6 @@ abstract class Connection extends BlockQueue implements Runnable {
                             _headers = null;
                             break;
                         }
-                        case COMMAND_GET_WORKSPACE: {
-                            WorkspaceLoad load = new WorkspaceLoad(((Server) _location).resolver()) {
-
-                                @Override
-                                void done(final long tick, final byte[] range, final byte id) {
-                                    post(new Write() {
-
-                                        @Override
-                                        void run(Connection connection) {
-                                            connection.write(COMMAND_ON_WORKSPACE, null, 0, null);
-                                        }
-
-                                        @Override
-                                        int runEx(Connection connection, Queue<Buff> queue, int room) {
-                                            Serialization.writeWorkspace(connection._writer, tick, range, id);
-                                            return room;
-                                        }
-                                    });
-                                }
-                            };
-
-                            load.run();
-                            break;
-                        }
-                        case COMMAND_ON_WORKSPACE: {
-                            final WorkspaceState state = Serialization.readWorkspace(_reader);
-
-                            if (_reader.interrupted()) {
-                                _reader.interrupt(uri);
-                                _reader.interrupt(path);
-                                _reader.interruptByte(code);
-                                _reader.interruptInt(STEP_READ_COMMAND);
-                                return;
-                            }
-
-                            if (_location instanceof Server)
-                                onWorkspace(state);
-                            else {
-                                Object key;
-
-                                if (Debug.ENABLED)
-                                    ThreadAssert.suspend(key = new Object());
-
-                                _loads.poll().onResponse(Tick.get(state.Peer.index(), state.Time), state.Range, state.Id);
-
-                                if (Debug.ENABLED)
-                                    ThreadAssert.resume(key);
-                            }
-
-                            break;
-                        }
-                        case COMMAND_ACK_WORKSPACE: {
-                            byte[] bytes = _reader.readBinary();
-
-                            if (_reader.interrupted()) {
-                                _reader.interrupt(uri);
-                                _reader.interrupt(path);
-                                _reader.interruptByte(code);
-                                _reader.interruptInt(STEP_READ_COMMAND);
-                                return;
-                            }
-
-                            Peer peer = Peer.get(new UID(bytes));
-                            _saves.remove(peer).done();
-                            break;
-                        }
                         default:
                             throw new IllegalStateException();
                     }
@@ -745,36 +654,10 @@ abstract class Connection extends BlockQueue implements Runnable {
     }
 
     final void onBlock(URI uri, View view, long tick, Buff[] buffs, long[] removals, boolean requested, boolean ack) {
-        Exception exception = uri.onBlock(view, tick, buffs, removals, requested, this, ack);
+        Exception exception = uri.onBlock(view, tick, buffs, removals, requested, this, ack, null);
 
         if (exception != null)
             Log.write(exception);
-    }
-
-    private final void onWorkspace(final WorkspaceState state) {
-        WorkspaceSave save = new WorkspaceSave() {
-
-            @Override
-            void run(Callback callback) {
-                callback.run(Tick.get(state.Peer.index(), state.Time), state.Range, state.Id);
-            }
-        };
-
-        save.run(((Server) _location).resolver());
-
-        post(new Write() {
-
-            @Override
-            void run(Connection connection) {
-                connection.write(COMMAND_ACK_WORKSPACE, null, 0, null);
-            }
-
-            @Override
-            int runEx(Connection connection, Queue<Buff> queue, int room) {
-                connection._writer.writeBinary(state.Peer.uid());
-                return room;
-            }
-        });
     }
 
     /*
@@ -795,7 +678,7 @@ abstract class Connection extends BlockQueue implements Runnable {
             if (Debug.THREADS)
                 ThreadAssert.exchangeTake(_writer);
 
-            runMessages();
+            runMessages(false);
 
             if (_writeStatus == WRITE_IDLE)
                 write();
@@ -803,7 +686,7 @@ abstract class Connection extends BlockQueue implements Runnable {
             if (Debug.ENABLED)
                 ThreadAssert.suspend(_writer);
 
-            onRunEnded();
+            onRunEnded(false);
         }
     }
 
@@ -904,7 +787,7 @@ abstract class Connection extends BlockQueue implements Runnable {
             else {
                 for (;;) {
                     int position = buff.position();
-                    int room1 = Platform.get().randomInt(room + 1);
+                    int room1 = Platform.get().randomInt(room - 1) + 1;
                     int room2 = writeImpl(queue, room1);
                     room -= room1 - room2;
                     room -= Serialization.enqueueWritten(queue, buff);
@@ -1064,70 +947,6 @@ abstract class Connection extends BlockQueue implements Runnable {
         }
     }
 
-    /*
-     * Workspaces.
-     */
-
-    final boolean start(final WorkspaceSave save) {
-        if (Debug.ENABLED)
-            Debug.assertion(_location instanceof Remote);
-
-        post(new Write() {
-
-            boolean _started;
-
-            @Override
-            void run(Connection connection) {
-                if (!_started && save.start()) {
-                    _started = true;
-
-                    save.run(new WorkspaceSave.Callback() {
-
-                        @Override
-                        void run(long tick, byte[] range, byte id) {
-                            _saves.put(Peer.get(Tick.peer(tick)), save);
-                        }
-                    });
-                }
-
-                if (_started)
-                    connection.write(COMMAND_ON_WORKSPACE, null, 0, null);
-            }
-
-            @Override
-            int runEx(final Connection connection, Queue<Buff> queue, int room) {
-                if (_started) {
-                    save.run(new WorkspaceSave.Callback() {
-
-                        @Override
-                        void run(long tick, byte[] range, byte id) {
-                            Serialization.writeWorkspace(connection._writer, tick, range, id);
-                        }
-                    });
-                }
-
-                return room;
-            }
-        });
-
-        return true;
-    }
-
-    final void start(WorkspaceLoad load) {
-        if (Debug.ENABLED)
-            Debug.assertion(_location instanceof Remote);
-
-        _loads.add(load);
-
-        post(new Write() {
-
-            @Override
-            void run(Connection connection) {
-                connection.write(COMMAND_GET_WORKSPACE, null, 0, null);
-            }
-        });
-    }
-
     // Debug
 
     public static String getCommandString(int code) {
@@ -1159,12 +978,6 @@ abstract class Connection extends BlockQueue implements Runnable {
                 return "HEADERS";
             case COMMAND_ADDRESS:
                 return "ADDRESS";
-            case COMMAND_GET_WORKSPACE:
-                return "GET_WORKSPACE";
-            case COMMAND_ON_WORKSPACE:
-                return "ON_WORKSPACE";
-            case COMMAND_ACK_WORKSPACE:
-                return "ACK_WORKSPACE";
             default:
                 throw new IllegalStateException();
         }

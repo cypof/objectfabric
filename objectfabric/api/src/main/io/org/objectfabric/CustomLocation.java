@@ -14,6 +14,8 @@ package org.objectfabric;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import org.objectfabric.URI.ResourceRef;
+
 /**
  * Lets an application specify its own resource storage and data format.
  */
@@ -130,7 +132,7 @@ public abstract class CustomLocation extends Origin {
             }
         }
 
-        uri.onBlock(view, tick, duplicates, removals, requested, null, false);
+        uri.onBlock(view, tick, duplicates, removals, requested, null, false, null);
 
         if (Debug.THREADS)
             ThreadAssert.exchangeTake(duplicates);
@@ -161,7 +163,7 @@ public abstract class CustomLocation extends Origin {
 
         @Override
         void onKnown(URI innerUri, long[] ticks) {
-            if (ticks != Tick.EMPTY) {
+            if (ticks.length != 0) {
                 View view = _outerURI.getOrCreate(_innerResource._outerLocation);
                 _outerURI.onKnown(view, ticks);
             } else {
@@ -185,9 +187,19 @@ public abstract class CustomLocation extends Origin {
                     }
                 }
 
-                _innerResource = (CustomResource) innerUri.getOrCreate(workspace);
+                Resource resource;
+
+                for (;;) {
+                    innerUri.open(workspace);
+                    ResourceRef ref = innerUri.getRef(workspace);
+                    resource = ref.get();
+
+                    if (resource != null)
+                        break;
+                }
+
+                _innerResource = (CustomResource) resource;
                 _innerResource._outerURI = _outerURI;
-                innerUri.open(_innerResource);
             }
         }
 
@@ -215,9 +227,9 @@ public abstract class CustomLocation extends Origin {
         }
 
         @Override
-        Exception onBlock(long tick, Buff[] buffs, long[] removals) {
+        void onNewBlock() {
             tellKnown();
-            return super.onBlock(tick, buffs, removals);
+            super.onNewBlock();
         }
 
         // @Override

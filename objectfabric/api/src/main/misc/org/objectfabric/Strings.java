@@ -44,8 +44,6 @@ abstract class Strings { // TODO clean, use only for api
 
     public static final String CLOSED = "This Workspace or Server has been closed.";
 
-    public static final String PERMISSION_REJECT = "Permission: " + Permission.REJECT;
-
     public static final String NO_CALLBACK_FOR_EXCEPTION = "No callback were provided by the user to report this exception, logging it: ";
 
     public static final String TIMEOUT = "Connection time-out";

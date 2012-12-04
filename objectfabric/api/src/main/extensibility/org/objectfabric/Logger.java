@@ -86,7 +86,7 @@ public class Logger extends Dispatcher implements Closeable {
         _run.addAndRun(new Flush() {
 
             @Override
-            void onSuccess() {
+            void done() {
                 if (Debug.ENABLED)
                     ThreadAssert.resume(_run);
 
@@ -101,11 +101,6 @@ public class Logger extends Dispatcher implements Closeable {
 
                 if (Debug.ENABLED)
                     ThreadAssert.suspend(_run);
-            }
-
-            @Override
-            void onException(Exception e) {
-                future.setException(e);
             }
         });
 
@@ -258,13 +253,13 @@ public class Logger extends Dispatcher implements Closeable {
                 ThreadAssert.resume(this, false);
 
             onRunStarting();
-            runMessages();
+            runMessages(false);
             walk();
 
             if (Debug.ENABLED)
                 ThreadAssert.suspend(this);
 
-            onRunEnded();
+            onRunEnded(false);
         }
     }
 }

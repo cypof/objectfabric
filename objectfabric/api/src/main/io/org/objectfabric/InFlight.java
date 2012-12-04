@@ -14,6 +14,11 @@ package org.objectfabric;
 
 final class InFlight {
 
+    interface Provider {
+
+        void cancel(URI uri, long tick);
+    }
+
     // TODO tune concurrency
     private static final PlatformConcurrentMap<Key, Object> _map = new PlatformConcurrentMap<Key, Object>();
 
@@ -29,40 +34,40 @@ final class InFlight {
             Get expect = (Get) _map.get(get);
 
             if (expect == null) {
-                expect = new Get(requester);
+                Get update = new Get(requester);
 
-                if (_map.putIfAbsent(get, expect) == null) {
+                if (_map.putIfAbsent(get, update) == null) {
                     uri.startGetBlock(requester, tick);
                     break;
                 }
             } else {
-                Object update = add(expect.From, requester);
+                Object update = add(expect.Requesters, requester);
 
-                if (update == expect.From || _map.replace(get, expect, new Get(update, expect.Sent)))
+                if (update == expect.Requesters || _map.replace(get, expect, new Get(update, expect.Providers)))
                     break;
             }
         }
     }
 
-    static boolean awaits(URI uri, long tick) {
+    static boolean starting(URI uri, long tick) {
         return _map.containsKey(new Key(uri, tick, BLOCK));
     }
 
-    static boolean sending(URI uri, long tick, Connection connection) {
+    static boolean starting(URI uri, long tick, Provider provider) {
         Key key = new Key(uri, tick, BLOCK);
 
         for (;;) {
-            Get get = (Get) _map.get(key);
+            Get expect = (Get) _map.get(key);
 
-            if (get == null)
+            if (expect == null)
                 return false;
 
-            Get update = new Get(get.From, add(get.Sent, connection));
+            Get update = new Get(expect.Requesters, add(expect.Providers, provider));
 
             if (Debug.ENABLED)
-                Debug.assertion(update != get);
+                Debug.assertion(update != expect);
 
-            if (_map.replace(key, get, update))
+            if (_map.replace(key, expect, update))
                 return true;
         }
     }
@@ -82,7 +87,7 @@ final class InFlight {
     }
 
     private static boolean tryCancel(Key key, Get expect, Object requester) {
-        if (expect.From == requester) {
+        if (expect.Requesters == requester) {
             if (!_map.remove(key, expect))
                 return false;
 
@@ -90,11 +95,11 @@ final class InFlight {
             return true;
         }
 
-        Object[] from = (Object[]) expect.From;
-        int index = indexOf(from, requester);
+        Object[] requesters = (Object[]) expect.Requesters;
+        int index = indexOf(requesters, requester);
 
         if (index >= 0) {
-            Get update = new Get(sub(from, index), expect.Sent);
+            Get update = new Get(sub(requesters, index), expect.Providers);
 
             if (!_map.replace(key, expect, update))
                 return false;
@@ -164,33 +169,33 @@ final class InFlight {
 
     static final class Get {
 
-        final Object From;
+        final Object Requesters;
 
-        final Object Sent;
+        final Object Providers;
 
-        Get(Object from) {
-            this(from, null);
+        Get(Object requester) {
+            this(requester, null);
         }
 
-        Get(Object from, Object sent) {
-            From = from;
-            Sent = sent;
+        Get(Object requesters, Object providers) {
+            Requesters = requesters;
+            Providers = providers;
         }
 
-        final void cancel(URI uri, long tick, Connection skip) {
-            if (Sent instanceof Connection) {
-                if (Sent != skip)
-                    ((Connection) Sent).postCancel(uri, tick);
+        final void cancel(URI uri, long tick, Provider skip) {
+            if (Providers instanceof Provider) {
+                if (Providers != skip)
+                    ((Provider) Providers).cancel(uri, tick);
 
                 return;
             }
 
-            if (Sent instanceof Connection[]) {
-                Connection[] array = (Connection[]) Sent;
+            if (Providers instanceof Object[]) {
+                Object[] array = (Object[]) Providers;
 
                 for (int i = 0; i < array.length; i++)
                     if (array[i] != skip)
-                        array[i].postCancel(uri, tick);
+                        ((Provider) array[i]).cancel(uri, tick);
             }
         }
     }

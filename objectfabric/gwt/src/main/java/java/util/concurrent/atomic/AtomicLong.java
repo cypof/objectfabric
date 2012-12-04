@@ -16,6 +16,11 @@ public class AtomicLong {
 
     private long _value;
 
+    public long addAndGet(long delta) {
+        _value += delta;
+        return _value;
+    }
+
     public boolean compareAndSet(long expect, long update) {
         if (_value != expect)
             return false;

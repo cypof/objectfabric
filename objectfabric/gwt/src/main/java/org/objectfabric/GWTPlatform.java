@@ -139,56 +139,22 @@ class GWTPlatform extends Platform {
         return Random.nextDouble();
     }
 
-    //
-
-    private static byte[] _uid;
-
-    private static long _uidXORCount;
-
-    @Override
-    public void initializeUIDGenerator(byte[] uid) {
-        if (Debug.ENABLED)
-            Debug.assertion(uid.length == UID.LENGTH);
-
-        _uid = uid;
-    }
-
     /**
-     * Generates UIDs by modifying one created on the server using a SecureRandom,
-     * hopefully without reducing entropy.
+     * TODO window.crypto.getRandomValues.
      */
     @Override
     byte[] newUID_() {
         byte[] bytes = new byte[UID.LENGTH];
-        System.arraycopy(_uid, 0, bytes, 0, bytes.length);
+        int n = 0;
 
-        // Shuffle the first bytes, they can be used as hash
+        for (int i = 0; i < 4; i++) {
+            int value = Random.nextInt();
+            bytes[n++] = (byte) (value >>> 0);
+            bytes[n++] = (byte) (value >>> 8);
+            bytes[n++] = (byte) (value >>> 16);
+            bytes[n++] = (byte) (value >>> 24);
+        }
 
-        int i = 0, rand = randomInt();
-        bytes[i++] ^= rand;
-        bytes[i++] ^= rand >>> 8;
-        bytes[i++] ^= rand >>> 16;
-        bytes[i++] ^= rand >>> 24;
-
-        rand = randomInt();
-        bytes[i++] ^= rand;
-        bytes[i++] ^= rand >>> 8;
-        bytes[i++] ^= rand >>> 16;
-        bytes[i++] ^= rand >>> 24;
-
-        // Increment to guarantee unicity
-
-        bytes[i++] ^= _uidXORCount;
-        bytes[i++] ^= _uidXORCount >>> 8;
-        bytes[i++] ^= _uidXORCount >>> 16;
-        bytes[i++] ^= _uidXORCount >>> 24;
-
-        bytes[i++] ^= _uidXORCount >>> 32;
-        bytes[i++] ^= _uidXORCount >>> 40;
-        bytes[i++] ^= _uidXORCount >>> 48;
-        bytes[i++] ^= _uidXORCount >>> 56;
-
-        _uidXORCount++;
         return bytes;
     }
 
@@ -225,12 +191,11 @@ class GWTPlatform extends Platform {
 
     @Override
     void logDefault(String message) {
-        if (Debug.ENABLED)
-            console(message);
+        console(message);
     }
 
     native void console(String message) /*-{
-		console.log(message);
+    console.log(message);
     }-*/;
 
     @Override
@@ -278,16 +243,16 @@ class GWTPlatform extends Platform {
     }
 
     @Override
-    void execute(Runnable runnable) {
-        Object key;
+    void execute(final Runnable runnable) {
+        Timer timer = new Timer() {
 
-        if (Debug.ENABLED)
-            ThreadAssert.suspend(key = new Object());
+            @Override
+            public void run() {
+                runnable.run();
+            }
+        };
 
-        runnable.run();
-
-        if (Debug.ENABLED)
-            ThreadAssert.resume(key);
+        timer.schedule(0);
     }
 
     @Override

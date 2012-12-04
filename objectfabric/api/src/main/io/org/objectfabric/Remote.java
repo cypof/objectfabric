@@ -65,7 +65,7 @@ public abstract class Remote extends Origin {
         if (_connection != null)
             return InFlight.idle() ? Status.UP_TO_DATE : Status.SYNCHRONIZING;
 
-        if (_actives == 0 || _lastAttempt == NO_RETRY)
+        if (_actives == 0 || _lastAttempt == NO_RETRY || !ClientURIHandler.isEnabled())
             return Status.DISCONNECTED;
 
         if (_attempt != null)
@@ -89,7 +89,7 @@ public abstract class Remote extends Origin {
         _run.addAndRun(new Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 invariants();
 
                 if (_connection != null)
@@ -107,13 +107,13 @@ public abstract class Remote extends Origin {
         _run.addAndRun(new Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 invariants();
 
                 // TODO grace period
                 if (--_actives == 0) {
                     if (_connection != null) {
-                        _connection.disconnect();
+                        _connection.requestClose(null);
                         _connection = null;
                     } else
                         closeAttempt();
@@ -150,7 +150,7 @@ public abstract class Remote extends Origin {
         _run.addAndRun(new Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 invariants();
                 ConnectionAttempt toStart = null;
                 closeAttempt();
@@ -188,11 +188,11 @@ public abstract class Remote extends Origin {
 
             @SuppressWarnings("null")
             @Override
-            void run(Actor actor) {
+            void run() {
                 invariants();
 
                 if (_attempt == null || _actives == 0)
-                    connection.disconnect();
+                    connection.requestClose(null);
                 else {
                     _attempt = null;
                     _connection = connection;
@@ -219,7 +219,7 @@ public abstract class Remote extends Origin {
         _run.addAndRun(new Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 if (_connection != null) {
                     uri.runIf(new Runnable() {
 
@@ -240,7 +240,7 @@ public abstract class Remote extends Origin {
         _run.addAndRun(new Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 invariants();
                 long now = 0, next = 0;
                 boolean ignore = true;
@@ -251,7 +251,7 @@ public abstract class Remote extends Origin {
                 }
 
                 if (connection != null && connection == _connection) {
-                    connection.disconnect();
+                    connection.requestClose(null);
                     _connection = null;
                     ignore = false;
                 }
@@ -304,38 +304,18 @@ public abstract class Remote extends Origin {
                 ThreadAssert.resume(this, false);
 
             onRunStarting();
-            runMessages();
+            runMessages(false);
 
             if (Debug.ENABLED)
                 ThreadAssert.suspend(this);
 
-            onRunEnded();
+            onRunEnded(false);
         }
     }
 
     //
 
     abstract Headers headers();
-
-    @Override
-    boolean start(WorkspaceSave save) {
-        Connection connection = _connection;
-
-        if (connection != null)
-            return connection.start(save);
-
-        return false;
-    }
-
-    @Override
-    void start(WorkspaceLoad load) {
-        Connection connection = _connection;
-
-        if (connection != null)
-            connection.start(load);
-        else
-            load.onResponseNull();
-    }
 
     //
 

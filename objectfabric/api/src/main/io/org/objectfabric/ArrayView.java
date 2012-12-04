@@ -38,6 +38,15 @@ abstract class ArrayView extends View {
         return _ticks == null;
     }
 
+    final boolean contains(long tick) {
+        if (Debug.ENABLED)
+            Platform.get().assertLock(this, false);
+
+        synchronized (this) {
+            return Tick.contains(_ticks, tick);
+        }
+    }
+
     final void clone(long[] value) {
         if (Debug.ENABLED)
             Platform.get().assertLock(this, true);
@@ -146,5 +155,22 @@ abstract class ArrayView extends View {
 
             return updated ? Platform.get().clone(_ticks) : null;
         }
+    }
+
+    final void onLoad(URI uri, long[] ticks, long[] compare) {
+        long[] updated = merge(ticks);
+
+        if (updated != null) {
+            if (updated.length != 0 || !location().isCache())
+                uri.onKnown(this, updated);
+
+            ticks = updated;
+        }
+
+        if (compare != null)
+            for (int i = 0; i < compare.length; i++)
+                if (!Tick.isNull(compare[i]))
+                    if (!Tick.contains(ticks, compare[i]))
+                        uri.getBlock(this, compare[i]);
     }
 }

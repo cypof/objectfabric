@@ -3,107 +3,117 @@
 <script src="objectfabric/objectfabric.nocache.js"></script>
 </head>
 <body>
-	<h1>JavaScript - ObjectModel</h1>
-	<div id="text">Loading...</div>
-	<script>
-		function write(s) {
-			document.getElementById('text').innerHTML += '<br>' + s;
-		}
+  <h1>JavaScript - ObjectModel</h1>
+  <div id="text">Loading...</div>
+  <script>
+      function write(s) {
+        document.getElementById('text').innerHTML += '<br>' + s;
+      }
 
-		// OF for JS supports the same built-in types as other platforms, but
-		// currently no custom objects
-		function onof(of) {
-			var uri = "ws://localhost:8888";
+      // OF for JS supports the same built-in types as other platforms, but
+      // currently no custom objects
+      function onof(of) {
+        var uri = "ws://localhost:8888";
 
-			// Immutables, not all types (C.f. Java class Immutable) are supported
+        // Immutables (C.f. Java class Immutable), not all types are
+        // supported by gwt-exporter
 
-			of.resolve(uri + "/string").get(function(s) {
-				write("/string: " + s);
-			});
+        of.open(uri + "/string", function(resource) {
+          write("/string: " + resource.get());
+          write("permission: " + resource.permission());
+        });
 
-			of.resolve(uri + "/int").get(function(i) {
-				write("/int: " + i);
-			});
+        of.open(uri + "/int", function(resource) {
+          write("/int: " + resource.get());
+        });
 
-			// Sets
+        // Sets
 
-			of.resolve(uri + "/set").get(function(set) {
-				set.each(function(e) {
-					write("/set: " + e);
-				});
+        of.open(uri + "/set", function(resource) {
+          var set = resource.get();
 
-				// Listen for changes
+          set.each(function(e) {
+            write("/set: " + e);
+          });
 
-				set.onadd(function(e) {
-					write("/set: added " + e);
-				});
+          // Listen for changes
 
-				set.onremove(function(e) {
-					write("/set: removed " + e);
-				});
+          set.onadd(function(e) {
+            write("/set: added " + e);
+          });
 
-				// Update
+          set.onremove(function(e) {
+            write("/set: removed " + e);
+          });
 
-				set.add("e");
-				set.remove("e");
-			});
+          // Update
 
-			// Maps
+          set.add("e");
+          set.remove("e");
+        });
 
-			of.resolve(uri + "/map").get(function(map) {
-				map.each(function(key) {
-					write("/map: " + key + "=" + map.get(key));
-				});
+        // Maps
 
-				// Listen for changes
+        of.open(uri + "/map", function(resource) {
+          var map = resource.get();
 
-				map.onput(function(key) {
-					write("/map: put " + key + "=" + map.get(key));
-				});
+          map.each(function(key) {
+            write("/map: " + key + "=" + map.get(key));
+          });
 
-				map.onremove(function(key) {
-					write("/map: removed " + key);
-				});
+          // Listen for changes
 
-				// Update
+          map.onput(function(key) {
+            write("/map: put " + key + "=" + map.get(key));
+          });
 
-				map.put("a", "b");
-				map.remove("a");
-			});
+          map.onremove(function(key) {
+            write("/map: removed " + key);
+          });
 
-			// Arrays
+          // Update
 
-			of.resolve(uri + "/arrayOfInt").get(function(array) {
-				write("/array: [0]=" + array.get(0));
-				write("/array: [5]=" + array.get(5));
-				write("/array: [8]=" + array.get(8));
+          map.put("a", "b");
+          map.remove("a");
+        });
 
-				// Listen for changes
+        // Arrays
 
-				array.onset(function(i) {
-					write("/array: set " + i + "=" + array.get(i));
-				});
+        of.open(uri + "/arrayOfInt", function(resource) {
+          var array = resource.get();
 
-				// Update
-				array.set(9, 2);
-			});
+          write("/array: [0]=" + array.get(0));
+          write("/array: [5]=" + array.get(5));
+          write("/array: [8]=" + array.get(8));
 
-			// Counters
+          // Listen for changes
 
-			of.resolve(uri + "/counter").get(function(counter) {
-				write("/counter: " + counter.get());
+          array.onset(function(i) {
+            write("/array: set " + i + "=" + array.get(i));
+          });
 
-				// Listen for changes
+          // Update
+          array.set(9, 2);
+        });
 
-				// TODO
-				// 				counter.onadd(function(delta) {
-				// 					write("/array: set " + value);
-				// 				});
+        // Counters
 
-				// Update
-				counter.add(1);
-			});
-		}
-	</script>
+        of.open(uri + "/counter", function(resource) {
+          var counter = resource.get();
+
+          write("/counter: " + counter.get());
+
+          // Listen for changes
+
+          // TODO
+          // 				counter.onadd(function(delta) {
+          // 					write("/array: set " + value);
+          // 				});
+
+          // Update
+          counter.add(1);
+        });
+      }
+    </script>
 </body>
 </html>

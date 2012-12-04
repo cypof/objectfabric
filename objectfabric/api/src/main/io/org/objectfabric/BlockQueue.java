@@ -51,7 +51,7 @@ abstract class BlockQueue extends Actor {
         addAndRun(new Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 // TODO why can be added twice?
                 if (index(block.URI, block.Tick) >= 0) {
                     block.cancel();
@@ -184,6 +184,9 @@ abstract class BlockQueue extends Actor {
             Removals = removals;
 
             Hash = hash(uri, tick);
+
+            if (Debug.ENABLED)
+                Debug.assertion(removals == null || removals.length > 0);
         }
 
         Block() {
@@ -325,6 +328,9 @@ abstract class BlockQueue extends Actor {
     }
 
     private final void check() {
+        if (!Debug.ENABLED)
+            throw new IllegalStateException();
+
         if (_size <= _indexes.length) {
             PlatformSet<Integer> queued = new PlatformSet<Integer>();
 

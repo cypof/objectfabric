@@ -13,5 +13,6 @@
     <module>cachebuilder</module>
     <module>javafx</module>
     <module>netty</module>
+    <module>sqlite4java</module>
   </modules>
 </project>

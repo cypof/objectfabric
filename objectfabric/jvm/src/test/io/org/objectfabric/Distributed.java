@@ -134,7 +134,7 @@ public class Distributed {
         final Workspace workspace = Platform.newTestWorkspace();
         Memory memory = new Memory(false);
         workspace.addURIHandler(memory);
-        Resource resource = workspace.resolve("/object");
+        Resource resource = workspace.open("/object");
         TObject object = create(test, resource, clients, flags);
         resource.set(object);
         workspace.flush();

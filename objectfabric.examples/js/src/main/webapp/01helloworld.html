@@ -8,8 +8,8 @@
   <script>
       // Called when ObjectFabric is loaded
       function onof(of) {
-        of.resolve("ws://localhost:8888/helloworld").get(function(value) {
-          document.getElementById('text').innerHTML += '<br>' + value;
+        of.open("ws://localhost:8888/helloworld", function(resource) {
+          document.getElementById('text').innerHTML += '<br>' + resource.get();
         });
       }
     </script>

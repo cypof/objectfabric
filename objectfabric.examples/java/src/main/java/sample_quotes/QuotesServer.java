@@ -49,8 +49,8 @@ public class QuotesServer {
         /*
          * Send random quotes.
          */
-        final Resource goog = workspace.resolve("/GOOG");
-        final Resource msft = workspace.resolve("/MSFT");
+        final Resource goog = workspace.open("/GOOG");
+        final Resource msft = workspace.open("/MSFT");
 
         new Thread() {
 
@@ -73,7 +73,7 @@ public class QuotesServer {
         /*
          * Listen for new orders.
          */
-        final Resource orders = workspace.resolve("/orders");
+        final Resource orders = workspace.open("/orders");
         TSet<Order> set = new TSet<Order>(orders);
         orders.set(set);
 

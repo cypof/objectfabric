@@ -37,19 +37,11 @@ public class Main implements EntryPoint {
         /*
          * Get resource from server. (Java examples server must be running)
          */
-        Resource resource = workspace.resolve(URI);
-
-        resource.getAsync(new AsyncCallback<Object>() {
+        workspace.openAsync(URI, new AsyncCallback<Resource>() {
 
             @Override
-            public void onSuccess(Object result) {
-                RootPanel.get("text").add(new HTML((String) result));
-
-                /*
-                 * Close workspace to release its resources and allow disconnection from
-                 * server.
-                 */
-                workspace.close();
+            public void onSuccess(Resource result) {
+                RootPanel.get("text").add(new HTML((String) result.get()));
             }
 
             @Override

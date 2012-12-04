@@ -94,7 +94,7 @@ public class Multi extends TestsHelper {
     }
 
     Resource getResource(Workspace workspace) {
-        return workspace.resolve("");
+        return workspace.open("");
     }
 
     public void run(final Granularity granularity, final int writers, final int writeCount, final int flags) {

@@ -17,5 +17,5 @@ package org.objectfabric;
  * read (synchronizing changes downstream only), or read-write.
  */
 public enum Permission {
-    REJECT, READ, WRITE
+    NONE, READ, WRITE
 }

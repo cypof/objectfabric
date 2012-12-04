@@ -35,22 +35,22 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="IKVM.OpenJDK.Core">
-      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\IKVM.OpenJDK.Core.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.1\lib\net45\IKVM.OpenJDK.Core.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime">
-      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\IKVM.Runtime.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.1\lib\net45\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Java">
-      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\Java.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.1\lib\net45\Java.dll</HintPath>
     </Reference>
     <Reference Include="ObjectFabric">
-      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\ObjectFabric.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.1\lib\net45\ObjectFabric.dll</HintPath>
     </Reference>
     <Reference Include="Shared1">
-      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\Shared1.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.1\lib\net45\Shared1.dll</HintPath>
     </Reference>
     <Reference Include="Shared2">
-      <HintPath>..\packages\ObjectFabric.0.9.0.3\lib\net45\Shared2.dll</HintPath>
+      <HintPath>..\packages\ObjectFabric.0.9.1\lib\net45\Shared2.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

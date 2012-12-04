@@ -40,9 +40,8 @@ public class VMConnection extends Connection {
             Buff buff = Buff.getOrCreate();
             buff.position(Buff.getLargestUnsplitable());
             byte[] temp = _randomSplitter.read(buffer, 0, length, buff.remaining());
-            buff.putBytes(temp, 0, temp.length);
-            buff.limit(buff.position());
-            buff.position(Buff.getLargestUnsplitable());
+            buff.putImmutably(temp, 0, temp.length);
+            buff.limit(buff.position() + temp.length);
 
             if (Debug.ENABLED && buff.remaining() == 0)
                 buff.lock(buff.limit());
@@ -79,7 +78,7 @@ public class VMConnection extends Connection {
                     break;
 
                 int remaining = buff.remaining();
-                buff.getBytes(_buffer, offset, remaining);
+                buff.getImmutably(_buffer, offset, remaining);
                 buff.recycle();
                 offset += remaining;
             }
@@ -96,7 +95,7 @@ public class VMConnection extends Connection {
         idle &= length == 0;
 
         if (length == CLOSED)
-            disconnect();
+            requestClose(null);
         else
             read(buffer, length);
 

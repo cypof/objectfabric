@@ -45,7 +45,7 @@ public class FileSystemTest extends TestsHelper {
             setUID1(workspace);
             FileSystem system = (FileSystem) Platform.get().newTestStore(TEMP);
             workspace.addURIHandler(system);
-            workspace.resolve("file:///test").set("data");
+            workspace.open("file:///test").set("data");
             workspace.close();
 
             if (Debug.ENABLED)
@@ -61,7 +61,7 @@ public class FileSystemTest extends TestsHelper {
             setUID2(workspace);
             FileSystem system = (FileSystem) Platform.get().newTestStore(TEMP);
             workspace.addURIHandler(system);
-            Resource test = workspace.resolve("file:///test");
+            Resource test = workspace.open("file:///test");
             Assert.assertEquals("data", test.get());
             test.set("update");
             workspace.close();
@@ -79,7 +79,7 @@ public class FileSystemTest extends TestsHelper {
             setUID3(workspace);
             FileSystem system = (FileSystem) Platform.get().newTestStore(TEMP);
             workspace.addURIHandler(system);
-            String value = (String) workspace.resolve("file:///test").get();
+            String value = (String) workspace.open("file:///test").get();
             Assert.assertEquals("update", value);
             workspace.close();
 

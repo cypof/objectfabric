@@ -12,14 +12,16 @@
 
 package org.objectfabric;
 
+import org.objectfabric.JS.Closure;
+import org.objectfabric.JS.External;
+import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
-import org.timepedia.exporter.client.Exportable;
 
 @SuppressWarnings("unchecked")
 @Export("map")
 @ExportPackage("of")
-public class JSMap implements Exportable {
+public class JSMap implements External {
 
     static final class MapInternal extends TMap implements Internal {
 
@@ -30,7 +32,7 @@ public class JSMap implements Exportable {
         }
 
         @Override
-        public Exportable getOrCreateJS() {
+        public External external() {
             if (_js == null) {
                 _js = new JSMap();
                 _js._internal = this;
@@ -49,8 +51,13 @@ public class JSMap implements Exportable {
     private JSMap() {
     }
 
+    @Override
+    public Internal internal() {
+        return _internal;
+    }
+
     public Object get(Object key) {
-        return _internal.get(key);
+        return JS.out(_internal.get(key));
     }
 
     public void clear() {
@@ -58,20 +65,20 @@ public class JSMap implements Exportable {
     }
 
     public void put(Object key, Object value) {
-        _internal.put(key, value);
+        _internal.put(JS.in(key), JS.in(value));
     }
 
     public void each(Closure closure) {
         for (Object key : _internal.keySet()) {
             if (key instanceof Internal)
-                closure.runExportable(((Internal) key).getOrCreateJS());
+                closure.runExportable(((Internal) key).external());
             else
                 closure.runImmutable(key);
         }
     }
 
     public void remove(Object key) {
-        _internal.remove(key);
+        _internal.remove(JS.in(key));
     }
 
     public int size() {
@@ -86,7 +93,7 @@ public class JSMap implements Exportable {
             @Override
             public void onPut(Object key) {
                 if (key instanceof Internal)
-                    closure.runExportable(((Internal) key).getOrCreateJS());
+                    closure.runExportable(((Internal) key).external());
                 else
                     closure.runImmutable(key);
             }
@@ -99,7 +106,7 @@ public class JSMap implements Exportable {
             @Override
             public void onRemove(Object key) {
                 if (key instanceof Internal)
-                    closure.runExportable(((Internal) key).getOrCreateJS());
+                    closure.runExportable(((Internal) key).external());
                 else
                     closure.runImmutable(key);
             }

@@ -112,17 +112,17 @@ final class MemoryView extends View {
         }
 
         if (duplicate != null) {
-            Buff[] buffs = new Buff[] { duplicate };
+            Buff[] duplicates = new Buff[] { duplicate };
 
             if (Debug.THREADS) {
                 ThreadAssert.exchangeTake(duplicate);
-                ThreadAssert.exchangeGive(buffs, duplicate);
+                ThreadAssert.exchangeGive(duplicates, duplicate);
             }
 
-            uri.onBlock(this, tick, buffs, null, true, null, false);
+            uri.onBlock(this, tick, duplicates, null, true, null, false, null);
 
             if (Debug.THREADS)
-                ThreadAssert.exchangeTake(buffs);
+                ThreadAssert.exchangeTake(duplicates);
 
             duplicate.recycle();
         }

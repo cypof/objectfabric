@@ -18,8 +18,12 @@ import java.util.concurrent.Future;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
- * A resource can be anything from a text string to a complex object graph. Objects from a
- * resource can only reference objects belonging to the same resource.
+ * Like a REST resource. Resources are represented by a class instead of returning their
+ * content directly to allow additional operations, like adding a listener for changes or
+ * reading the associated {@link Permission}. The resource value can be accessed using
+ * {@link #get()} and {@link #set(Object)}, and can be anything from a text string to a
+ * complex object graph. Objects from a resource can only reference objects belonging to
+ * the same resource.
  */
 public class Resource extends TObject {
 
@@ -128,83 +132,31 @@ public class Resource extends TObject {
 
     //
 
-    public final boolean isLoaded() {
-        if (_uri == null)
-            wrongResource_();
-
-        return _goals == null;
-    }
-
     /**
-     * Gets resource synchronously. The calling thread blocks until the first location
-     * responds (origin or cache). Returned value might not be the most up to date
-     * version, and change when following responses are received from other locations.
+     * Gets resource content. Caller thread does not block as content has been retrieved
+     * when the resource was opened.
      */
     public Object get() {
+        if (Debug.ENABLED)
+            Debug.assertion(isLoaded());
+
         if (_uri == null)
             wrongResource_();
 
-        for (;;) {
-            Object value = getFromMemory();
-
-            if (value != null)
-                return value != NULL ? value : null;
-
-            FutureWithCallbacks<Object> future = _uri.open(this);
-
-            if (future != null) {
-                try {
-                    return future.get();
-                } catch (Exception ex) {
-                    ExpectedExceptionThrower.throwRuntimeException(ex);
-                }
-            }
-        }
-    }
-
-    public Future<Object> getAsync(AsyncCallback<Object> callback) {
-        if (_uri == null)
-            wrongResource_();
-
-        Executor executor = workspaceImpl().callbackExecutor();
-
-        for (;;) {
-            Object value = getFromMemory();
-
-            if (value != null) {
-                value = value != NULL ? value : null;
-
-                if (callback == null)
-                    return new CompletedFuture<Object>(value);
-
-                FutureWithCallback<Object> future = new FutureWithCallback<Object>(callback, executor);
-                future.set(value);
-                return future;
-            }
-
-            FutureWithCallbacks<Object> future = _uri.open(this);
-
-            if (future != null) {
-                if (callback != null)
-                    future.addCallback(callback, executor);
-
-                return future;
-            }
-        }
-    }
-
-    final Object getFromMemory() {
         Transaction outer = current_();
         Transaction inner = startRead_(outer);
-        Object value = getFromMemory(inner, (ResourceVersion) inner.getVersion(this), true);
+        Object value = getFromMemory(inner, (ResourceVersion) inner.getVersion(this));
         endRead_(outer, inner);
         return value;
     }
 
     /**
-     * Updates resource lazily. Calling thread does not block.
+     * Sets resource content. Caller thread does not block.
      */
     public void set(Object value) {
+        if (Debug.ENABLED)
+            Debug.assertion(isLoaded());
+
         if (_uri == null)
             wrongResource_();
 
@@ -214,22 +166,11 @@ public class Resource extends TObject {
         Transaction outer = current_();
         Transaction inner = startWrite_(outer);
         ResourceVersion version = (ResourceVersion) getOrCreateVersion_(inner);
-        boolean open = getFromMemory(inner, version, false) == null;
         version._value = value;
         endWrite_(outer, inner);
-
-        if (open)
-            _uri.open(this);
     }
 
-    /**
-     * Deletes resource lazily. Calling thread does not block.
-     */
-    public void delete() {
-        set(NULL);
-    }
-
-    private final Object getFromMemory(Transaction transaction, ResourceVersion version, boolean markRead) {
+    private final Object getFromMemory(Transaction transaction, ResourceVersion version) {
         if (version != null && version._value != null)
             return version._value;
 
@@ -244,7 +185,7 @@ public class Resource extends TObject {
             }
         }
 
-        if (markRead && !transaction.ignoreReads()) {
+        if (!transaction.ignoreReads()) {
             Version read = transaction.getRead(this);
 
             if (read == null) {
@@ -257,15 +198,12 @@ public class Resource extends TObject {
         }
 
         versions = transaction.getPublicSnapshotVersions();
-        return getFromPublicVersions(versions);
-    }
 
-    private final Object getFromPublicVersions(Version[][] versions) {
         for (int i = versions.length - 1; i > TransactionManager.OBJECTS_VERSIONS_INDEX; i--) {
-            ResourceVersion version = (ResourceVersion) TransactionBase.getVersion(versions[i], this);
+            ResourceVersion v = (ResourceVersion) TransactionBase.getVersion(versions[i], this);
 
-            if (version != null && version._value != null)
-                return version._value;
+            if (v != null && v._value != null)
+                return v._value;
         }
 
         ResourceVersion shared = (ResourceVersion) shared_();
@@ -328,15 +266,12 @@ public class Resource extends TObject {
 
         _permission = permission;
 
-        if (permission == Permission.REJECT)
-            _uri.onCancel(this, new RuntimeException(Strings.PERMISSION_REJECT));
-
         // Forget acks if permission is not WRITE
         if (permission != Permission.WRITE) {
             watcher().actor().addAndRun(new Actor.Message() {
 
                 @Override
-                void run(Actor actor) {
+                void run() {
                     List<Long> toRemove = null;
 
                     for (Entry<Long, NewBlock> entry : _pendingAcks.entrySet()) {
@@ -360,11 +295,13 @@ public class Resource extends TObject {
         _uri.onCancel(this, new RemoteException(Strings.URI_UNRESOLVED));
     }
 
+    //
+
     final void getKnown() {
         watcher().actor().addAndRun(new Actor.Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 if (_pendingAcks.size() > 0)
                     tellKnown();
             }
@@ -392,7 +329,7 @@ public class Resource extends TObject {
         watcher().actor().addAndRun(new Actor.Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 if (ticks.length == 0)
                     onUpToDate();
                 else {
@@ -439,7 +376,7 @@ public class Resource extends TObject {
         watcher().actor().addAndRun(new Actor.Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 NewBlock block = _pendingAcks.get(tick);
 
                 if (block != null) {
@@ -457,7 +394,7 @@ public class Resource extends TObject {
                     if (Debug.THREADS)
                         ThreadAssert.suspend(key = new Object());
 
-                    _uri.onBlock(Resource.this, tick, duplicates, null, true, null, true);
+                    _uri.onBlock(Resource.this, tick, duplicates, null, true, null, true, null);
 
                     if (Debug.THREADS) {
                         ThreadAssert.resume(key);
@@ -482,7 +419,7 @@ public class Resource extends TObject {
                         watcher().actor().addAndRun(new Actor.Message() {
 
                             @Override
-                            void run(Actor actor) {
+                            void run() {
                                 onEnqueued();
                             }
                         });
@@ -501,44 +438,48 @@ public class Resource extends TObject {
         watcher().actor().addAndRun(new Actor.Message() {
 
             @Override
-            void run(Actor actor) {
-                NewBlock block = _pendingAcks.get(tick);
-
-                if (block != null) {
-                    Location[] caches = _workspace.caches();
-
-                    // Wait for ack of caches if present
-                    if (caches != null) {
-                        for (int i = 0; i < caches.length; i++) {
-                            if (view.location() == caches[i]) {
-                                block.PendingAcksBitSet = Bits.unset(block.PendingAcksBitSet, i);
-                                break;
-                            }
-                        }
-
-                        int mask = -1 >>> (32 - caches.length);
-
-                        if ((block.PendingAcksBitSet & mask) == 0)
-                            removePendingAck(tick);
-                    } else {
-                        // Otherwise wait for origin ack
-                        if (view.location() == uri().origin()) {
-                            block.PendingAcksBitSet &= ~URIResolver.ORIGIN_BIT;
-
-                            if (block.PendingAcksBitSet == 0)
-                                removePendingAck(tick);
-                        }
-                    }
-                }
+            void run() {
+                ack(view.location(), tick);
             }
         });
     }
 
-    final void onFailed(final Object source, long tick) {
+    final void ack(Location location, long tick) {
+        NewBlock block = _pendingAcks.get(tick);
+
+        if (block != null) {
+            Location[] caches = _workspace.caches();
+
+            // Wait for ack of caches if present
+            if (caches != null) {
+                for (int i = 0; i < caches.length; i++) {
+                    if (location == caches[i]) {
+                        block.PendingAcksBitSet = Bits.unset(block.PendingAcksBitSet, i);
+                        break;
+                    }
+                }
+
+                int mask = -1 >>> (32 - caches.length);
+
+                if ((block.PendingAcksBitSet & mask) == 0)
+                    removePendingAck(tick);
+            } else {
+                // Otherwise wait for origin ack
+                if (location == uri().origin()) {
+                    block.PendingAcksBitSet &= ~URIResolver.ORIGIN_BIT;
+
+                    if (block.PendingAcksBitSet == 0)
+                        removePendingAck(tick);
+                }
+            }
+        }
+    }
+
+    final void onFailed(long tick) {
         watcher().actor().addAndRun(new Actor.Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 // If data loss, show currently loaded instead of just blocking
                 onUpToDate();
             }
@@ -711,13 +652,8 @@ public class Resource extends TObject {
             else {
                 for (int i = versions.length - 1; i >= 0; i--) {
                     if (versions[i] != null) {
-                        if (versions[i].object() != this || !watcher().hasPendingAcks(this)) {
-                            Version shared = versions[i].object().shared_();
-                            shared.merge(shared, versions[i], true);
-                        } else {
-                            int todo;
-                            System.out.println("skipping root");
-                        }
+                        Version shared = versions[i].object().shared_();
+                        shared.merge(shared, versions[i], true);
                     }
                 }
             }
@@ -918,48 +854,40 @@ public class Resource extends TObject {
         return removals;
     }
 
+    //
+
+    private final boolean isLoaded() {
+        return _goals == null;
+    }
+
     private final void onUpToDate() {
-        FutureWithCallbacks<Object> future = _uri.markLoaded(this);
-
-        if (future != null) {
-            _goals = null;
-
-            if (Debug.ENABLED)
-                Debug.assertion(current_() == null);
-
-            Snapshot snapshot;
-
-            for (;;) {
-                snapshot = workspaceImpl().snapshotWithoutClosing();
-
-                if (snapshot.last().tryToAddWatchers(1))
-                    break;
-            }
-
-            if (Debug.ENABLED)
-                Helper.instance().addWatcher(snapshot.last(), this, snapshot, "Resource::onUpToDate()");
-
-            Object value = getFromPublicVersions(snapshot.writes());
-            value = value != NULL ? value : null;
-
-            if (Debug.ENABLED)
-                Helper.instance().removeWatcher(snapshot.last(), this, snapshot, "Resource::onUpToDate()");
-
-            snapshot.last().removeWatchers(workspaceImpl(), 1, false, null);
-            future.set(value);
-
-            if (watcher().removeHasPendingAcks(this, false)) {
-                if (Debug.ENABLED)
-                    Debug.assertion(_pendingAcks.size() == 0);
-
-                watcher().writeChangesUntilUpToDate(this, value);
-            }
-        }
+        _goals = null;
+        _uri.markLoaded(this);
     }
 
     //
 
-    final void writeNewBlock(long tick, Version[] versions) {
+    static final class NewBlock {
+
+        final Resource Resource;
+
+        final long Tick;
+
+        final Buff[] Buffs;
+
+        final long[] Removals;
+
+        int PendingAcksBitSet;
+
+        NewBlock(Resource resource, long tick, Buff[] buffs, long[] removals) {
+            Resource = resource;
+            Tick = tick;
+            Buffs = buffs;
+            Removals = removals;
+        }
+    }
+
+    final NewBlock writeNewBlock(long tick, Version[] versions) {
         if (Debug.ENABLED) {
             Debug.assertion(isLoaded());
             boolean ok = false;
@@ -981,10 +909,9 @@ public class Resource extends TObject {
         watcher().writeHappenedBefore(happenedBefore);
 
         _ordered.add(new Block(tick, versions, happenedBefore, null));
-
         _loaded = Tick.putMax(_loaded, tick, true);
-        Buff[] buffs = watcher().finishTick();
-        NewBlock block = new NewBlock();
+
+        NewBlock block = new NewBlock(this, tick, watcher().finishTick(), removals);
         Location[] caches = watcher().workspace().caches();
 
         // Wait for ack of caches if any
@@ -995,79 +922,47 @@ public class Resource extends TObject {
         if (_permission == null || _permission == Permission.WRITE)
             block.PendingAcksBitSet |= URIResolver.ORIGIN_BIT;
 
-        if (block.PendingAcksBitSet != 0)
-            addPendingAck(tick, block, buffs);
-
-        if (removals != null)
-            for (int i = 0; i < removals.length; i++)
-                if (!Tick.isNull(removals[i]))
-                    removePendingAck(removals[i]);
-
-        Object key;
-
-        if (Debug.THREADS) {
-            for (int i = 0; i < buffs.length; i++)
-                ThreadAssert.exchangeGive(buffs, buffs[i]);
-
-            ThreadAssert.suspend(key = new Object());
-        }
-
-        Exception exception = onBlock(tick, buffs, removals);
-
-        if (Debug.THREADS) {
-            ThreadAssert.resume(key);
-            ThreadAssert.exchangeTake(buffs);
-        }
-
-        if (Debug.ENABLED)
-            Debug.assertion(exception == null);
-
-        for (int i = 0; i < buffs.length; i++)
-            buffs[i].recycle();
+        updatePendingAcks(block);
 
         if (Stats.ENABLED)
             Stats.Instance.BlockCreated.incrementAndGet();
+
+        onNewBlock();
+        return block;
     }
 
-    Exception onBlock(long tick, Buff[] buffs, long[] removals) {
-        return _uri.onBlock(this, tick, buffs, removals, false, null, true);
+    void onNewBlock() {
     }
 
-    private final void addPendingAck(long tick, NewBlock block, Buff[] buffs) {
-        Buff[] duplicates = new Buff[buffs.length];
+    private final void updatePendingAcks(NewBlock block) {
+        if (block.PendingAcksBitSet != 0) {
+            if (_pendingAcks.size() == 0)
+                watcher().addHasPendingAcks(this);
 
-        for (int i = 0; i < duplicates.length; i++)
-            duplicates[i] = buffs[i].duplicate();
+            _pendingAcks.put(block.Tick, block);
+        }
 
-        block.Buffs = duplicates;
-
-        //
-
-        if (_pendingAcks.size() == 0)
-            watcher().addHasPendingAcks(this);
-
-        _pendingAcks.put(tick, block);
+        if (block.Removals != null)
+            for (int i = 0; i < block.Removals.length; i++)
+                if (!Tick.isNull(block.Removals[i]))
+                    removePendingAck(block.Removals[i]);
     }
 
     private final void removePendingAck(long tick) {
         NewBlock block = _pendingAcks.remove(tick);
 
         if (block != null) {
+            if (Debug.THREADS)
+                ThreadAssert.exchangeTake(block.Buffs);
+
             for (int i = 0; i < block.Buffs.length; i++)
                 block.Buffs[i].recycle();
 
-            watcher().onBlockAck(Tick.time(tick));
+            watcher().onBlockAck(block);
 
             if (_pendingAcks.size() == 0)
                 watcher().removeHasPendingAcks(this, true);
         }
-    }
-
-    private static final class NewBlock {
-
-        Buff[] Buffs;
-
-        int PendingAcksBitSet;
     }
 
     /*
@@ -1145,7 +1040,12 @@ public class Resource extends TObject {
         if (this == workspaceImpl().emptyResource())
             return "Empty URI";
 
-        return _uri.toString();
+        String s = "";
+
+        if (Debug.ENABLED)
+            s += Platform.get().defaultToString(this) + "-";
+
+        return s + _uri.toString();
     }
 
     //

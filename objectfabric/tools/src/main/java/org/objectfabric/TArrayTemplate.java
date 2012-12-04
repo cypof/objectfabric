@@ -20,7 +20,7 @@ package org.objectfabric;
 
 /**
  * Transactional array. ObjectFabric generates implementations for every supported type (
- * listed in {@link Immutable} and extending {@link TObject}) for faster serialization, to
+ * listed in {@link Immutable} or extending {@link TObject}) for faster serialization, to
  * avoid boxing primitive types, and for easier interoperability with .NET generics which
  * require a type at runtime.
  */

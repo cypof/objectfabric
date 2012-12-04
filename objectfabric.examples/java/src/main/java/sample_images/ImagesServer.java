@@ -15,6 +15,11 @@ package sample_images;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -38,7 +43,7 @@ public class ImagesServer {
         FileSystem temp = new FileSystem("temp");
         Workspace workspace = new JVMWorkspace();
         workspace.addURIHandler(temp);
-        Resource resource = workspace.resolve("/images");
+        Resource resource = workspace.open("/images");
 
         /*
          * Share a set arrays of doubles. Each array is of length two, representing the X
@@ -71,5 +76,24 @@ public class ImagesServer {
 
         bootstrap.bind(new InetSocketAddress(8888));
         System.out.println("Started Images server.");
+
+        /*
+         * When packaged as a demo, also launch Jetty to serve demo static files.
+         */
+        if (args != null && args.length == 1) {
+            org.eclipse.jetty.server.Server jetty = new org.eclipse.jetty.server.Server();
+            SelectChannelConnector connector = new SelectChannelConnector();
+            connector.setPort(8080);
+            jetty.addConnector(connector);
+            ResourceHandler resource_handler = new ResourceHandler();
+            resource_handler.setDirectoriesListed(true);
+            resource_handler.setWelcomeFiles(new String[] { "images.html" });
+            resource_handler.setResourceBase(args[0]);
+            HandlerList handlers = new HandlerList();
+            handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
+            jetty.setHandler(handlers);
+            jetty.start();
+            jetty.join();
+        }
     }
 }

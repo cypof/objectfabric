@@ -32,14 +32,14 @@ namespace SampleImages
         {
             Workspace workspace = new Workspace();
             workspace.AddURIHandler(new WebSocketURIHandler());
-            resource = workspace.Resolve("ws://localhost:8888/images");
+            resource = await workspace.OpenAsync("ws://localhost:8888/images");
 
             DispatcherTimer dispatcherTimer = new DispatcherTimer();
             dispatcherTimer.Tick += Refresh;
             dispatcherTimer.Interval = TimeSpan.FromMilliseconds(100);
             dispatcherTimer.Start();
 
-            positions = (TSet<TArray<double>>) await resource.GetAsync();
+            positions = (TSet<TArray<double>>) resource.Value;
             button.IsEnabled = true;
 
             // Register a handler on the set to be notified when an image

@@ -12,6 +12,7 @@
 
 package org.objectfabric;
 
+import org.objectfabric.Range.Id;
 import org.objectfabric.ThreadAssert.SingleThreaded;
 
 @SingleThreaded
@@ -22,11 +23,11 @@ abstract class TObjectReader extends ImmutableReader {
     // TODO clear after each read for GC?
     private TObject[][] _objects = new TObject[0xff + 1][];
 
-    private UID[] _ranges = new UID[0xff + 1];
+    private Id[] _ranges = new Id[0xff + 1];
 
     private ObjectModel[] _models = new ObjectModel[0xff + 1];
 
-    private UID _range;
+    private Id _range;
 
     private ObjectModel _model;
 
@@ -116,13 +117,15 @@ abstract class TObjectReader extends ImmutableReader {
 
     private static final int TOBJECT_ID = 0;
 
-    private static final int TOBJECT_RANGE = 1;
+    private static final int TOBJECT_RANGE_PEER = 1;
 
-    private static final int TOBJECT_MODEL = 2;
+    private static final int TOBJECT_RANGE_ID = 2;
 
-    private static final int TOBJECT_CLASS_ID = 3;
+    private static final int TOBJECT_MODEL = 3;
 
-    private static final int TOBJECT_GENERIC_ARGUMENTS = 4;
+    private static final int TOBJECT_CLASS_ID = 4;
+
+    private static final int TOBJECT_GENERIC_ARGUMENTS = 5;
 
     @SuppressWarnings("fallthrough")
     final TObject[] readTObject(byte flags) {
@@ -157,6 +160,7 @@ abstract class TObjectReader extends ImmutableReader {
 
         int step = TOBJECT_ID;
         int id = 0;
+        byte[] rangePeer = null;
         int classId = 0;
         ObjectModel model = null;
         TType[] genericParameters = null;
@@ -164,6 +168,7 @@ abstract class TObjectReader extends ImmutableReader {
         if (interrupted()) {
             step = resumeInt();
             id = resumeInt();
+            rangePeer = (byte[]) resume();
             classId = resumeInt();
             model = (ObjectModel) resume();
         } else {
@@ -178,6 +183,7 @@ abstract class TObjectReader extends ImmutableReader {
                 if (!canReadByte()) {
                     interrupt(model);
                     interruptInt(classId);
+                    interrupt(rangePeer);
                     interruptInt(id);
                     interruptInt(TOBJECT_ID);
                     return null;
@@ -197,31 +203,49 @@ abstract class TObjectReader extends ImmutableReader {
                     return objects;
                 }
             }
-            case TOBJECT_RANGE: {
+            case TOBJECT_RANGE_PEER: {
                 if ((flags & Writer.TOBJECT_RANGE_CHANGE) != 0) {
                     if ((flags & Writer.TOBJECT_RANGE_CACHED) != 0) {
                         if (!canReadByte()) {
                             interrupt(model);
                             interruptInt(classId);
+                            interrupt(rangePeer);
                             interruptInt(id);
-                            interruptInt(TOBJECT_RANGE);
+                            interruptInt(TOBJECT_RANGE_PEER);
                             return null;
                         }
 
                         int index = readByte() & 0xff;
                         _range = _ranges[index];
                     } else {
-                        byte[] uid = readBinary();
+                        rangePeer = readBinary();
 
                         if (interrupted()) {
                             interrupt(model);
                             interruptInt(classId);
+                            interrupt(rangePeer);
                             interruptInt(id);
-                            interruptInt(TOBJECT_RANGE);
+                            interruptInt(TOBJECT_RANGE_PEER);
+                            return null;
+                        }
+                    }
+                }
+            }
+            case TOBJECT_RANGE_ID: {
+                if ((flags & Writer.TOBJECT_RANGE_CHANGE) != 0) {
+                    if ((flags & Writer.TOBJECT_RANGE_CACHED) == 0) {
+                        if (!canReadLong()) {
+                            interrupt(model);
+                            interruptInt(classId);
+                            interrupt(rangePeer);
+                            interruptInt(id);
+                            interruptInt(TOBJECT_RANGE_ID);
                             return null;
                         }
 
-                        _ranges[uid[0] & 0xff] = _range = new UID(uid);
+                        _range = new Id(Peer.get(new UID(rangePeer)), readLong());
+                        int index = TObjectWriter.getCacheIndex(_range) & 0xff;
+                        _ranges[index] = _range;
 
                         if (Debug.COMMUNICATIONS_LOG)
                             Helper.instance().getSB().append("range: " + _range + ", ");
@@ -239,6 +263,7 @@ abstract class TObjectReader extends ImmutableReader {
                         if (!canReadByte()) {
                             interrupt(model);
                             interruptInt(classId);
+                            interrupt(rangePeer);
                             interruptInt(id);
                             interruptInt(TOBJECT_MODEL);
                             return null;
@@ -252,6 +277,7 @@ abstract class TObjectReader extends ImmutableReader {
                         if (interrupted()) {
                             interrupt(model);
                             interruptInt(classId);
+                            interrupt(rangePeer);
                             interruptInt(id);
                             interruptInt(TOBJECT_MODEL);
                             return null;
@@ -278,6 +304,7 @@ abstract class TObjectReader extends ImmutableReader {
                 if (!canReadInteger()) {
                     interrupt(model);
                     interruptInt(classId);
+                    interrupt(rangePeer);
                     interruptInt(id);
                     interruptInt(TOBJECT_CLASS_ID);
                     return null;
@@ -295,6 +322,7 @@ abstract class TObjectReader extends ImmutableReader {
                     if (interrupted()) {
                         interrupt(model);
                         interruptInt(classId);
+                        interrupt(rangePeer);
                         interruptInt(id);
                         interruptInt(TOBJECT_GENERIC_ARGUMENTS);
                         return null;

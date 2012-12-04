@@ -12,12 +12,13 @@
 
 package org.objectfabric;
 
+import org.objectfabric.JS.External;
+import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
-import org.timepedia.exporter.client.Exportable;
 
 @SuppressWarnings("unchecked")
 @Export
-public class JSCounter implements Exportable {
+public class JSCounter implements External  {
 
     static final class CounterInternal extends Counter implements Internal {
 
@@ -28,7 +29,7 @@ public class JSCounter implements Exportable {
         }
 
         @Override
-        public Exportable getOrCreateJS() {
+        public External external() {
             if (_js == null) {
                 _js = new JSCounter();
                 _js._internal = this;
@@ -42,6 +43,11 @@ public class JSCounter implements Exportable {
 
     public JSCounter(JSResource resource) {
         _internal = new CounterInternal(resource._internal);
+    }
+
+    @Override
+    public Internal internal() {
+        return _internal;
     }
 
     private JSCounter() {

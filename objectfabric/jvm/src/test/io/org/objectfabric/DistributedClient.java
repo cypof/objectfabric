@@ -53,11 +53,11 @@ public class DistributedClient {
         // else
         // uri = "tcp://localhost:8080/object";
 
-        workspace.resolve(uri).getAsync(new AsyncCallback<Object>() {
+        workspace.openAsync(uri, new AsyncCallback<Resource>() {
 
             @Override
-            public void onSuccess(Object result) {
-                _object = (Limit32) result;
+            public void onSuccess(Resource result) {
+                _object = (Limit32) result.get();
 
                 _progress.set(GO);
 

@@ -23,7 +23,7 @@ public class BitsTest extends TestsHelper {
         final int SIZE = 100;
         TIndexedNRead tester = new TIndexedNRead();
 
-        tester.setObject(new TObject(workspace.resolve("")));
+        tester.setObject(new TObject(workspace.open("")));
 
         for (int set = 0; set < SIZE; set++) {
             for (int i = 0; i < SIZE; i++)
@@ -40,7 +40,7 @@ public class BitsTest extends TestsHelper {
         Workspace workspace = Platform.newTestWorkspace();
         final int SIZE = 100;
         TIndexedNRead tester = new TIndexedNRead();
-        tester.setObject(new TObject(workspace.resolve("")));
+        tester.setObject(new TObject(workspace.open("")));
 
         for (int set = 0; set < SIZE; set++) {
             for (int i = 0; i < SIZE; i++)
@@ -58,7 +58,7 @@ public class BitsTest extends TestsHelper {
         final int SIZE = 1000;
         boolean[] array = new boolean[SIZE];
         TIndexedNRead tester = new TIndexedNRead();
-        tester.setObject(new TObject(workspace.resolve("")));
+        tester.setObject(new TObject(workspace.open("")));
 
         for (int i = 0; i < SIZE / 10; i++) {
             int index = Platform.get().randomInt(SIZE);
@@ -78,7 +78,7 @@ public class BitsTest extends TestsHelper {
         final int SIZE = 1000;
         boolean[] array = new boolean[SIZE];
         TIndexedNRead tester = new TIndexedNRead();
-        tester.setObject(new TObject(workspace.resolve("")));
+        tester.setObject(new TObject(workspace.open("")));
 
         for (int i = 0; i < SIZE / 10; i++) {
             int index = Platform.get().randomInt(SIZE);

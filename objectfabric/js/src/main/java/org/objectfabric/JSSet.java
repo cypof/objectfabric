@@ -12,14 +12,16 @@
 
 package org.objectfabric;
 
+import org.objectfabric.JS.Closure;
+import org.objectfabric.JS.External;
+import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
-import org.timepedia.exporter.client.Exportable;
 
 @SuppressWarnings("unchecked")
 @Export("set")
 @ExportPackage("of")
-public class JSSet implements Exportable {
+public class JSSet implements External {
 
     static final class SetInternal extends TSet implements Internal {
 
@@ -30,7 +32,7 @@ public class JSSet implements Exportable {
         }
 
         @Override
-        public Exportable getOrCreateJS() {
+        public External external() {
             if (_js == null) {
                 _js = new JSSet();
                 _js._internal = this;
@@ -49,8 +51,13 @@ public class JSSet implements Exportable {
     private JSSet() {
     }
 
+    @Override
+    public Internal internal() {
+        return _internal;
+    }
+
     public void add(Object item) {
-        _internal.add(item);
+        _internal.add(JS.in(item));
     }
 
     public void clear() {
@@ -58,20 +65,20 @@ public class JSSet implements Exportable {
     }
 
     public boolean contains(Object item) {
-        return _internal.contains(item);
+        return _internal.contains(JS.in(item));
     }
 
     public void each(Closure closure) {
         for (Object item : _internal) {
             if (item instanceof Internal)
-                closure.runExportable(((Internal) item).getOrCreateJS());
+                closure.runExportable(((Internal) item).external());
             else
                 closure.runImmutable(item);
         }
     }
 
     public void remove(Object item) {
-        _internal.remove(item);
+        _internal.remove(JS.in(item));
     }
 
     public int size() {
@@ -86,7 +93,7 @@ public class JSSet implements Exportable {
             @Override
             public void onPut(Object key) {
                 if (key instanceof Internal)
-                    closure.runExportable(((Internal) key).getOrCreateJS());
+                    closure.runExportable(((Internal) key).external());
                 else
                     closure.runImmutable(key);
             }
@@ -99,7 +106,7 @@ public class JSSet implements Exportable {
             @Override
             public void onRemove(Object key) {
                 if (key instanceof Internal)
-                    closure.runExportable(((Internal) key).getOrCreateJS());
+                    closure.runExportable(((Internal) key).external());
                 else
                     closure.runImmutable(key);
             }

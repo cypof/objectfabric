@@ -120,8 +120,8 @@ public final class CLRBuff extends Buff {
 
     @Override
     final void putShort(short value) {
-        putByte((byte) (value & 0xff));
-        putByte((byte) ((value >>> 8) & 0xff));
+        putByte((byte) (value >>> 0));
+        putByte((byte) (value >>> 8));
     }
 
     @Override
@@ -145,10 +145,10 @@ public final class CLRBuff extends Buff {
 
     @Override
     final void putInt(int value) {
-        putByte((byte) ((value >>> 0) & 0xff));
-        putByte((byte) ((value >>> 8) & 0xff));
-        putByte((byte) ((value >>> 16) & 0xff));
-        putByte((byte) ((value >>> 24) & 0xff));
+        putByte((byte) (value >>> 0));
+        putByte((byte) (value >>> 8));
+        putByte((byte) (value >>> 16));
+        putByte((byte) (value >>> 24));
     }
 
     @Override
@@ -160,29 +160,27 @@ public final class CLRBuff extends Buff {
 
     @Override
     final void putLong(long value) {
-        putInt((int) value);
+        putInt((int) (value >>> 0));
         putInt((int) (value >>> 32));
     }
 
+    //
+
     @Override
-    final void getBytes(byte[] bytes, int offset, int length) {
+    void getImmutably(byte[] bytes, int offset, int length) {
         if (length > remaining())
             throw new RuntimeException();
 
         System.arraycopy(_array, _position, bytes, offset, length);
-        _position += length;
     }
 
     @Override
-    final void putBytes(byte[] bytes, int offset, int length) {
+    void putImmutably(byte[] bytes, int offset, int length) {
         if (length > remaining())
             throw new RuntimeException();
 
         System.arraycopy(bytes, offset, _array, _position, length);
-        _position += length;
     }
-
-    //
 
     @Override
     final void putImmutably(Buff source) {

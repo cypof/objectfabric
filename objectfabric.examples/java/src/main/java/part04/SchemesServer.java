@@ -46,7 +46,7 @@ public class SchemesServer {
         Memory memory = new Memory(false);
         Workspace workspace = new JVMWorkspace();
         workspace.addURIHandler(memory);
-        workspace.resolve("/test").set("data");
+        workspace.open("/test").set("data");
         workspace.close();
 
         /*

@@ -69,7 +69,7 @@ public class SplitRemote {
             Stats.Instance.reset();
 
         Workspace workspace = Platform.get().newTestWorkspace(granularity);
-        _map = new TMap<String, String>(workspace.resolve(""));
+        _map = new TMap<String, String>(workspace.open(""));
 
         TestNotifier notifier = new TestNotifier(workspace);
         workspace.forceChangeNotifier(notifier);

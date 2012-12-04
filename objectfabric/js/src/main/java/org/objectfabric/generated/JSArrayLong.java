@@ -12,15 +12,15 @@
 
 package org.objectfabric.generated;
 
-import org.objectfabric.Closure;
 import org.objectfabric.IndexListener;
-import org.objectfabric.Internal;
+import org.objectfabric.JS.Closure;
+import org.objectfabric.JS.External;
+import org.objectfabric.JS.Internal;
 import org.objectfabric.JSResource;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayLong;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
-import org.timepedia.exporter.client.Exportable;
 import org.timepedia.exporter.client.NoExport;
 
 //==============================================================================
@@ -32,7 +32,7 @@ import org.timepedia.exporter.client.NoExport;
 @SuppressWarnings("unchecked")
 @Export("TArrayLong")
 @ExportPackage("of")
-public class JSArrayLong implements Exportable {
+public class JSArrayLong implements External {
 
     // TODO back with JS typed arrays?
     public static final class ArrayInternal extends TArrayLong implements Internal {
@@ -44,7 +44,7 @@ public class JSArrayLong implements Exportable {
         }
 
         @Override
-        public Exportable getOrCreateJS() {
+        public External external() {
             if (_js == null) {
                 _js = new JSArrayLong();
                 _js._internal = this;
@@ -57,11 +57,16 @@ public class JSArrayLong implements Exportable {
     private ArrayInternal _internal;
 
     public JSArrayLong(JSResource resource, int length) {
-        _internal = new ArrayInternal(resource.internal(), length);
+        _internal = new ArrayInternal((Resource) resource.internal(), length);
     }
 
     @NoExport
     public JSArrayLong() {
+    }
+
+    @Override
+    public Internal internal() {
+        return _internal;
     }
 
     public long get(int index) {

@@ -240,11 +240,11 @@ abstract class Buff extends AtomicInteger {
 
     abstract void putLong(long value);
 
-    abstract void getBytes(byte[] bytes, int offset, int length);
-
-    abstract void putBytes(byte[] bytes, int offset, int length);
-
     //
+
+    abstract void getImmutably(byte[] bytes, int offset, int length);
+
+    abstract void putImmutably(byte[] bytes, int offset, int length);
 
     abstract void putImmutably(Buff source);
 

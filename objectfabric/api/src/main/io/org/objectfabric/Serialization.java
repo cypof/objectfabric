@@ -73,7 +73,7 @@ abstract class Serialization {
     static long[] readTicks(ImmutableReader reader) {
         int step = STEP_PEER;
         Peer peer = null;
-        long[] ticks = Tick.EMPTY;
+        long[] ticks = null;
 
         if (reader.interrupted()) {
             step = reader.resumeInt();
@@ -580,126 +580,6 @@ abstract class Serialization {
                 headers.add(name, s);
                 name = null;
             }
-        }
-    }
-
-    //
-
-    private static final int SUSPENSION_PEER = 0;
-
-    private static final int SUSPENSION_TIME = 1;
-
-    private static final int SUSPENSION_RANGE = 2;
-
-    private static final int SUSPENSION_ID = 3;
-
-    @SuppressWarnings("fallthrough")
-    static void writeWorkspace(ImmutableWriter writer, long tick, byte[] range, byte id) {
-        int step = SUSPENSION_PEER;
-
-        if (writer.interrupted())
-            step = writer.resumeInt();
-
-        switch (step) {
-            case SUSPENSION_PEER: {
-                writer.writeBinary(Peer.get(Tick.peer(tick)).uid());
-
-                if (writer.interrupted()) {
-                    writer.interruptInt(SUSPENSION_PEER);
-                    return;
-                }
-            }
-            case SUSPENSION_TIME: {
-                if (!writer.canWriteLong()) {
-                    writer.interruptInt(SUSPENSION_TIME);
-                    return;
-                }
-
-                writer.writeLong(Tick.time(tick));
-            }
-            case SUSPENSION_RANGE: {
-                writer.writeBinary(range);
-
-                if (writer.interrupted()) {
-                    writer.interruptInt(SUSPENSION_RANGE);
-                    return;
-                }
-            }
-            case SUSPENSION_ID: {
-                if (!writer.canWriteByte()) {
-                    writer.interruptInt(SUSPENSION_ID);
-                    return;
-                }
-
-                writer.writeByte(id);
-            }
-        }
-    }
-
-    static final class WorkspaceState {
-
-        Peer Peer;
-
-        long Time;
-
-        byte[] Range;
-
-        byte Id;
-    }
-
-    @SuppressWarnings("fallthrough")
-    static WorkspaceState readWorkspace(ImmutableReader reader) {
-        int step = SUSPENSION_PEER;
-        WorkspaceState state;
-
-        if (reader.interrupted()) {
-            step = reader.resumeInt();
-            state = (WorkspaceState) reader.resume();
-        } else
-            state = new WorkspaceState();
-
-        switch (step) {
-            case SUSPENSION_PEER: {
-                byte[] value = reader.readBinary();
-
-                if (reader.interrupted()) {
-                    reader.interrupt(state);
-                    reader.interruptInt(SUSPENSION_PEER);
-                    return null;
-                }
-
-                state.Peer = Peer.get(new UID(value));
-            }
-            case SUSPENSION_TIME: {
-                if (!reader.canReadLong()) {
-                    reader.interrupt(state);
-                    reader.interruptInt(SUSPENSION_TIME);
-                    return null;
-                }
-
-                state.Time = reader.readLong();
-            }
-            case SUSPENSION_RANGE: {
-                state.Range = reader.readBinary();
-
-                if (reader.interrupted()) {
-                    reader.interrupt(state);
-                    reader.interruptInt(SUSPENSION_RANGE);
-                    return null;
-                }
-            }
-            case SUSPENSION_ID: {
-                if (!reader.canReadByte()) {
-                    reader.interrupt(state);
-                    reader.interruptInt(SUSPENSION_ID);
-                    return null;
-                }
-
-                state.Id = reader.readByte();
-                return state;
-            }
-            default:
-                throw new IllegalStateException();
         }
     }
 }

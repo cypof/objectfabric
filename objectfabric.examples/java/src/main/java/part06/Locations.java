@@ -15,13 +15,12 @@ package part06;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
-import junit.framework.Assert;
-
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
 import org.jboss.netty.channel.Channels;
 import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
+import org.junit.Assert;
 import org.objectfabric.Address;
 import org.objectfabric.FileSystem;
 import org.objectfabric.JVMServer;
@@ -63,13 +62,13 @@ public class Locations {
         /*
          * Resolving a URI returns an empty resource with memory as origin location.
          */
-        Resource resource = workspace.resolve("/test");
+        Resource resource = workspace.open("/test");
         Assert.assertEquals(memory, resource.origin());
 
         /*
          * Any valid URI can be used and will resolve to memory.
          */
-        resource = workspace.resolve("any:///blah");
+        resource = workspace.open("any:///blah");
         Assert.assertEquals(memory, resource.origin());
 
         /*
@@ -79,7 +78,7 @@ public class Locations {
         workspace.close();
         workspace = new JVMWorkspace();
         workspace.addURIHandler(memory);
-        resource = workspace.resolve("memory:///blah");
+        resource = workspace.open("memory:///blah");
         Assert.assertEquals("data", resource.get());
         workspace.close();
 
@@ -106,11 +105,11 @@ public class Locations {
         workspace = new JVMWorkspace();
         workspace.addURIHandler(handler);
 
-        Assert.assertEquals(locationA, workspace.resolve("memory:///data").origin());
-        Assert.assertEquals(locationB, workspace.resolve("/folder").origin());
+        Assert.assertEquals(locationA, workspace.open("memory:///data").origin());
+        Assert.assertEquals(locationB, workspace.open("/folder").origin());
 
         try {
-            workspace.resolve("/not");
+            workspace.open("/not");
             Assert.fail();
         } catch (Exception ex) {
             Assert.assertTrue(ex.getMessage().contains("URI cannot be resolved"));
@@ -148,18 +147,16 @@ public class Locations {
         /*
          * Client side, resolving a URI returns a resource whose location is the network.
          */
-        resource = workspace.resolve("tcp://localhost:1850/folder");
+        resource = workspace.open("tcp://localhost:1850/folder");
         Assert.assertTrue(resource.origin() instanceof Remote);
         Assert.assertNull(resource.get());
 
         /*
          * This one correctly resolves client side to the network, but cannot be resolved
-         * server side, so get() will fail.
+         * server side.
          */
-        resource = workspace.resolve("tcp://localhost:1850/not");
-
         try {
-            resource.get();
+            resource = workspace.open("tcp://localhost:1850/not");
             Assert.fail();
         } catch (Exception ex) {
             Assert.assertTrue(ex.getMessage().contains("URI cannot be resolved"));

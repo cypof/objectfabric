@@ -3,12 +3,25 @@
   <parent>
     <groupId>org.objectfabric</groupId>
     <artifactId>objectfabric</artifactId>
-    <version>0.9-SNAPSHOT</version>
+    <version>0.9.1-SNAPSHOT</version>
     <relativePath>../objectfabric/pom.xml</relativePath>
   </parent>
 
   <artifactId>objectfabric.examples</artifactId>
   <packaging>pom</packaging>
+
+  <repositories>
+    <repository>
+      <id>oss-staging</id>
+      <url>http://oss.sonatype.org/content/groups/staging</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
 
   <modules>
     <module>csharp</module>
@@ -18,5 +31,6 @@
     <module>gwt.site_demo</module>
     <module>java</module>
     <module>js</module>
+    <module>packages</module>
   </modules>
 </project>

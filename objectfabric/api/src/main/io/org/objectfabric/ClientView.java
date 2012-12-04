@@ -48,6 +48,9 @@ class ClientView extends ArrayView {
 
         uri.onPermission(permission);
 
+        if (permission == Permission.NONE)
+            uri.onKnown(this, Tick.EMPTY);
+
         if (Debug.THREADS)
             ThreadAssert.resume(key);
     }
@@ -81,7 +84,7 @@ class ClientView extends ArrayView {
         if (connection != null)
             for (int i = 0; i < ticks.length; i++)
                 if (!Tick.isNull(ticks[i]))
-                    if (InFlight.awaits(uri, ticks[i]))
+                    if (InFlight.starting(uri, ticks[i]))
                         connection.postGet(uri, ticks[i]);
 
         // Send new local blocks
@@ -118,7 +121,7 @@ class ClientView extends ArrayView {
 
     @Override
     final void getBlock(URI uri, long tick) {
-        if (_permission != Permission.REJECT) {
+        if (_permission != Permission.NONE) {
             Connection connection = getConnection();
 
             if (connection != null)

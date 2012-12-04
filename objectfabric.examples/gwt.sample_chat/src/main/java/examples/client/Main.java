@@ -42,13 +42,11 @@ public class Main implements EntryPoint {
         Workspace workspace = new GWTWorkspace();
         workspace.addURIHandler(new WebSocketURIHandler());
 
-        Resource resource = workspace.resolve("ws://localhost:8888/room1");
-
-        resource.getAsync(new AsyncCallback<Object>() {
+        workspace.openAsync("ws://localhost:8888/room1", new AsyncCallback<Resource>() {
 
             @Override
-            public void onSuccess(Object result) {
-                final TSet<String> messages = (TSet) result;
+            public void onSuccess(Resource result) {
+                final TSet<String> messages = (TSet) result.get();
 
                 /*
                  * Display messages that get added to the set.

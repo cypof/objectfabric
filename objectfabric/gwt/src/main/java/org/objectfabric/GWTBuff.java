@@ -12,7 +12,8 @@
 
 package org.objectfabric;
 
-import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.typedarrays.client.Uint8ArrayNative;
+import com.google.gwt.typedarrays.shared.ArrayBuffer;
 
 final class GWTBuff extends Buff {
 
@@ -20,7 +21,7 @@ final class GWTBuff extends Buff {
 
     private final byte[] _array;
 
-    private final JavaScriptObject _typed;
+    private final Uint8ArrayNative _typed;
 
     private int _position, _limit, _mark;
 
@@ -29,14 +30,22 @@ final class GWTBuff extends Buff {
 
         if (_useTypedArrays) {
             _array = null;
-            _typed = createTyped(capacity);
+            _typed = Uint8ArrayNative.create(capacity);
         } else {
             _array = new byte[capacity];
             _typed = null;
         }
     }
 
-    private GWTBuff(Buff parent, byte[] array, JavaScriptObject typed, int position, int limit, int mark) {
+    GWTBuff(Uint8ArrayNative toWrap) {
+        super(false);
+
+        _array = null;
+        _typed = toWrap;
+        _limit = toWrap.length();
+    }
+
+    private GWTBuff(Buff parent, byte[] array, Uint8ArrayNative typed, int position, int limit, int mark) {
         super(parent);
 
         _array = array;
@@ -55,11 +64,7 @@ final class GWTBuff extends Buff {
     final void destroy() {
     }
 
-    private static native JavaScriptObject createTyped(int length) /*-{
-		return new Uint8Array(length);
-    }-*/;
-
-    public JavaScriptObject getTyped() {
+    public Uint8ArrayNative typed() {
         return _typed;
     }
 
@@ -70,14 +75,10 @@ final class GWTBuff extends Buff {
     @Override
     public int capacity() {
         if (_useTypedArrays)
-            return length(_typed);
+            return _typed.length();
 
         return _array.length;
     }
-
-    private static native int length(JavaScriptObject typed) /*-{
-		return typed.length;
-    }-*/;
 
     @Override
     public int position() {
@@ -121,14 +122,10 @@ final class GWTBuff extends Buff {
             Debug.assertion(_position < _limit);
 
         if (_useTypedArrays)
-            set(_typed, _position++, value & 0xff);
+            _typed.set(_position++, value & 0xff);
         else
             _array[_position++] = value;
     }
-
-    private static native void set(JavaScriptObject typed, int index, int value) /*-{
-		typed[index] = value;
-    }-*/;
 
     @Override
     public byte getByte() {
@@ -136,19 +133,15 @@ final class GWTBuff extends Buff {
             Debug.assertion(_position < _limit);
 
         if (_useTypedArrays)
-            return (byte) get(_typed, _position++);
+            return (byte) _typed.get(_position++);
 
         return _array[_position++];
     }
 
-    private static native int get(JavaScriptObject typed, int index) /*-{
-		return typed[index];
-    }-*/;
-
     @Override
     public void putShort(short value) {
-        putByte((byte) (value & 0xff));
-        putByte((byte) ((value >>> 8) & 0xff));
+        putByte((byte) (value >>> 0));
+        putByte((byte) (value >>> 8));
     }
 
     @Override
@@ -170,10 +163,10 @@ final class GWTBuff extends Buff {
 
     @Override
     public void putInt(int value) {
-        putByte((byte) ((value >>> 0) & 0xff));
-        putByte((byte) ((value >>> 8) & 0xff));
-        putByte((byte) ((value >>> 16) & 0xff));
-        putByte((byte) ((value >>> 24) & 0xff));
+        putByte((byte) (value >>> 0));
+        putByte((byte) (value >>> 8));
+        putByte((byte) (value >>> 16));
+        putByte((byte) (value >>> 24));
     }
 
     @Override
@@ -187,7 +180,7 @@ final class GWTBuff extends Buff {
 
     @Override
     public void putLong(long value) {
-        putInt((int) value);
+        putInt((int) (value >>> 0));
         putInt((int) (value >>> 32));
     }
 
@@ -198,35 +191,31 @@ final class GWTBuff extends Buff {
         return i0 | (i1 << 32);
     }
 
-    @Override
-    public void getBytes(byte[] bytes, int offset, int length) {
-        if (length > remaining())
-            throw new RuntimeException();
-
-        if (_useTypedArrays) {
-            for (int i = 0; i < length; i++)
-                bytes[offset + i] = getByte();
-        } else {
-            System.arraycopy(_array, _position, bytes, offset, length);
-            _position += length;
-        }
-    }
-
-    @Override
-    public void putBytes(byte[] bytes, int offset, int length) {
-        if (length > remaining())
-            throw new RuntimeException();
-
-        if (_useTypedArrays) {
-            for (int i = 0; i < length; i++)
-                putByte(bytes[offset + i]);
-        } else {
-            System.arraycopy(bytes, offset, _array, _position, length);
-            _position += length;
-        }
-    }
-
     //
+
+    @Override
+    public void getImmutably(byte[] bytes, int offset, int length) {
+        if (length > remaining())
+            throw new RuntimeException();
+
+        if (_useTypedArrays) {
+            for (int i = 0; i < length; i++)
+                bytes[offset + i] = (byte) _typed.get(_position + i);
+        } else
+            System.arraycopy(_array, _position, bytes, offset, length);
+    }
+
+    @Override
+    public void putImmutably(byte[] bytes, int offset, int length) {
+        if (length > remaining())
+            throw new RuntimeException();
+
+        if (_useTypedArrays) {
+            for (int i = 0; i < length; i++)
+                _typed.set(_position + i, bytes[offset + i] & 0xff);
+        } else
+            System.arraycopy(bytes, offset, _array, _position, length);
+    }
 
     @Override
     final void putImmutably(Buff source) {
@@ -237,17 +226,12 @@ final class GWTBuff extends Buff {
             throw new RuntimeException();
 
         if (_useTypedArrays)
-            setTyped(buff._typed, buff._position, _typed, _position, length);
+            _typed.set(buff._typed.subarray(buff._position, buff._position + length), _position);
         else
             System.arraycopy(buff._array, buff._position, _array, _position, length);
 
         _position += length;
     }
-
-    private native void setTyped(JavaScriptObject source, int sourceOffset, JavaScriptObject target, int targetOffset, int length) /*-{
-		target.set(source.subarray(sourceOffset, sourceOffset + length),
-				targetOffset);
-    }-*/;
 
     @Override
     final void putLeftover(Buff source) {
@@ -257,4 +241,28 @@ final class GWTBuff extends Buff {
         source.position(source.position() + remaining);
         position(position() - remaining);
     }
+
+    //
+
+    final ArrayBuffer slice() {
+        return slice(typed(), position(), remaining());
+    }
+
+    private static native ArrayBuffer slice(Uint8ArrayNative typed, int offset, int length) /*-{
+    if (!ArrayBuffer.prototype.slice) { // Apparently no slice on IE10 & Firefox?
+      ArrayBuffer.prototype.slice = function(start, end) {
+        var that = new Uint8Array(this);
+        if (end == undefined)
+          end = that.length;
+        var result = new ArrayBuffer(end - start);
+        var resultArray = new Uint8Array(result);
+        for ( var i = 0; i < resultArray.length; i++)
+          resultArray[i] = that[i + start];
+        return result;
+      }
+    }
+
+    // TODO return view instead of copying?
+    return typed.buffer.slice(offset, offset + length);
+    }-*/;
 }

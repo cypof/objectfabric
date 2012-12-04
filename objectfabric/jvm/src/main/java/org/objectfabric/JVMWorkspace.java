@@ -21,8 +21,6 @@ public class JVMWorkspace extends Workspace {
 
     static {
         JVMPlatform.loadClass();
-
-        Runtime.getRuntime().addShutdownHook(new Hook());
     }
 
     public JVMWorkspace() {
@@ -36,13 +34,5 @@ public class JVMWorkspace extends Workspace {
     @Override
     protected Executor createCallbackExecutor() {
         return ThreadPool.getInstance();
-    }
-
-    private static class Hook extends Thread {
-
-        @Override
-        public void run() {
-            onShutdown();
-        }
     }
 }

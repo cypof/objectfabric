@@ -47,7 +47,7 @@ public class FileSystemTest2 extends TestsHelper {
             FileSystem temp = (FileSystem) Platform.get().newTestStore(FileSystemTest.TEMP);
             Workspace workspace = Platform.newTestWorkspace();
             workspace.addURIHandler(temp);
-            Resource resource = workspace.resolve("file:///test");
+            Resource resource = workspace.open("file:///test");
             TMap<String, TSet<Limit32>> map = new TMap<String, TSet<Limit32>>(resource);
 
             for (int i = 0; i < COUNT; i++) {
@@ -63,12 +63,10 @@ public class FileSystemTest2 extends TestsHelper {
 
             Assert.assertEquals(COUNT, map.size());
             Log.write("Inserted " + COUNT + " sets.");
-            long mainWriteLength = 0;
             workspace.flush();
 
             if (Stats.ENABLED) {
-                Assert.assertEquals(1, Stats.Instance.FileWriteCount.get());
-                mainWriteLength = Stats.Instance.FileWriteBytes.get();
+                Assert.assertEquals(1, Stats.Instance.BlockWriteCount.get());
                 Stats.Instance.writeAndReset();
             }
 
@@ -81,11 +79,8 @@ public class FileSystemTest2 extends TestsHelper {
             Log.write("Inserted 1 more set.");
             long addedWriteLength = 0;
 
-            if (Stats.ENABLED) {
-                Assert.assertEquals(1, Stats.Instance.FileWriteCount.get());
-                addedWriteLength = Stats.Instance.FileWriteBytes.get();
-                Assert.assertTrue(addedWriteLength < mainWriteLength / 10);
-            }
+            if (Stats.ENABLED)
+                Assert.assertEquals(1, Stats.Instance.BlockWriteCount.get());
 
             workspace.close();
 
@@ -96,7 +91,7 @@ public class FileSystemTest2 extends TestsHelper {
 
             workspace = Platform.newTestWorkspace();
             workspace.addURIHandler(temp);
-            resource = workspace.resolve("file:///test");
+            resource = workspace.open("file:///test");
 
             @SuppressWarnings("unchecked")
             TMap<String, TSet<Limit32>> map2 = (TMap) resource.get();
@@ -113,9 +108,8 @@ public class FileSystemTest2 extends TestsHelper {
             workspace.close();
 
             if (Stats.ENABLED) {
-                Assert.assertEquals(0, Stats.Instance.FileWriteCount.get());
-                Assert.assertEquals(2, Stats.Instance.FileReadCount.get());
-                Assert.assertEquals(mainWriteLength + addedWriteLength, Stats.Instance.FileReadBytes.get());
+                Assert.assertEquals(0, Stats.Instance.BlockWriteCount.get());
+                Assert.assertEquals(2, Stats.Instance.BlockReadCount.get());
                 Stats.Instance.writeAndReset();
             }
 
@@ -131,7 +125,7 @@ public class FileSystemTest2 extends TestsHelper {
             FileSystem temp = (FileSystem) Platform.get().newTestStore(FileSystemTest.TEMP);
             Workspace workspace = Platform.newTestWorkspace();
             workspace.addURIHandler(temp);
-            Resource resource = workspace.resolve("file:///test");
+            Resource resource = workspace.open("file:///test");
 
             @SuppressWarnings("unchecked")
             final TMap<String, TSet<Limit32>> map = (TMap) resource.get();
@@ -151,8 +145,8 @@ public class FileSystemTest2 extends TestsHelper {
             });
 
             if (Stats.ENABLED) {
-                Assert.assertEquals(0, Stats.Instance.FileWriteCount.get());
-                Assert.assertEquals(2, Stats.Instance.FileReadCount.get());
+                Assert.assertEquals(0, Stats.Instance.BlockWriteCount.get());
+                Assert.assertEquals(2, Stats.Instance.BlockReadCount.get());
                 Stats.Instance.writeAndReset();
             }
 
@@ -166,8 +160,8 @@ public class FileSystemTest2 extends TestsHelper {
 
             if (Stats.ENABLED) {
                 int todo;
-                //Assert.assertEquals(1, Stats.Instance.FileWriteCount.get());
-                Assert.assertEquals(0, Stats.Instance.FileReadCount.get());
+                // Assert.assertEquals(1, Stats.Instance.FileWriteCount.get());
+                Assert.assertEquals(0, Stats.Instance.BlockReadCount.get());
                 Stats.Instance.writeAndReset();
             }
 
@@ -184,7 +178,7 @@ public class FileSystemTest2 extends TestsHelper {
             FileSystem temp = (FileSystem) Platform.get().newTestStore(FileSystemTest.TEMP);
             Workspace workspace = Platform.newTestWorkspace();
             workspace.addURIHandler(temp);
-            Resource resource = workspace.resolve("file:///test");
+            Resource resource = workspace.open("file:///test");
 
             @SuppressWarnings("unchecked")
             final TMap<String, TSet<Limit32>> map = (TMap) resource.get();
@@ -208,7 +202,7 @@ public class FileSystemTest2 extends TestsHelper {
             Log.write("Reopened and read all.");
 
             if (Stats.ENABLED) {
-                Assert.assertEquals(3, Stats.Instance.FileReadCount.get());
+                Assert.assertEquals(3, Stats.Instance.BlockReadCount.get());
                 Stats.Instance.writeAndReset();
             }
 

@@ -33,9 +33,7 @@ final class ThreadPool {
         if (Debug.ONE_THREAD_PER_POOL)
             instance = Executors.newFixedThreadPool(1, new Factory());
         else
-            instance = Executors.newFixedThreadPool(8, new Factory());
-        
-        int tid;
+            instance = Executors.newCachedThreadPool(new Factory());
 
         if (Debug.ENABLED) {
             if (Debug.DISABLE_THREAD_POOL) {

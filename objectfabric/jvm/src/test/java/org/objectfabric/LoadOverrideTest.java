@@ -25,14 +25,14 @@ public class LoadOverrideTest extends TestsHelper {
 
         Workspace workspace = Platform.newTestWorkspace();
         workspace.addURIHandler(memory);
-        Resource resource = workspace.resolve("test:///object");
+        Resource resource = workspace.open("test:///object");
         resource.set("blah");
         Assert.assertEquals("blah", resource.get());
         workspace.close();
 
         workspace = Platform.newTestWorkspace();
         workspace.addURIHandler(memory);
-        resource = workspace.resolve("test:///object");
+        resource = workspace.open("test:///object");
         resource.set("blah2");
         Log.write("write");
         Assert.assertEquals("blah2", resource.get());

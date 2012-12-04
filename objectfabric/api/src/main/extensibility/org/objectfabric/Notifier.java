@@ -77,13 +77,13 @@ class Notifier extends Dispatcher {
                 ThreadAssert.exchangeTake(this);
 
             onRunStarting();
-            runMessages();
+            runMessages(false);
             walk();
 
             if (Debug.ENABLED)
                 ThreadAssert.suspend(this);
 
-            onRunEnded();
+            onRunEnded(false);
         }
     }
 
@@ -327,7 +327,7 @@ class Notifier extends Dispatcher {
         }
 
         @Override
-        void run(Actor actor) {
+        void run() {
             if (_object.listeners() == null)
                 _object.listeners(new PlatformSet<Object>());
 
@@ -347,7 +347,7 @@ class Notifier extends Dispatcher {
         }
 
         @Override
-        void run(Actor actor) {
+        void run() {
             if (_object.listeners() != null) {
                 _object.listeners().remove(_listener);
 
@@ -369,7 +369,7 @@ class Notifier extends Dispatcher {
         }
 
         @Override
-        void run(Actor actor) {
+        void run() {
             if (_object instanceof TIndexed) {
                 if (_object.listeners() != null) {
                     invoke(_object, new Invocation() {
@@ -397,7 +397,7 @@ class Notifier extends Dispatcher {
         }
 
         @Override
-        void run(Actor actor) {
+        void run() {
             if (_object instanceof TIndexed) {
                 if (_object.listeners() != null) {
                     invoke(_object, new Invocation() {

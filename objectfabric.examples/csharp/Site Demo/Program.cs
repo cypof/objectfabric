@@ -15,7 +15,7 @@ namespace Examples
 
             // Get live array of numbers through WebSocket
             string uri = "ws://test.objectfabric.org/array";
-            TArray<long> a = (TArray<long>) w.Resolve(uri).Get();
+            TArray<long> a = (TArray<long>) w.Open(uri).Value;
 
             // Add a listener on array, called when an element is
             // set to a new value server side

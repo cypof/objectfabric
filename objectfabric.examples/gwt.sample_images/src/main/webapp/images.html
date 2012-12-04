@@ -1,18 +1,24 @@
-<html>
+<html manifest="examples.app/cache.manifest">
 <head>
-<meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<style type="text/css">
-h1 {
-	font-size: 2em;
-	font-weight: bold;
-	color: #777777;
-	margin: 40px 0px 70px;
-	text-align: center;
-}
-</style>
 <script src="examples.app/examples.app.nocache.js"></script>
+<script>
+  window.addEventListener('load', function(e) {
+    if (window.applicationCache) {
+      window.applicationCache.addEventListener('updateready', function(e) {
+        if (window.applicationCache.status == window.applicationCache.UPDATEREADY) {
+          // Browser downloaded a new app cache.
+          // Swap it in and reload the page to get the new hotness.
+          window.applicationCache.swapCache();
+          //if (confirm('A new version of this site is available. Load it?')) {
+          window.location.reload();
+          //}
+        }
+      }, false);
+    }
+  }, false);
+</script>
 </head>
 <body>
-	<h1>GWT Images Sample</h1>
+  <h2>Images - GWT</h2>
 </body>
 </html>

@@ -12,7 +12,7 @@
 
 package org.objectfabric;
 
-import org.objectfabric.Range.Ref;
+import org.objectfabric.Range.Id;
 import org.objectfabric.ThreadAssert.SingleThreaded;
 
 @SuppressWarnings("rawtypes")
@@ -33,12 +33,6 @@ abstract class TObjectWriter extends ImmutableWriter {
 
     private TObject[] _refs;
 
-    //
-
-    private Range _nextIdRange;
-
-    private int _nextId;
-
     protected TObjectWriter(Watcher watcher, List<Object> interruptionStack) {
         super(interruptionStack);
 
@@ -48,23 +42,6 @@ abstract class TObjectWriter extends ImmutableWriter {
     final Watcher watcher() {
         return _watcher;
     }
-
-    final Range nextIdRange() {
-        return _nextIdRange;
-    }
-
-    final int nextId() {
-        return _nextId;
-    }
-
-    //
-
-    final void resume(Range range, int id) {
-        _nextIdRange = range;
-        _nextId = id;
-    }
-
-    //
 
     @Override
     void reset() {
@@ -87,13 +64,15 @@ abstract class TObjectWriter extends ImmutableWriter {
 
     private static final int TOBJECT_ID = 1;
 
-    private static final int TOBJECT_RANGE = 2;
+    private static final int TOBJECT_RANGE_PEER = 2;
 
-    private static final int TOBJECT_MODEL = 3;
+    private static final int TOBJECT_RANGE_ID = 3;
 
-    private static final int TOBJECT_CLASS_ID = 4;
+    private static final int TOBJECT_MODEL = 4;
 
-    private static final int TOBJECT_GENERIC_ARGUMENTS = 5;
+    private static final int TOBJECT_CLASS_ID = 5;
+
+    private static final int TOBJECT_GENERIC_ARGUMENTS = 6;
 
     @SuppressWarnings({ "fallthrough", "null" })
     public final void writeTObject(TObject object) {
@@ -114,16 +93,8 @@ abstract class TObjectWriter extends ImmutableWriter {
             else {
                 flags = (byte) Writer.VALUE_IS_TOBJECT;
 
-                if (object.range() == null) {
-                    object.range(_nextIdRange);
-                    object.id(_nextId);
-                    _nextIdRange.set(_nextId++, new Ref(object));
-
-                    if (_nextId == Range.LENGTH) {
-                        _nextId = 0;
-                        _nextIdRange = _watcher.workspace().createRange();
-                    }
-                }
+                if (object.range() == null)
+                    _watcher.clock().assignId(object);
 
                 if (_objects.contains(object, object.id()))
                     flags |= Writer.TOBJECT_CACHED;
@@ -135,7 +106,7 @@ abstract class TObjectWriter extends ImmutableWriter {
                     if (object.range() != _currentRange) {
                         _currentRange = object.range();
                         flags |= Writer.TOBJECT_RANGE_CHANGE;
-                        int index = object.range().uid()[0] & 0xff;
+                        int index = getCacheIndex(object.range().id()) & 0xff;
 
                         if (_ranges.contains(object.range(), index))
                             flags |= Writer.TOBJECT_RANGE_CACHED;
@@ -206,27 +177,40 @@ abstract class TObjectWriter extends ImmutableWriter {
                 if ((flags & Writer.TOBJECT_CACHED) != 0)
                     break;
             }
-            case TOBJECT_RANGE: {
+            case TOBJECT_RANGE_PEER: {
                 if ((flags & Writer.TOBJECT_RANGE_CHANGE) != 0) {
                     if ((flags & Writer.TOBJECT_RANGE_CACHED) != 0) {
                         if (!canWriteByte()) {
                             interruptByte(flags);
-                            interruptInt(TOBJECT_RANGE);
+                            interruptInt(TOBJECT_RANGE_PEER);
                             return;
                         }
 
-                        writeByte(object.range().uid()[0]);
+                        writeByte((byte) getCacheIndex(object.range().id()));
                     } else {
-                        writeBinary(_currentRange.uid());
+                        writeBinary(_currentRange.id().Peer.uid());
 
                         if (interrupted()) {
                             interruptByte(flags);
-                            interruptInt(TOBJECT_RANGE);
+                            interruptInt(TOBJECT_RANGE_PEER);
+                            return;
+                        }
+                    }
+                }
+            }
+            case TOBJECT_RANGE_ID: {
+                if ((flags & Writer.TOBJECT_RANGE_CHANGE) != 0) {
+                    if ((flags & Writer.TOBJECT_RANGE_CACHED) == 0) {
+                        if (!canWriteLong()) {
+                            interruptByte(flags);
+                            interruptInt(TOBJECT_RANGE_ID);
                             return;
                         }
 
+                        writeLong(object.range().id().Value);
+
                         if (Debug.COMMUNICATIONS_LOG)
-                            Helper.instance().getSB().append("range: " + new UID(_currentRange.uid()) + ", ");
+                            Helper.instance().getSB().append("range: " + _currentRange.id().Value + ", ");
                     }
                 }
             }
@@ -286,6 +270,10 @@ abstract class TObjectWriter extends ImmutableWriter {
 
         if (Debug.COMMUNICATIONS_LOG)
             log(Helper.instance().getSB().toString());
+    }
+
+    static int getCacheIndex(Id id) {
+        return id.Peer.uid()[0] ^ (int) id.Value;
     }
 
     private final void writeTypes(TType[] types) {
@@ -428,7 +416,7 @@ abstract class TObjectWriter extends ImmutableWriter {
 
         long counter = ThreadAssert.getOrCreateCurrent().getWriterDebugCounter(this);
         String c = Platform.get().simpleClassName(this);
-        log(event, c, "OUT", counter, new UID(_currentRange.uid()));
+        log(event, c, "OUT", counter, _currentRange.id());
     }
 
     static String getClassName(Object object) {
@@ -447,14 +435,14 @@ abstract class TObjectWriter extends ImmutableWriter {
         return Platform.get().simpleName(c);
     }
 
-    final static void log(String event, String name, String direction, long counter, UID range) {
+    final static void log(String event, String name, String direction, long counter, Id id) {
         if (!Debug.ENABLED)
             throw new IllegalStateException();
 
         String message = Utils.padRight(name + ", ", 25) + direction;
         message += Utils.padLeft("" + counter + ", ", 12);
         message += Utils.padRight(event + ", ", 75);
-        message += Utils.padRight("Range " + range, 14);
+        message += Utils.padRight("Range " + id, 14);
         Log.write(message);
     }
 

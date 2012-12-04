@@ -27,13 +27,6 @@ public abstract class Location {
         return true;
     }
 
-    /**
-     * Can be used to select only a subset of URI to be cached at a given location.
-     */
-    protected boolean caches(URI uri) {
-        return true;
-    }
-
     //
 
     abstract View newView(URI uri);
@@ -43,15 +36,9 @@ public abstract class Location {
 
     //
 
-    boolean start(WorkspaceSave save) {
-        return false;
+    Clock newClock(Watcher watcher) {
+        return null;
     }
-
-    void start(WorkspaceLoad load) {
-        load.onResponseNull();
-    }
-
-    //
 
     void sha1(SHA1Digest sha1) {
     }

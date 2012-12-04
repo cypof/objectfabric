@@ -16,11 +16,42 @@ import java.lang.ref.WeakReference;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
 /**
- * Groups objects by 256. Distributes ids to transactional objects and keep a weak
- * reference to their shared version so they can be retrieved by id. TODO simplify.
+ * Groups objects by 256. Weak references them so they can be retrieved by id.
  */
 @SuppressWarnings("serial")
 final class Range extends AtomicReferenceArray<Object> {
+
+    static final class Id {
+
+        final Peer Peer;
+
+        final long Value;
+
+        Id(Peer peer, long value) {
+            Peer = peer;
+            Value = value;
+        }
+
+        @Override
+        public int hashCode() {
+            return Peer.hashCode() ^ (int) (Value ^ (Value >>> 32));
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj instanceof Id) {
+                Id other = (Id) obj;
+                return Peer == other.Peer && Value == other.Value;
+            }
+
+            return false;
+        }
+
+        @Override
+        public String toString() {
+            return Peer.toString() + "-" + Value;
+        }
+    }
 
     static final class Ref extends WeakReference<TObject> {
 
@@ -29,25 +60,27 @@ final class Range extends AtomicReferenceArray<Object> {
         }
     }
 
+    static final int SHIFT = 8;
+    
     static final int LENGTH = 256;
 
-    private final byte[] _uid;
+    private final Id _id;
 
     /*
      * TODO Compact/reuse ids.
      */
 
-    Range(Workspace workspace, byte[] uid) {
+    Range(Workspace workspace, Id id) {
         super(LENGTH);
 
-        if (workspace == null || uid == null)
+        if (workspace == null || id == null)
             throw new IllegalArgumentException();
 
-        _uid = uid;
+        _id = id;
     }
 
-    final byte[] uid() {
-        return _uid;
+    final Id id() {
+        return _id;
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked", "null" })

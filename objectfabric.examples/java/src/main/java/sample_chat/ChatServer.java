@@ -45,7 +45,7 @@ public class ChatServer {
         /*
          * Create a chat room.
          */
-        Resource resource = workspace.resolve("/room1");
+        Resource resource = workspace.open("/room1");
         // Add generic type for .NET (runtime generics)
         resource.set(new TSet(resource, Immutable.STRING.type()));
         workspace.close();

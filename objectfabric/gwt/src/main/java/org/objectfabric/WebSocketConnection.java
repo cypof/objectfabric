@@ -15,6 +15,8 @@ package org.objectfabric;
 import org.objectfabric.CloseCounter.Callback;
 
 import com.google.gwt.core.client.JavaScriptObject;
+import com.google.gwt.typedarrays.client.Uint8ArrayNative;
+import com.google.gwt.typedarrays.shared.ArrayBuffer;
 
 class WebSocketConnection extends Connection {
 
@@ -48,7 +50,7 @@ class WebSocketConnection extends Connection {
     socket.onmessage = function(event) {
       if (event.data instanceof ArrayBuffer) {
         var typed = new Uint8Array(event.data);
-        callback.@org.objectfabric.WebSocketConnection::onMessage(Lcom/google/gwt/core/client/JavaScriptObject;)(typed);
+        callback.@org.objectfabric.WebSocketConnection::onMessage(Lcom/google/gwt/typedarrays/client/Uint8ArrayNative;)(typed);
       }
     }
 
@@ -60,24 +62,6 @@ class WebSocketConnection extends Connection {
         onStarted();
     }
 
-    private native void send(JavaScriptObject webSocket, JavaScriptObject array, int offset, int length) /*-{
-    if (!ArrayBuffer.prototype.slice) { // Apparently no slice on IE10 & Firefox?
-      ArrayBuffer.prototype.slice = function(start, end) {
-        var that = new Uint8Array(this);
-        if (end == undefined)
-          end = that.length;
-        var result = new ArrayBuffer(end - start);
-        var resultArray = new Uint8Array(result);
-        for ( var i = 0; i < resultArray.length; i++)
-          resultArray[i] = that[i + start];
-        return result;
-      }
-    }
-
-    var slice = array.buffer.slice(offset, offset + length);
-    webSocket.send(slice);
-    }-*/;
-
     private void onClose() {
         ((Remote) location()).onError(this, Strings.DISCONNECTED, true);
     }
@@ -86,10 +70,10 @@ class WebSocketConnection extends Connection {
         ((Remote) location()).onError(this, Strings.DISCONNECTED, true);
     }
 
-    private void onMessage(JavaScriptObject typed) {
+    private void onMessage(Uint8ArrayNative typed) {
         if (resumeRead()) {
             int offset = 0;
-            int length = length(typed);
+            int length = typed.length();
 
             while (offset < length) {
                 // TODO wrap instead of copy
@@ -97,7 +81,8 @@ class WebSocketConnection extends Connection {
                 buff.position(Buff.getLargestUnsplitable());
 
                 int copy = Math.min(length - offset, buff.remaining());
-                copy(typed, offset, buff.getTyped(), buff.position(), copy);
+                Uint8ArrayNative sub = typed.subarray(offset, offset + copy);
+                buff.typed().set(sub, buff.position());
                 buff.limit(buff.position() + copy);
                 offset += copy;
 
@@ -109,15 +94,6 @@ class WebSocketConnection extends Connection {
             suspendRead();
         }
     }
-
-    private native int length(JavaScriptObject array) /*-{
-    return array.length;
-    }-*/;
-
-    private static native void copy(JavaScriptObject source, int sourceOffset, JavaScriptObject target, int targetOffset, int length) /*-{
-    var sub = source.subarray(sourceOffset, sourceOffset + length);
-    target.set(sub, targetOffset);
-    }-*/;
 
     @Override
     void onClose(Callback callback) {
@@ -144,7 +120,7 @@ class WebSocketConnection extends Connection {
             try {
                 for (int i = 0; i < buffs.size(); i++) {
                     GWTBuff buff = (GWTBuff) buffs.get(i);
-                    send(_webSocket, buff.getTyped(), buff.position(), buff.remaining());
+                    send(_webSocket, buff.slice());
                 }
             } catch (Exception e) {
                 ex = e;
@@ -159,4 +135,8 @@ class WebSocketConnection extends Connection {
                 ((Remote) location()).onError(this, ex.toString(), true);
         }
     }
+
+    private native void send(JavaScriptObject webSocket, ArrayBuffer buffer) /*-{
+    webSocket.send(buffer);
+    }-*/;
 }

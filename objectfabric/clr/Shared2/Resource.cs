@@ -57,30 +57,10 @@ namespace ObjectFabric
             get { return (Location) origin(); }
         }
 
-        public bool IsLoaded
+        public object Value
         {
-            get { return isLoaded(); }
-        }
-
-        public object Get()
-        {
-            return get();
-        }
-
-        public Task<object> GetAsync()
-        {
-            ObjectFuture future = (ObjectFuture) getAsync(null);
-            return future.Task;
-        }
-
-        public void Set(object value)
-        {
-            set(value);
-        }
-
-        public void Delete()
-        {
-            delete();
+            get { return get(); }
+            set { set(value); }
         }
 
         //

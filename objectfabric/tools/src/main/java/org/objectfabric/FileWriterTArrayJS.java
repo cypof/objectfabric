@@ -55,6 +55,11 @@ class FileWriterTArrayJS extends FileGenerator {
             Utils.replace(template, "float", "Object");
             Utils.replace(template, "Float", "");
         }
+        
+        if (_type == TObject.class || _type == Object.class) {
+            Utils.replace(template, "return _internal.get(index);", "return org.objectfabric.JS.out(_internal.get(index));");
+            Utils.replace(template, "_internal.set(index, value);", "_internal.set(index, org.objectfabric.JS.in(value));");
+        }
 
         write(template);
     }

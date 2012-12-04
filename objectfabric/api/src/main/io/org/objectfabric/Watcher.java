@@ -13,11 +13,11 @@
 package org.objectfabric;
 
 import org.objectfabric.Actor.Flush;
-import org.objectfabric.Actor.Message;
 import org.objectfabric.CloseCounter.Callback;
 import org.objectfabric.Counter.CounterRead;
 import org.objectfabric.Counter.CounterSharedVersion;
 import org.objectfabric.Counter.CounterVersion;
+import org.objectfabric.Resource.NewBlock;
 import org.objectfabric.Resource.ResourceRead;
 import org.objectfabric.Resource.ResourceVersion;
 import org.objectfabric.TObject.Version;
@@ -41,21 +41,13 @@ final class Watcher extends Extension {
 
     private final Queue<TObject> _added = new Queue<TObject>();
 
-    private static final int NULL = -1, LOADING = -2;
-
-    private int _peer = NULL;
-
-    private long _time;
-
-    private boolean _timeUsed;
-
-    private Version[] _versions;
-
-    //
-
-    private final PlatformSet<Resource> _hasPendingAcks = new PlatformSet<Resource>();
+    private final PlatformMap<Resource, Resource> _hasPendingAcks = new PlatformMap<Resource, Resource>();
 
     private final List<WriteFlush> _flushes = new List<WriteFlush>();
+
+    private Clock _clock;
+
+    private Version[] _versions;
 
     Watcher(Workspace workspace) {
         super(workspace, true);
@@ -68,6 +60,10 @@ final class Watcher extends Extension {
 
     final Actor actor() {
         return _run;
+    }
+
+    final Clock clock() {
+        return _clock;
     }
 
     final void start() {
@@ -110,6 +106,9 @@ final class Watcher extends Extension {
         }
 
         if (Debug.THREADS) {
+            if (_clock != null)
+                ThreadAssert.removePrivate(_clock);
+
             ThreadAssert.exchangeTake(_run);
             ThreadAssert.removePrivateList(_writer.getThreadContextObjects());
             ThreadAssert.removePrivate(Watcher.this);
@@ -119,6 +118,13 @@ final class Watcher extends Extension {
             ThreadAssert.resume(key);
     }
 
+    final void run() {
+        if (Debug.ENABLED)
+            Debug.assertion(Platform.get().value() == Platform.GWT);
+
+        _run.run();
+    }
+
     private final class Run extends Actor implements Runnable {
 
         @Override
@@ -126,60 +132,61 @@ final class Watcher extends Extension {
             Platform.get().execute(this);
         }
 
+        private static final int WALK = 0;
+
+        private static final int COMMIT = 1;
+
         @Override
         public void run() {
             if (Debug.ENABLED)
                 ThreadAssert.resume(this, false);
 
+            if (Debug.THREADS)
+                ThreadAssert.exchangeTake(this);
+
             onRunStarting();
-            runMessages();
+            runMessages(interrupted());
 
-            if (_peer >= 0) {
-                // TODO test moving machine clock
-                long min = _timeUsed ? _time + 1 : _time;
+            int step = WALK;
 
-                // 1/125s since 1970, stored on 5 bytes -> good until 2248
-                _time = System.currentTimeMillis() / 8;
-
-                if (_time <= min)
-                    _time = min;
-
-                _timeUsed = false;
+            if (interrupted())
+                step = resumeInt();
+            else {
+                if (_clock != null)
+                    _clock.start();
             }
 
-            walk();
+            switch (step) {
+                case WALK: {
+                    walk();
+
+                    if (interrupted()) {
+                        interruptInt(WALK);
+                        break;
+                    }
+                }
+                case COMMIT: {
+                    if (_clock != null)
+                        _clock.commit();
+
+                    if (interrupted()) {
+                        interruptInt(COMMIT);
+                        break;
+                    }
+                }
+            }
+
+            boolean interrupted = interrupted();
 
             if (Debug.ENABLED)
                 ThreadAssert.suspend(this);
 
-            onRunEnded();
+            onRunEnded(interrupted);
         }
 
         @Override
         void onClose(Callback closeCallback) {
             super.onClose(null);
-
-            Object key;
-
-            if (Debug.ENABLED) {
-                ThreadAssert.suspend(key = new Object());
-                ThreadAssert.resume(Run.this, false);
-            }
-
-            boolean noSave = _peer < 0;
-
-            if (Debug.ENABLED) {
-                ThreadAssert.suspend(Run.this);
-                ThreadAssert.resume(key);
-            }
-
-            if (noSave)
-                onClosed(closeCallback);
-            else
-                saveWorkspace(closeCallback);
-        }
-
-        final void onClosed(Callback closeCallback) {
             Object key;
 
             if (Debug.ENABLED) {
@@ -197,6 +204,42 @@ final class Watcher extends Extension {
             if (Debug.ENABLED)
                 ThreadAssert.resume(key);
         }
+    }
+
+    //
+
+    private final Clock createClock() {
+        Clock clock = request(workspace().caches());
+
+        if (clock == null)
+            clock = request(workspace().uriHandlers());
+
+        if (clock == null) {
+            for (Location location : workspace().resolver().origins().keySet()) {
+                clock = location.newClock(this);
+
+                if (clock != null)
+                    break;
+            }
+        }
+
+        if (clock == null)
+            clock = workspace().newDefaultClock();
+
+        return clock;
+    }
+
+    private final Clock request(Object[] array) {
+        for (int i = 0; array != null && i < array.length; i++) {
+            if (array[i] instanceof Location) {
+                Clock clock = ((Location) array[i]).newClock(this);
+
+                if (clock != null)
+                    return clock;
+            }
+        }
+
+        return null;
     }
 
     //
@@ -223,30 +266,38 @@ final class Watcher extends Extension {
     }
 
     @Override
+    void onVisitingResources(Resources resources) {
+        super.onVisitingResources(resources);
+
+        if (resources.size() > 0) {
+            if (_clock == null)
+                _clock = createClock();
+
+            _clock.writing(resources);
+        }
+    }
+
+    @Override
     final void onVisitingResource(Resource resource) {
         super.onVisitingResource(resource);
 
         if (interrupted())
             resume();
 
-        if (_peer < 0) {
-            if (_peer != LOADING) {
-                _peer = LOADING;
-                loadWorkspace();
-            }
-
+        if (_clock.peer() == null) {
             interrupt(null);
             return;
         }
 
-        newBlock();
-    }
+        _writer.reset();
 
-    @Override
-    final void onVisitedResource(Resource resource) {
-        super.onVisitedResource(resource);
-
-        endBlock(resource);
+        if (_buffs.size() == 0) {
+            Buff buff = addBuffer();
+            buff.putByte(TObject.SERIALIZATION_VERSION);
+        } else {
+            if (Debug.ENABLED)
+                Debug.assertion(_buffs.size() == 1 && _buffs.get(0).position() == 1);
+        }
     }
 
     @Override
@@ -259,68 +310,6 @@ final class Watcher extends Extension {
         _versions = TransactionBase.putVersion(_versions, version);
     }
 
-    //
-
-    final boolean hasPendingAcks(Resource resource) {
-        return _hasPendingAcks.contains(resource);
-    }
-
-    final void addHasPendingAcks(Resource resource) {
-        boolean changed = _hasPendingAcks.add(resource);
-
-        if (Debug.ENABLED)
-            Debug.assertion(changed);
-    }
-
-    final boolean removeHasPendingAcks(Resource resource, boolean checkChanged) {
-        boolean changed = _hasPendingAcks.remove(resource);
-
-        if (Debug.ENABLED && checkChanged)
-            Debug.assertion(changed);
-
-        return changed;
-    }
-
-    //
-
-    final void writeChangesUntilUpToDate(Resource resource, Object value) {
-        newBlock();
-
-        ResourceVersion version = resource.createVersion_();
-        version.setValue(value);
-
-        if (Debug.ENABLED)
-            Debug.assertion(_versions == null);
-
-        _versions = new Version[OpenMap.CAPACITY];
-        _versions = TransactionBase.putVersion(_versions, version);
-
-        for (;;) {
-            _writer.writeRootVersion(value);
-
-            if (!interrupted())
-                break;
-
-            addBuffer();
-        }
-
-        endBlock(resource);
-    }
-
-    //
-
-    final void newBlock() {
-        _writer.reset();
-
-        if (_buffs.size() == 0) {
-            Buff buff = addBuffer();
-            buff.putByte(TObject.SERIALIZATION_VERSION);
-        } else {
-            if (Debug.ENABLED)
-                Debug.assertion(_buffs.size() == 1 && _buffs.get(0).position() == 1);
-        }
-    }
-
     final void onWriting(TObject object) {
         if (!object.isReferencedByURI()) {
             object.setReferencedByURI();
@@ -328,7 +317,10 @@ final class Watcher extends Extension {
         }
     }
 
-    private final void endBlock(final Resource resource) {
+    @Override
+    final void onVisitedResource(Resource resource) {
+        super.onVisitedResource(resource);
+
         if (_added.size() > 0) {
             visitingNewObject(true);
             int map1 = mapIndex1();
@@ -353,10 +345,8 @@ final class Watcher extends Extension {
             visitingNewObject(false);
         }
 
-        if (_buffs.size() > 1 || _buffs.get(0).position() > 1) {
-            resource.writeNewBlock(Tick.get(_peer, _time), _versions);
-            _timeUsed = true;
-        }
+        if (_buffs.size() > 1 || _buffs.get(0).position() > 1)
+            _clock.onBlock(resource, _versions);
 
         _versions = null;
     }
@@ -376,7 +366,7 @@ final class Watcher extends Extension {
 
     final void writeHappenedBefore(long[] ticks) {
         for (int i = 0; i < ticks.length; i++) {
-            if (!Tick.isNull(ticks[i]) && Tick.peer(ticks[i]) != _peer) {
+            if (!Tick.isNull(ticks[i]) && Tick.peer(ticks[i]) != _clock.peer().index()) {
                 for (;;) {
                     _writer.writePeerTick(Writer.COMMAND_HAPPENED_BEFORE, ticks[i]);
 
@@ -424,29 +414,50 @@ final class Watcher extends Extension {
 
     //
 
+    final boolean hasPendingAcks(Resource resource) {
+        return _hasPendingAcks.containsKey(resource);
+    }
+
+    final void addHasPendingAcks(Resource resource) {
+        Resource previous = _hasPendingAcks.put(resource, resource);
+
+        if (Debug.ENABLED)
+            Debug.assertion(previous == null);
+    }
+
+    final boolean removeHasPendingAcks(Resource resource, boolean checkChanged) {
+        Resource previous = _hasPendingAcks.remove(resource);
+
+        if (Debug.ENABLED && checkChanged)
+            Debug.assertion(previous != null);
+
+        return previous != null;
+    }
+
+    //
+
     final void startFlush(FutureWithCallback<Void> future) {
         _run.addAndRun(new WriteFlush(future));
     }
 
-    final void onBlockAck(long time) {
+    final void onBlockAck(NewBlock block) {
         for (int i = _flushes.size() - 1; i >= 0; i--)
-            _flushes.get(i).onBlockAck(time, i);
+            _flushes.get(i).onBlockAck(block, i);
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private final class WriteFlush extends Flush {
 
         private final FutureWithCallback<Void> _future;
 
-        private long _flushedTime;
-
-        private int _count;
+        private PlatformMap<NewBlock, NewBlock> _pending;
 
         WriteFlush(FutureWithCallback<Void> future) {
             _future = future;
         }
 
         @Override
-        final void onSuccess() {
+        final void done() {
             if (Debug.ENABLED)
                 ThreadAssert.resume(_run);
 
@@ -454,17 +465,14 @@ final class Watcher extends Extension {
                 _future.set(null);
             else {
                 _flushes.add(this);
-                _flushedTime = _time;
+                _pending = new PlatformMap<NewBlock, NewBlock>();
 
-                for (Resource resource : _hasPendingAcks) {
-                    if (resource.pendingAcks().size() > 0)
-                        _count += resource.pendingAcks().size();
-                    else {
-                        if (Debug.ENABLED)
-                            Debug.assertion(!resource.isLoaded());
+                for (Resource resource : _hasPendingAcks.keySet()) {
+                    if (Debug.ENABLED)
+                        Debug.assertion(resource.pendingAcks().size() > 0);
 
-                        _count++;
-                    }
+                    for (NewBlock block : resource.pendingAcks().values())
+                        _pending.put(block, block);
                 }
             }
 
@@ -472,83 +480,17 @@ final class Watcher extends Extension {
                 ThreadAssert.suspend(_run);
         }
 
-        @Override
-        final void onException(Exception e) {
-            _future.setException(e);
-        }
+        final void onBlockAck(NewBlock block, int index) {
+            NewBlock removed = _pending.remove(block);
 
-        final void onBlockAck(long time, int index) {
-            if (time <= _flushedTime) {
-                _count--;
+            if (Debug.ENABLED)
+                Debug.assertion(removed != null);
 
-                if (_count == 0) {
-                    _future.set(null);
-                    _flushes.remove(index);
-                }
+            if (_pending.size() == 0) {
+                _future.set(null);
+                _flushes.remove(index);
             }
         }
-    }
-
-    //
-
-    private final void loadWorkspace() {
-        WorkspaceLoad load = new WorkspaceLoad(workspace().resolver()) {
-
-            @Override
-            void done(final long tick, final byte[] range, final byte id) {
-                _run.addAndRun(new Message() {
-
-                    @Override
-                    void run(Actor actor) {
-                        if (Debug.ENABLED)
-                            Debug.assertion(_peer == LOADING);
-
-                        _peer = Tick.peer(tick);
-                        _time = Tick.time(tick);
-                        _timeUsed = true;
-                        _writer.resume(workspace().getOrCreateRange(new UID(range)), id & 0xff);
-
-                        if (Debug.ENABLED)
-                            Debug.assertion(interrupted());
-                    }
-                });
-            }
-        };
-
-        load.run();
-    }
-
-    private final void saveWorkspace(final Callback closeCallback) {
-        WorkspaceSave save = new WorkspaceSave() {
-
-            @Override
-            void run(WorkspaceSave.Callback saveCallback) {
-                Object key;
-
-                if (Debug.ENABLED) {
-                    ThreadAssert.suspend(key = new Object());
-                    ThreadAssert.resume(_run, false);
-                }
-
-                long tick = Tick.get(_peer, _time);
-                byte[] range = _writer.nextIdRange().uid();
-                byte id = (byte) _writer.nextId();
-
-                if (Debug.ENABLED) {
-                    ThreadAssert.suspend(_run);
-                    ThreadAssert.resume(key);
-                }
-
-                saveCallback.run(tick, range, id);
-            }
-
-            @Override
-            void done() {
-                _run.onClosed(closeCallback);
-            }
-        };
-
-        save.run(workspace().resolver());
     }
 
     // Resource
@@ -558,7 +500,7 @@ final class Watcher extends Extension {
         for (;;) {
             _writer.writeRootRead();
 
-            if (!_writer.interrupted())
+            if (!interrupted())
                 break;
 
             addBuffer();
@@ -567,19 +509,14 @@ final class Watcher extends Extension {
 
     @Override
     final void visit(ResourceVersion version) {
-        Resource resource = (Resource) version.object();
+        for (;;) {
+            _writer.writeRootVersion(version.getValue() != Resource.NULL ? version.getValue() : null);
 
-        if (resource.isLoaded()) {
-            for (;;) {
-                _writer.writeRootVersion(version.getValue() != Resource.NULL ? version.getValue() : null);
+            if (!interrupted())
+                break;
 
-                if (!_writer.interrupted())
-                    break;
-
-                addBuffer();
-            }
-        } else
-            _hasPendingAcks.add(resource);
+            addBuffer();
+        }
     }
 
     // Indexed32
@@ -589,7 +526,7 @@ final class Watcher extends Extension {
         for (;;) {
             _writer.write(version);
 
-            if (!_writer.interrupted())
+            if (!interrupted())
                 break;
 
             addBuffer();
@@ -603,7 +540,7 @@ final class Watcher extends Extension {
         for (;;) {
             _writer.write(version);
 
-            if (!_writer.interrupted())
+            if (!interrupted())
                 break;
 
             addBuffer();
@@ -619,7 +556,7 @@ final class Watcher extends Extension {
         for (;;) {
             _writer.writeTKeyed(object, version.getEntries(), false, version.getFullyRead());
 
-            if (!_writer.interrupted())
+            if (!interrupted())
                 break;
 
             addBuffer();
@@ -633,7 +570,7 @@ final class Watcher extends Extension {
         for (;;) {
             _writer.writeTKeyed(object, version.getEntries(), version.getCleared(), false);
 
-            if (!_writer.interrupted())
+            if (!interrupted())
                 break;
 
             addBuffer();
@@ -652,7 +589,7 @@ final class Watcher extends Extension {
         for (;;) {
             _writer.writeCounter(version.object(), false, 0, false);
 
-            if (!_writer.interrupted())
+            if (!interrupted())
                 break;
 
             addBuffer();
@@ -664,7 +601,7 @@ final class Watcher extends Extension {
         for (;;) {
             _writer.writeCounter(version.object(), true, version.getDelta(), version.getReset());
 
-            if (!_writer.interrupted())
+            if (!interrupted())
                 break;
 
             addBuffer();
@@ -677,10 +614,6 @@ final class Watcher extends Extension {
     }
 
     // Debug
-
-    final void setPeer(Peer peer) {
-        _peer = peer.index();
-    }
 
     private final void assertIdle() {
         if (!Debug.ENABLED)

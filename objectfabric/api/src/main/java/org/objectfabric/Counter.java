@@ -286,7 +286,7 @@ public class Counter extends TObject {
                 if (Debug.ENABLED)
                     Debug.assertion(_value == 0);
 
-                _value = ((CounterSharedVersion) source)._value;
+                _delta = ((CounterSharedVersion) source)._value;
             } else
                 merge((CounterVersion) source);
         }

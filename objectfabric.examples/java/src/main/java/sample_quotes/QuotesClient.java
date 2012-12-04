@@ -38,8 +38,8 @@ public class QuotesClient {
         /*
          * Write current prices and listens for future ones.
          */
-        final Resource goog = workspace.resolve("ws://localhost:8888/GOOG");
-        final Resource msft = workspace.resolve("ws://localhost:8888/MSFT");
+        final Resource goog = workspace.open("ws://localhost:8888/GOOG");
+        final Resource msft = workspace.open("ws://localhost:8888/MSFT");
 
         System.out.println("GOOG " + goog.get());
         System.out.println("MSFT " + msft.get());
@@ -63,7 +63,7 @@ public class QuotesClient {
         /*
          * Send an order.
          */
-        Resource orders = workspace.resolve("ws://localhost:8888/orders");
+        Resource orders = workspace.open("ws://localhost:8888/orders");
 
         Order order = new Order(orders);
         order.user("Mini Me");

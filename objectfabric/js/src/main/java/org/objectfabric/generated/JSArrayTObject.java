@@ -12,15 +12,15 @@
 
 package org.objectfabric.generated;
 
-import org.objectfabric.Closure;
 import org.objectfabric.IndexListener;
-import org.objectfabric.Internal;
+import org.objectfabric.JS.Closure;
+import org.objectfabric.JS.External;
+import org.objectfabric.JS.Internal;
 import org.objectfabric.JSResource;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayTObject;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
-import org.timepedia.exporter.client.Exportable;
 import org.timepedia.exporter.client.NoExport;
 
 //==============================================================================
@@ -32,7 +32,7 @@ import org.timepedia.exporter.client.NoExport;
 @SuppressWarnings("unchecked")
 @Export("TArrayTObject")
 @ExportPackage("of")
-public class JSArrayTObject implements Exportable {
+public class JSArrayTObject implements External {
 
     // TODO back with JS typed arrays?
     public static final class ArrayInternal extends TArrayTObject implements Internal {
@@ -44,7 +44,7 @@ public class JSArrayTObject implements Exportable {
         }
 
         @Override
-        public Exportable getOrCreateJS() {
+        public External external() {
             if (_js == null) {
                 _js = new JSArrayTObject();
                 _js._internal = this;
@@ -57,15 +57,20 @@ public class JSArrayTObject implements Exportable {
     private ArrayInternal _internal;
 
     public JSArrayTObject(JSResource resource, int length) {
-        _internal = new ArrayInternal(resource.internal(), length);
+        _internal = new ArrayInternal((Resource) resource.internal(), length);
     }
 
     @NoExport
     public JSArrayTObject() {
     }
 
+    @Override
+    public Internal internal() {
+        return _internal;
+    }
+
     public org.objectfabric.TObject get(int index) {
-        return _internal.get(index);
+        return org.objectfabric.JS.out(_internal.get(index));
     }
 
     public int length() {
@@ -73,7 +78,7 @@ public class JSArrayTObject implements Exportable {
     }
 
     public void set(int index, org.objectfabric.TObject value) {
-        _internal.set(index, value);
+        _internal.set(index, org.objectfabric.JS.in(value));
     }
 
     public void onset(final Closure closure) {

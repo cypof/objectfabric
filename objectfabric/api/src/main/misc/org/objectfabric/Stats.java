@@ -18,69 +18,67 @@ final class Stats {
 
     // TODO export to JMX?
 
-    public static final boolean ENABLED = false;
+    static final boolean ENABLED = false;
 
     static final Stats Instance;
 
-    public final AtomicLong Created = new AtomicLong();
+    final AtomicLong Created = new AtomicLong();
 
-    public final AtomicLong Started = new AtomicLong();
+    final AtomicLong Started = new AtomicLong();
 
-    public final AtomicLong Committed = new AtomicLong();
+    final AtomicLong Committed = new AtomicLong();
 
-    public final AtomicLong Aborted = new AtomicLong();
+    final AtomicLong Aborted = new AtomicLong();
 
-    public final AtomicLong ValidationRetries = new AtomicLong();
+    final AtomicLong ValidationRetries = new AtomicLong();
 
-    public final AtomicLong ValidationRetriesMax = new AtomicLong();
+    final AtomicLong ValidationRetriesMax = new AtomicLong();
 
-    public final AtomicLong TransactionRetries = new AtomicLong();
+    final AtomicLong TransactionRetries = new AtomicLong();
 
-    public final AtomicLong TransactionRetriesMax = new AtomicLong();
+    final AtomicLong TransactionRetriesMax = new AtomicLong();
 
-    public final AtomicLong Merged = new AtomicLong();
+    final AtomicLong Merged = new AtomicLong();
 
-    public final AtomicLong MaxMapCount = new AtomicLong();
+    final AtomicLong MaxMapCount = new AtomicLong();
 
-    public final AtomicLong Put = new AtomicLong();
+    final AtomicLong Put = new AtomicLong();
 
-    public final AtomicLong PutRetry = new AtomicLong();
+    final AtomicLong PutRetry = new AtomicLong();
 
-    public final AtomicLong BlockCreated = new AtomicLong();
+    final AtomicLong BlockCreated = new AtomicLong();
 
-    public final AtomicLong BlockOverwritten = new AtomicLong();
+    final AtomicLong BlockOverwritten = new AtomicLong();
 
-    public final AtomicLong BlockReceived = new AtomicLong();
+    final AtomicLong BlockReceived = new AtomicLong();
 
-    public final AtomicLong BlockRequestsSent = new AtomicLong();
+    final AtomicLong BlockRequestsSent = new AtomicLong();
 
-    public final AtomicLong BlockRequestsReceived = new AtomicLong();
+    final AtomicLong BlockRequestsReceived = new AtomicLong();
 
-    public final AtomicLong AckCreated = new AtomicLong();
+    final AtomicLong AckCreated = new AtomicLong();
 
-    public final AtomicLong AckReceived = new AtomicLong();
+    final AtomicLong AckReceived = new AtomicLong();
 
-    public final AtomicLong BuffCount = new AtomicLong();
+    final AtomicLong BuffCount = new AtomicLong();
 
-    public final AtomicLong ConnectionQueues = new AtomicLong();
+    final AtomicLong ConnectionQueues = new AtomicLong();
 
-    public final AtomicLong BlockQueues = new AtomicLong();
+    final AtomicLong BlockQueues = new AtomicLong();
 
-    public final AtomicLong MemoryBlocksCreated = new AtomicLong();
+    final AtomicLong MemoryBlocksCreated = new AtomicLong();
 
-    public final AtomicLong MemoryBlocksLive = new AtomicLong();
+    final AtomicLong MemoryBlocksLive = new AtomicLong();
 
-    public final AtomicLong FileListCount = new AtomicLong();
+    final AtomicLong BlockListCount = new AtomicLong();
 
-    public final AtomicLong FileReadCount = new AtomicLong();
+    final AtomicLong BlockReadCount = new AtomicLong();
 
-    public final AtomicLong FileReadBytes = new AtomicLong();
+    final AtomicLong BlockWriteCount = new AtomicLong();
 
-    public final AtomicLong FileWriteCount = new AtomicLong();
+    final AtomicLong BlockMaxBytes = new AtomicLong();
 
-    public final AtomicLong FileWriteBytes = new AtomicLong();
-
-    public final AtomicLong NativeAllocations = new AtomicLong();
+    final AtomicLong NativeAllocations = new AtomicLong();
 
     private Stats() {
         if (!ENABLED)
@@ -94,11 +92,23 @@ final class Stats {
             Instance = null;
     }
 
-    public void writeAndReset() {
+    static void max(AtomicLong field, long value) {
+        for (;;) {
+            long max = field.get();
+
+            if (value <= max)
+                break;
+
+            if (field.compareAndSet(max, value))
+                break;
+        }
+    }
+
+    final void writeAndReset() {
         writeAndReset(true);
     }
 
-    public void reset() {
+    final void reset() {
         writeAndReset(false);
     }
 

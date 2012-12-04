@@ -15,6 +15,7 @@ package examples.client;
 import org.objectfabric.AsyncCallback;
 import org.objectfabric.GWTWorkspace;
 import org.objectfabric.IndexListener;
+import org.objectfabric.Resource;
 import org.objectfabric.TArrayLong;
 import org.objectfabric.WebSocketURIHandler;
 import org.objectfabric.Workspace;
@@ -40,11 +41,11 @@ public class Main implements EntryPoint {
         // Get array of long and stay connected through WebSocket
         String uri = "ws://test.objectfabric.org/array";
 
-        w.resolve(uri).getAsync(new AsyncCallback<Object>() {
+        w.openAsync(uri, new AsyncCallback<Resource>() {
 
             @Override
-            public void onSuccess(Object result) {
-                final TArrayLong array = (TArrayLong) result;
+            public void onSuccess(Resource result) {
+                final TArrayLong array = (TArrayLong) result.get();
                 final NumberFormat format = NumberFormat.getDecimalFormat();
 
                 // Called when an array element is set

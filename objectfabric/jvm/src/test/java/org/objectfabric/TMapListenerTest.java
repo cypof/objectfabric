@@ -37,7 +37,7 @@ public class TMapListenerTest extends TestsHelper {
     @Test
     public void test1() {
         Workspace workspace = Platform.newTestWorkspace();
-        TMap<Integer, String> map = new TMap<Integer, String>(workspace.resolve(""));
+        TMap<Integer, String> map = new TMap<Integer, String>(workspace.open(""));
 
         map.addListener(new KeyListener<Integer>() {
 

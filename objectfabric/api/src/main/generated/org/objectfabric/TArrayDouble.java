@@ -20,9 +20,9 @@ package org.objectfabric;
 
 /**
  * Transactional array. ObjectFabric generates implementations for every supported type (
- * {@link Immutable} and {@link TObjects}) for faster serialization, to avoid boxing
- * primitive types, and for easier interoperability with .NET generics which require a
- * type at runtime.
+ * listed in {@link Immutable} or extending {@link TObject}) for faster serialization, to
+ * avoid boxing primitive types, and for easier interoperability with .NET generics which
+ * require a type at runtime.
  */
 public class TArrayDouble extends TIndexed implements Iterable<Double> {
 

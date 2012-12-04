@@ -34,7 +34,7 @@ public class STM {
 
     public static void main(String[] args) {
         final Workspace workspace = new JVMWorkspace();
-        final Resource local = workspace.resolve("");
+        final Resource local = workspace.open("");
         final MyClass object = new MyClass(local);
 
         /*

@@ -114,10 +114,6 @@ abstract class ExpectedExceptionThrower {
         throw new AbortException();
     }
 
-    public static void throwRuntimeException(Exception e) {
-        throw new RuntimeException(e);
-    }
-
     //
 
     public static void executeRead(Workspace workspace, Transaction transaction, Runnable runnable) {

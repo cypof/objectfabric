@@ -30,7 +30,7 @@ public final class Debug {
 
     public static final boolean STM_LOG = ENABLED && false;
 
-    public static final boolean TICKS_LOG = ENABLED && false;
+    public static final boolean TICKS_LOG = ENABLED && true;
 
     public static final boolean STACKS = ENABLED && true;
 

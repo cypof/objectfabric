@@ -50,7 +50,7 @@ class ServerView extends ArrayView {
         connection.addAndRun(new Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 connection.subscribed().put(uri, ServerView.this);
             }
         });
@@ -64,7 +64,7 @@ class ServerView extends ArrayView {
         connection.addAndRun(new Message() {
 
             @Override
-            void run(Actor actor) {
+            void run() {
                 connection.subscribed().remove(uri);
             }
         });

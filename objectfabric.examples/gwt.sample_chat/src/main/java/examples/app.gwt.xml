@@ -3,7 +3,10 @@
   <inherits name='com.google.gwt.user.User' />
   <inherits name='objectfabric' />
   <entry-point class='examples.client.Main' />
+
+  <!-- 
   <set-property name="user.agent" value="safari" />
+  -->
 
   <!-- GWT 2.5 debugging -->
   <add-linker name="xsiframe" />

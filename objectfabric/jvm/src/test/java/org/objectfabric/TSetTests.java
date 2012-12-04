@@ -54,11 +54,11 @@ public class TSetTests extends TestsHelper {
     }
 
     protected Set createSet() {
-        return new TSet(_workspace.resolve(""));
+        return new TSet(_workspace.open(""));
     }
 
     protected Set createSet2() {
-        return new TSet(_workspace.resolve(""));
+        return new TSet(_workspace.open(""));
     }
 
     protected boolean transactionIsPrivate() {

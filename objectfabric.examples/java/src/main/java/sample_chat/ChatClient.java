@@ -39,7 +39,7 @@ public class ChatClient {
         w.addURIHandler(new NettyURIHandler());
 
         // Get a room
-        Resource resource = w.resolve("ws://localhost:8888/room1");
+        Resource resource = w.open("ws://localhost:8888/room1");
         final TSet<String> messages = (TSet) resource.get();
 
         // A room is a set of messages. Adding a message to a

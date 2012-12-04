@@ -55,11 +55,11 @@ public class TMapTests extends TestsHelper {
     }
 
     protected Map createMap() {
-        return new TMap(_workspace.resolve(""));
+        return new TMap(_workspace.open(""));
     }
 
     protected Map createMap2() {
-        return new TMap(_workspace.resolve(""));
+        return new TMap(_workspace.open(""));
     }
 
     protected boolean transactionIsPrivate() {

@@ -37,6 +37,7 @@ import org.objectfabric.KeyListener;
 import org.objectfabric.NettyURIHandler;
 import org.objectfabric.Remote;
 import org.objectfabric.Resource;
+import org.objectfabric.SQLite;
 import org.objectfabric.SwingWorkspace;
 import org.objectfabric.TArrayDouble;
 import org.objectfabric.TSet;
@@ -46,11 +47,6 @@ import org.objectfabric.Workspace;
  * This sample replicates image positions.
  */
 public class Images {
-
-    /*
-     * Configure a workspace for a Swing application.
-     */
-    private final Workspace workspace = new SwingWorkspace();
 
     private TSet<TArrayDouble> positions;
 
@@ -62,20 +58,28 @@ public class Images {
 
     public static void main(String[] args) throws Exception {
         Images images = new Images();
-        images.run();
+        images.run(args);
     }
 
     @SuppressWarnings("unchecked")
-    public void run() throws Exception {
+    public void run(String[] args) throws Exception {
         final JFrame frame = buildWindow();
-        workspace.addURIHandler(new NettyURIHandler());
-        final Resource resource = workspace.resolve("ws://localhost:8888/images");
 
-        resource.getAsync(new AsyncCallback<Object>() {
+        // Configure a workspace for a Swing application.
+        final Workspace workspace = new SwingWorkspace();
+
+        if (args.length > 0) {
+            // Add a file based cache to demo off-line support
+            workspace.addCache(new SQLite("temp/" + args[0], true));
+        }
+
+        workspace.addURIHandler(new NettyURIHandler());
+
+        workspace.openAsync("ws://localhost:8888/images", new AsyncCallback<Resource>() {
 
             @Override
-            public void onSuccess(Object result) {
-                positions = (TSet<TArrayDouble>) result;
+            public void onSuccess(Resource result) {
+                positions = (TSet<TArrayDouble>) result.get();
                 onReceivedImages();
             }
 
@@ -99,27 +103,29 @@ public class Images {
                 ongoing.setVisible(false);
                 complete.setVisible(false);
 
-                switch (((Remote) resource.origin()).status()) {
-                    case DISCONNECTED:
-                        disconnected.setVisible(true);
-                        label.setText("Disconnected");
-                        break;
-                    case CONNECTING:
-                        ongoing.setVisible(true);
-                        label.setText("Connecting...");
-                        break;
-                    case WAITING_RETRY:
-                        disconnected.setVisible(true);
-                        label.setText("Waiting retry...");
-                        break;
-                    case SYNCHRONIZING:
-                        ongoing.setVisible(true);
-                        label.setText("Synchronizing...");
-                        break;
-                    case UP_TO_DATE:
-                        complete.setVisible(true);
-                        label.setText("Up to date");
-                        break;
+                if (positions != null) {
+                    switch (((Remote) positions.resource().origin()).status()) {
+                        case DISCONNECTED:
+                            disconnected.setVisible(true);
+                            label.setText("Disconnected");
+                            break;
+                        case CONNECTING:
+                            ongoing.setVisible(true);
+                            label.setText("Connecting...");
+                            break;
+                        case WAITING_RETRY:
+                            disconnected.setVisible(true);
+                            label.setText("Waiting retry...");
+                            break;
+                        case SYNCHRONIZING:
+                            ongoing.setVisible(true);
+                            label.setText("Synchronizing...");
+                            break;
+                        case UP_TO_DATE:
+                            complete.setVisible(true);
+                            label.setText("Up to date");
+                            break;
+                    }
                 }
             }
         });
@@ -147,24 +153,24 @@ public class Images {
         disconnected = new JLabel(icon1);
         imagePanel.add(disconnected);
         disconnected.setSize(icon1.getIconWidth(), icon1.getIconHeight());
-        disconnected.setLocation((int) imagePanel.getPreferredSize().getWidth() - 150, 0);
+        disconnected.setLocation(10, 10);
         disconnected.setVisible(false);
 
         ongoing = new JLabel(icon2);
         imagePanel.add(ongoing);
         ongoing.setSize(icon2.getIconWidth(), icon2.getIconHeight());
-        ongoing.setLocation((int) imagePanel.getPreferredSize().getWidth() - 150, 0);
+        ongoing.setLocation(10, 10);
         ongoing.setVisible(false);
 
         complete = new JLabel(icon3);
         imagePanel.add(complete);
         complete.setSize(icon3.getIconWidth(), icon3.getIconHeight());
-        complete.setLocation((int) imagePanel.getPreferredSize().getWidth() - 150, 0);
+        complete.setLocation(10, 10);
         complete.setVisible(false);
 
         label = new JLabel();
         imagePanel.add(label);
-        label.setLocation((int) imagePanel.getPreferredSize().getWidth() - 110, 0);
+        label.setLocation(50, 10);
         label.setSize(120, 24);
 
         JFrame frame = new JFrame("Images Sample (Java & Swing)");
@@ -197,7 +203,7 @@ public class Images {
          * Some images might already be shared, show them. Iterators on transactional
          * collections provide a stable view of the collection.
          */
-        workspace.atomicRead(new Runnable() {
+        positions.atomicRead(new Runnable() {
 
             public void run() {
                 for (TArrayDouble position : positions)
@@ -211,7 +217,7 @@ public class Images {
 
         imagePanel.add(button);
 
-        button.setLocation(30, 80);
+        button.setLocation(10, 50);
         button.setSize(new Dimension(77, 23));
 
         button.addActionListener(new ActionListener() {

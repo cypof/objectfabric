@@ -4,7 +4,11 @@
     "http://java.sun.com/dtd/web-app_2_3.dtd">
 
 <web-app>
-	<welcome-file-list>
-		<welcome-file>Images.html</welcome-file>
-	</welcome-file-list>
+  <mime-mapping>
+    <extension>manifest</extension>
+    <mime-type>text/cache-manifest</mime-type>
+  </mime-mapping>
+  <welcome-file-list>
+    <welcome-file>images.html</welcome-file>
+  </welcome-file-list>
 </web-app>

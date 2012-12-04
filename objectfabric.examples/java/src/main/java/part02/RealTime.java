@@ -36,7 +36,7 @@ public class RealTime {
         /*
          * Get map from server.
          */
-        final TMap<String, Integer> map = (TMap) workspace.resolve("ws://localhost:8888/map").get();
+        final TMap<String, Integer> map = (TMap) workspace.open("ws://localhost:8888/map").get();
 
         /*
          * Add a listener to get notified of updates.

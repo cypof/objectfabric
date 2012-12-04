@@ -41,25 +41,17 @@ abstract class Actor extends AtomicInteger {
 
     static abstract class Message {
 
-        abstract void run(Actor actor);
+        abstract void run();
     }
 
-    static abstract class Flush extends Message {
+    static abstract class Flush {
 
-        abstract void onSuccess();
-
-        abstract void onException(Exception e);
-
-        @Override
-        final void run(Actor actor) {
-            if (actor._currentFlushes == null)
-                actor._currentFlushes = new List<Flush>();
-
-            actor._currentFlushes.add(this);
-        }
+        abstract void done();
     }
 
     private final PlatformConcurrentQueue<Message> _messages = new PlatformConcurrentQueue<Message>();
+
+    private final PlatformConcurrentQueue<Flush> _flushes = new PlatformConcurrentQueue<Flush>();
 
     private List<Flush> _currentFlushes;
 
@@ -76,9 +68,20 @@ abstract class Actor extends AtomicInteger {
         return true;
     }
 
+    final boolean addAndRun(Flush flush) {
+        _flushes.add(flush);
+
+        if (!requestRun()) {
+            _flushes.poll();
+            return false;
+        }
+
+        return true;
+    }
+
     //
 
-    final void runMessages() {
+    final void runMessages(boolean interrupted) {
         for (;;) {
             Message message = _messages.poll();
 
@@ -88,7 +91,21 @@ abstract class Actor extends AtomicInteger {
             if (message == null)
                 break;
 
-            message.run(this);
+            message.run();
+        }
+
+        if (!interrupted) {
+            for (;;) {
+                Flush flush = _flushes.poll();
+
+                if (flush == null)
+                    break;
+
+                if (_currentFlushes == null)
+                    _currentFlushes = new List<Flush>();
+
+                _currentFlushes.add(flush);
+            }
         }
     }
 
@@ -158,6 +175,19 @@ abstract class Actor extends AtomicInteger {
         }
     }
 
+    final boolean setScheduled() {
+        if (Debug.ENABLED) {
+            Debug.assertion(Platform.get().value() == Platform.GWT);
+            Debug.assertion(get() == IDLE || get() == SCHEDULED);
+        }
+
+        if (get() == SCHEDULED)
+            return true;
+
+        set(SCHEDULED);
+        return false;
+    }
+
     private final void execute() {
         Object key;
 
@@ -185,12 +215,14 @@ abstract class Actor extends AtomicInteger {
         return true;
     }
 
-    final void onRunEnded() {
-        if (_currentFlushes != null && _currentFlushes.size() > 0) {
-            for (int i = 0; i < _currentFlushes.size(); i++)
-                _currentFlushes.get(i).onSuccess();
+    final void onRunEnded(boolean interrupted) {
+        if (!interrupted) {
+            if (_currentFlushes != null && _currentFlushes.size() > 0) {
+                for (int i = 0; i < _currentFlushes.size(); i++)
+                    _currentFlushes.get(i).done();
 
-            _currentFlushes.clear();
+                _currentFlushes.clear();
+            }
         }
 
         for (;;) {
@@ -319,7 +351,14 @@ abstract class Actor extends AtomicInteger {
 
         if (message != null) {
             Debug.fail();
-            message.run(null);
+            message.run();
+        }
+
+        Flush flush = _flushes.poll();
+
+        if (flush != null) {
+            Debug.fail();
+            flush.done();
         }
     }
 

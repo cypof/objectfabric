@@ -12,15 +12,15 @@
 
 package org.objectfabric.generated;
 
-import org.objectfabric.Closure;
 import org.objectfabric.IndexListener;
-import org.objectfabric.Internal;
+import org.objectfabric.JS.Closure;
+import org.objectfabric.JS.External;
+import org.objectfabric.JS.Internal;
 import org.objectfabric.JSResource;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayFloat;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
-import org.timepedia.exporter.client.Exportable;
 import org.timepedia.exporter.client.NoExport;
 
 //==============================================================================
@@ -32,7 +32,7 @@ import org.timepedia.exporter.client.NoExport;
 @SuppressWarnings("unchecked")
 @Export("TArrayFloat")
 @ExportPackage("of")
-public class JSArrayFloat implements Exportable {
+public class JSArrayFloat implements External {
 
     // TODO back with JS typed arrays?
     public static final class ArrayInternal extends TArrayFloat implements Internal {
@@ -44,7 +44,7 @@ public class JSArrayFloat implements Exportable {
         }
 
         @Override
-        public Exportable getOrCreateJS() {
+        public External external() {
             if (_js == null) {
                 _js = new JSArrayFloat();
                 _js._internal = this;
@@ -57,11 +57,16 @@ public class JSArrayFloat implements Exportable {
     private ArrayInternal _internal;
 
     public JSArrayFloat(JSResource resource, int length) {
-        _internal = new ArrayInternal(resource.internal(), length);
+        _internal = new ArrayInternal((Resource) resource.internal(), length);
     }
 
     @NoExport
     public JSArrayFloat() {
+    }
+
+    @Override
+    public Internal internal() {
+        return _internal;
     }
 
     public float get(int index) {

@@ -45,7 +45,7 @@ import part05.generated.User;
  */
 public class ExamplesServer {
 
-    public static void main(String[] args) {
+    public static void run() {
         clearFolder("temp/server");
 
         /*
@@ -62,13 +62,13 @@ public class ExamplesServer {
         /*
          * Add resources, first a simple String.
          */
-        workspace.resolve("/helloworld").set("Hello World!");
+        workspace.open("/helloworld").set("Hello World!");
 
         /*
          * Add a map. ObjectFabric maps derive from TObject, whose constructor requires
          * the resource they will be stored at. Resolve the resource first and pass it.
          */
-        Resource resource = workspace.resolve("/map");
+        Resource resource = workspace.open("/map");
         TMap<String, Integer> map = new TMap<String, Integer>(resource);
         map.put("example key", 42);
         resource.set(map);
@@ -76,21 +76,21 @@ public class ExamplesServer {
         /*
          * Add various types for the ObjectModel example.
          */
-        workspace.resolve("/string").set("{\"key\": \"value\"}");
-        workspace.resolve("/int").set(1);
-        workspace.resolve("/bin").set(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 });
+        workspace.open("/string").set("{\"key\": \"value\"}");
+        workspace.open("/int").set(1);
+        workspace.open("/bin").set(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 });
 
-        resource = workspace.resolve("/set");
+        resource = workspace.open("/set");
         TSet<String> set = new TSet<String>(resource);
         set.add("blah");
         resource.set(set);
 
-        resource = workspace.resolve("/arrayOfInt");
+        resource = workspace.open("/arrayOfInt");
         TArrayInteger ints = new TArrayInteger(resource, 10);
         ints.set(5, 1);
         resource.set(ints);
 
-        resource = workspace.resolve("/counter");
+        resource = workspace.open("/counter");
         Counter counter = new Counter(resource);
         counter.add(1);
         resource.set(counter);
@@ -98,7 +98,7 @@ public class ExamplesServer {
         /*
          * Custom objects.
          */
-        resource = workspace.resolve("/car");
+        resource = workspace.open("/car");
         Car car = new Car(resource, "DeLorean");
         User joe = new User(resource);
         joe.name("Joe");
@@ -115,7 +115,7 @@ public class ExamplesServer {
          * generics, some classes have type arguments. E.g this code creates a set that
          * would be instantiated on .NET as a strongly typed Set<Car>.
          */
-        resource = workspace.resolve("/generics");
+        resource = workspace.open("/generics");
         resource.set(new TSet<Car>(resource, Car.TYPE));
 
         /*
@@ -153,6 +153,10 @@ public class ExamplesServer {
          */
         bootstrap.bind(new InetSocketAddress(8888));
         System.out.println("Started ExamplesServer on port 8888");
+    }
+
+    public static void main(String[] args) {
+        run();
 
         try {
             Thread.sleep(Long.MAX_VALUE);

@@ -594,16 +594,7 @@ final class TransactionManager {
 
                     if (Stats.ENABLED) {
                         Stats.Instance.ValidationRetries.incrementAndGet();
-
-                        for (;;) {
-                            long max = Stats.Instance.ValidationRetriesMax.get();
-
-                            if (retryCount <= max)
-                                break;
-
-                            if (Stats.Instance.ValidationRetriesMax.compareAndSet(max, retryCount))
-                                break;
-                        }
+                        Stats.max(Stats.Instance.ValidationRetriesMax, retryCount);
                     }
 
                     Helper.instance().setRetryCount(retryCount);

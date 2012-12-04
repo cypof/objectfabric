@@ -37,6 +37,19 @@ class JVMBuff extends Buff {
         _buffer.order(ByteOrder.LITTLE_ENDIAN);
     }
 
+    static JVMBuff getWithPosition(int position) {
+        JVMBuff buff = (JVMBuff) Buff.getOrCreate();
+        buff.position(position);
+
+        if (Debug.RANDOMIZE_TRANSFER_LENGTHS) {
+            int limit = Math.min(buff.remaining(), 200);
+            int rand = Platform.get().randomInt(limit - 1) + 1;
+            buff.limit(position + rand);
+        }
+
+        return buff;
+    }
+
     @Override
     Buff duplicateInternals(Buff parent) {
         JVMBuff buff = new JVMBuff(parent, _buffer.duplicate());
@@ -233,23 +246,23 @@ class JVMBuff extends Buff {
         _buffer.putLong(value);
     }
 
+    //
+
     @Override
-    final void getBytes(byte[] bytes, int offset, int length) {
+    final void getImmutably(byte[] bytes, int offset, int length) {
         if (Debug.ENABLED)
             check(false);
 
-        _buffer.get(bytes, offset, length);
+        _buffer.duplicate().get(bytes, offset, length);
     }
 
     @Override
-    final void putBytes(byte[] bytes, int offset, int length) {
+    final void putImmutably(byte[] bytes, int offset, int length) {
         if (Debug.ENABLED)
             check(true);
 
-        _buffer.put(bytes, offset, length);
+        _buffer.duplicate().put(bytes, offset, length);
     }
-
-    //
 
     @Override
     final void putImmutably(Buff source) {

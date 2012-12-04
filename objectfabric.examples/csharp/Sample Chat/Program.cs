@@ -14,8 +14,8 @@ namespace Sample_Chat
             w.AddURIHandler(new WebSocketURIHandler());
 
             // Get a room
-            Resource resource = w.Resolve("ws://localhost:8888/room1");
-            TSet<string> messages = (TSet<string>) resource.Get();
+            Resource resource = w.Open("ws://localhost:8888/room1");
+            TSet<string> messages = (TSet<string>) resource.Value;
 
             // A room is a set of messages. Adding a message to a
             // set raises the 'onPut' callback on all clients who

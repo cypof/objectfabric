@@ -12,6 +12,8 @@
 
 package org.objectfabric;
 
+import org.objectfabric.JS.Closure;
+import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.Exportable;
 
@@ -37,8 +39,18 @@ public class JSWorkspace implements Exportable {
         return new JSWorkspace();
     }
 
-    public JSResource resolve(String uri) {
-        Internal resource = (Internal) Instance.resolve(uri);
-        return (JSResource) resource.getOrCreateJS();
+    public void open(final String uri, final Closure closure) {
+        Instance.openAsync(uri, new AsyncCallback<Resource>() {
+
+            @Override
+            public void onSuccess(Resource result) {
+                closure.runExportable(((Internal) result).external());
+            }
+
+            @Override
+            public void onFailure(Exception e) {
+                Log.write("Could not get " + uri, e);
+            }
+        });
     }
 }

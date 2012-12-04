@@ -82,7 +82,7 @@ final class Peer {
      * Custom primitive wrapper that do not reference Class, so that Java reflection can
      * be removed from the .NET version.
      */
-    static final class IntBox {
+    private static final class IntBox {
 
         private final int _value;
 

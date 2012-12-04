@@ -173,14 +173,6 @@ class JVMPlatform extends Platform {
 
     private final SecureRandom _secureRandom = new SecureRandom();
 
-    @Override
-    void initializeUIDGenerator(byte[] uid) {
-        if (Debug.ENABLED)
-            Debug.assertion(uid.length == UID.LENGTH);
-
-        // Ignored, used on GWT
-    }
-
     /**
      * See java.util.UUID.
      */

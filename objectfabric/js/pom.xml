@@ -65,7 +65,6 @@
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>gwt-maven-plugin</artifactId>
         <version>${gwt.version}</version>
-        <!-- 
         <executions>
           <execution>
             <phase>compile</phase>
@@ -74,7 +73,6 @@
             </goals>
           </execution>
         </executions>
-        -->
       </plugin>
       <plugin>
         <artifactId>maven-eclipse-plugin</artifactId>

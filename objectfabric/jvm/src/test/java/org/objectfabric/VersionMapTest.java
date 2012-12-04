@@ -27,12 +27,12 @@ public class VersionMapTest extends TestsHelper {
 
         Transaction barrier1 = _w.startImpl(0);
 
-        SimpleClass a = new SimpleClass(_w.resolve(""));
+        SimpleClass a = new SimpleClass(_w.open(""));
         a.int0(1);
 
         Transaction barrier2 = _w.startImpl(0);
 
-        SimpleClass b = new SimpleClass(_w.resolve(""));
+        SimpleClass b = new SimpleClass(_w.open(""));
         b.int0(2);
 
         Assert.assertEquals(3, _w.snapshot().getVersionMaps().length);

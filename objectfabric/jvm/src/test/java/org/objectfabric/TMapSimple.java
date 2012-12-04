@@ -37,7 +37,7 @@ public class TMapSimple extends TestsHelper {
         if (LOG)
             logger = new Logger(workspace, workspace.callbackExecutor());
 
-        final TMap<Integer, String> map = new TMap<Integer, String>(workspace.resolve(""));
+        final TMap<Integer, String> map = new TMap<Integer, String>(workspace.open(""));
         final CyclicBarrier barrier = new CyclicBarrier(2);
         final CountDownLatch latch = new CountDownLatch(1);
         final AtomicInteger attempts = new AtomicInteger();
@@ -182,7 +182,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void sizePrivatePublic() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<String, Integer> map = new TMap<String, Integer>(workspace.resolve(""));
+        final TMap<String, Integer> map = new TMap<String, Integer>(workspace.open(""));
 
         map.put("A", 0);
         map.put("B", 1);
@@ -218,7 +218,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void loop1() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.resolve(""));
+        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.open(""));
 
         for (int i = 0; i < CYCLES; i++) {
             workspace.atomic(new Runnable() {
@@ -236,7 +236,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void loop2() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.resolve(""));
+        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.open(""));
 
         for (int i = 0; i < CYCLES; i++) {
             workspace.atomic(new Runnable() {
@@ -254,7 +254,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void loop3() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.resolve(""));
+        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.open(""));
 
         for (int i = 0; i < CYCLES; i++) {
             map.clear();
@@ -274,7 +274,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void loop3_bis() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.resolve(""));
+        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.open(""));
 
         for (int i = 0; i < CYCLES; i++) {
             workspace.atomic(new Runnable() {
@@ -303,7 +303,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void threads1() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.resolve(""));
+        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.open(""));
         int threads = Runtime.getRuntime().availableProcessors();
 
         new TMapExtended(workspace).run(threads, new Runnable() {
@@ -319,7 +319,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void threads2() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.resolve(""));
+        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.open(""));
         int threads = Runtime.getRuntime().availableProcessors();
 
         new TMapExtended(workspace).run(threads, new Runnable() {
@@ -335,7 +335,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void threads3() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.resolve(""));
+        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.open(""));
         int threads = Runtime.getRuntime().availableProcessors();
 
         new TMapExtended(workspace).run(threads, new Runnable() {
@@ -352,7 +352,7 @@ public class TMapSimple extends TestsHelper {
     @Test
     public void threads3_bis() {
         final Workspace workspace = Platform.newTestWorkspace();
-        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.resolve(""));
+        final TMap<Integer, Integer> map = new TMap<Integer, Integer>(workspace.open(""));
 
         int threads = Runtime.getRuntime().availableProcessors();
 

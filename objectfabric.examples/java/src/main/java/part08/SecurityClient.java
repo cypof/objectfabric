@@ -53,30 +53,19 @@ public class SecurityClient {
         /*
          * This resource is not accessible.
          */
-        Resource resource = workspace.resolve("wss://localhost:8883/internal");
-        Object value;
-
-        try {
-            value = resource.get();
-            Assert.fail();
-        } catch (Exception ex) {
-            Assert.assertTrue(ex.getMessage().contains("Permission: REJECT"));
-        }
-
-        // The permission returned by the server can be read on the resource
-        Assert.assertEquals(Permission.REJECT, resource.permission());
+        Resource resource = workspace.open("wss://localhost:8883/internal");
+        Assert.assertEquals(Permission.NONE, resource.permission());
 
         /*
          * This resource is read only.
          */
-        resource = workspace.resolve("wss://localhost:8883/read-only");
-        value = resource.get();
+        resource = workspace.open("wss://localhost:8883/read-only");
+        Assert.assertEquals(Permission.READ, resource.permission());
 
         /*
-         * Read was successful.
+         * Resource content can be read.
          */
-        Assert.assertEquals("data", value);
-        Assert.assertEquals(Permission.READ, resource.permission());
+        Assert.assertEquals("data", resource.get());
 
         /*
          * Writes are allowed but will not be synchronized to server. Updates remain in
@@ -87,10 +76,9 @@ public class SecurityClient {
         /*
          * This resource is read-write.
          */
-        resource = workspace.resolve("wss://localhost:8883/read-write");
-        value = resource.get();
-        Assert.assertEquals("data", value);
+        resource = workspace.open("wss://localhost:8883/read-write");
         Assert.assertEquals(Permission.WRITE, resource.permission());
+        Assert.assertEquals("data", resource.get());
         resource.set("update");
 
         workspace.close();
@@ -104,13 +92,13 @@ public class SecurityClient {
         /*
          * Read-only is still at previous value.
          */
-        value = workspace.resolve("wss://localhost:8883/read-only").get();
+        Object value = workspace.open("wss://localhost:8883/read-only").get();
         Assert.assertEquals("data", value);
 
         /*
          * Read-write has been updated.
          */
-        value = workspace.resolve("wss://localhost:8883/read-write").get();
+        value = workspace.open("wss://localhost:8883/read-write").get();
         Assert.assertEquals("update", value);
 
         System.out.println("Done!");

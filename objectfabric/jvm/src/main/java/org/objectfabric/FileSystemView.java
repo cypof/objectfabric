@@ -18,13 +18,13 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.channels.FileChannel;
 
-final class FileView extends ArrayView {
+final class FileSystemView extends ArrayView {
 
     private final File _folder;
 
-    private final FileQueue _queue;
+    private final FileSystemQueue _queue;
 
-    FileView(Location location, File folder, FileQueue queue) {
+    FileSystemView(Location location, File folder, FileSystemQueue queue) {
         super(location);
 
         _folder = folder;
@@ -39,9 +39,10 @@ final class FileView extends ArrayView {
     final void getKnown(URI uri) {
         long[] ticks = copy();
 
-        if (ticks != null)
-            uri.onKnown(this, ticks);
-        else
+        if (ticks != null) {
+            if (ticks.length != 0 || !location().isCache())
+                uri.onKnown(this, ticks);
+        } else
             list(uri, null);
     }
 
@@ -68,7 +69,7 @@ final class FileView extends ArrayView {
                     Log.write("Folder list  " + _folder.getPath());
 
                 if (Stats.ENABLED)
-                    Stats.Instance.FileListCount.incrementAndGet();
+                    Stats.Instance.BlockListCount.incrementAndGet();
 
                 String[] files;
 
@@ -80,41 +81,28 @@ final class FileView extends ArrayView {
                 }
 
                 long[] ticks = null;
-                long[] updated = null;
 
                 if (files != null && files.length > 0) {
                     for (int i = 0; i < files.length; i++)
                         ticks = Tick.add(ticks, Utils.getTick(files[i]));
-                } else if (!location().isCache())
+                } else
                     ticks = Tick.EMPTY;
 
-                if (ticks != null) {
-                    synchronized (this) {
-                        updated = merge(ticks);
-                    }
-
-                    if (updated != null) {
-                        uri.onKnown(FileView.this, updated);
-                        ticks = updated;
-                    }
-                }
-
-                if (compare != null)
-                    for (int i = 0; i < compare.length; i++)
-                        if (!Tick.isNull(compare[i]))
-                            if (!Tick.contains(ticks, compare[i]))
-                                uri.getBlock(FileView.this, compare[i]);
+                onLoad(uri, ticks, compare);
             }
         });
     }
 
     @Override
     void getBlock(final URI uri, final long tick) {
+        if (!contains(tick))
+            return;
+
         ThreadPool.getInstance().execute(new Runnable() {
 
             @Override
             public void run() {
-                if (InFlight.awaits(uri, tick)) {
+                if (InFlight.starting(uri, tick)) {
                     File file = new File(_folder, Utils.getTickHex(tick));
 
                     if (Debug.PERSISTENCE_LOG)
@@ -138,7 +126,7 @@ final class FileView extends ArrayView {
 
                         // TODO lock file for multi-process?
                         // if (channel.tryLock(0, Long.MAX_VALUE, true) != null) {
-                        JVMBuff buff = getNewBuff(0);
+                        JVMBuff buff = JVMBuff.getWithPosition(0);
                         int position = buff.position();
                         int offset = 0;
 
@@ -163,7 +151,7 @@ final class FileView extends ArrayView {
                                 buff.position(position);
                                 buff.mark();
                                 list.add(buff);
-                                buff = getNewBuff(Buff.getLargestUnsplitable());
+                                buff = JVMBuff.getWithPosition(Buff.getLargestUnsplitable());
                                 position = buff.position();
                             }
 
@@ -190,18 +178,9 @@ final class FileView extends ArrayView {
                     }
 
                     if (Stats.ENABLED)
-                        Stats.Instance.FileReadCount.incrementAndGet();
+                        Stats.Instance.BlockReadCount.incrementAndGet();
 
                     if (buffs != null) {
-                        if (Stats.ENABLED) {
-                            int bytes = 0;
-
-                            for (int i = 0; i < buffs.length; i++)
-                                bytes += buffs[i].remaining();
-
-                            Stats.Instance.FileReadBytes.addAndGet(bytes);
-                        }
-
                         if (Debug.RANDOMIZE_FILE_LOAD_ORDER)
                             Platform.get().sleep(Platform.get().randomInt(100));
 
@@ -209,10 +188,8 @@ final class FileView extends ArrayView {
                             for (int i = 0; i < buffs.length; i++)
                                 ThreadAssert.exchangeGive(buffs, buffs[i]);
 
-                        if (buffs.length == 0)
-                            file.delete();
-                        else {
-                            Exception exception = uri.onBlock(FileView.this, tick, buffs, null, true, null, false);
+                        if (buffs.length > 0) {
+                            Exception exception = uri.onBlock(FileSystemView.this, tick, buffs, null, true, null, false, null);
 
                             if (Debug.THREADS)
                                 ThreadAssert.exchangeTake(buffs);
@@ -234,18 +211,6 @@ final class FileView extends ArrayView {
                 }
             }
         });
-    }
-
-    private static JVMBuff getNewBuff(int position) {
-        JVMBuff buff = (JVMBuff) Buff.getOrCreate();
-        buff.position(position);
-
-        if (Debug.RANDOMIZE_TRANSFER_LENGTHS) {
-            int rand = Platform.get().randomInt(buff.remaining() + 1);
-            buff.limit(position + rand);
-        }
-
-        return buff;
     }
 
     @Override

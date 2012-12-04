@@ -43,9 +43,36 @@ namespace ObjectFabric
             addURIHandler(handler);
         }
 
-        public Resource Resolve(string uri)
+        public Resource Open(string uri)
         {
-            return (Resource) resolve(uri);
+            return OpenAsync(uri).Result;
+        }
+
+        public Task<Resource> OpenAsync(string uri)
+        {
+            TaskCompletionSource<Resource> future = new TaskCompletionSource<Resource>();
+            openAsync(uri, new ResourceCallback(future));
+            return future.Task;
+        }
+
+        private class ResourceCallback : org.objectfabric.AsyncCallback
+        {
+            readonly TaskCompletionSource<Resource> _source;
+
+            public ResourceCallback(TaskCompletionSource<Resource> source)
+            {
+                _source = source;
+            }
+
+            public void onSuccess(object obj)
+            {
+                _source.SetResult((Resource) obj);
+            }
+
+            public void onFailure(java.lang.Exception e)
+            {
+                _source.SetException(e);
+            }
         }
 
         //

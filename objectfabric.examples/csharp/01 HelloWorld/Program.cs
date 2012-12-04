@@ -13,7 +13,7 @@ namespace Examples
             /*
              * Fetch resource from server. (Server java\src\main\java\launchfirst\SamplesServer.java must be running)
              */
-            object value = workspace.Resolve("ws://localhost:8888/helloworld").Get();
+            object value = workspace.Open("ws://localhost:8888/helloworld").Value;
             Console.WriteLine(value);
 
             Console.ReadLine();

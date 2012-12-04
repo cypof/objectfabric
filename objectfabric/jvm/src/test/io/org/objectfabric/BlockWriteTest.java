@@ -66,9 +66,10 @@ public class BlockWriteTest extends TestsHelper {
 
             for (int i = 0; i < queue.size(); i++) {
                 byte[] temp = new byte[queue.get(i).remaining()];
-                queue.get(i).getBytes(temp, 0, temp.length);
+                queue.get(i).getImmutably(temp, 0, temp.length);
                 queue.get(i).recycle();
-                buff.putBytes(temp, 0, temp.length);
+                buff.putImmutably(temp, 0, temp.length);
+                buff.position(buff.position() + temp.length);
             }
 
             int limit = buff.position();

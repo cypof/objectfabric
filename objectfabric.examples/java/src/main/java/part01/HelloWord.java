@@ -38,7 +38,7 @@ public class HelloWord {
         /*
          * Get resource from server. (Server 'launchfirst.ExamplesServer' must be running)
          */
-        Object value = workspace.resolve("ws://localhost:8888/helloworld").get();
+        Object value = workspace.open("ws://localhost:8888/helloworld").get();
         Assert.assertEquals("Hello World!", value);
         System.out.println(value);
 
