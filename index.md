@@ -17,7 +17,7 @@ REST 2.0 resources keep track and synchronize changes to remain up-to date, like
 
 <img class="real-time" src="/images/real-time.png"/>
 
-The replication mechanism is modelled after source control systems. It tracks and creates immutable representations of changes that can be transmitted and cached as regular Web documents. Changes are ordered and merged in the background by other clients, and can be stored to keep a resource history.
+The replication mechanism is modelled after source control systems. It tracks and creates immutable representations of changes that can be transmitted and cached as regular Web documents, or could be replicated using e.g. DropBox. Changes are ordered and merged in the background by other clients, and can be stored to keep a resource history.
 
 ## + Offline
 
@@ -53,12 +53,13 @@ If the demo gods allow, this should show live data pushed by our test server.
 // Called when ObjectFabric is loaded
 function onof(of) {
   // Get live array of numbers through WebSocket
-  of.resolve("ws://test.objectfabric.org/array").get(function(a) {
+  of.open("ws://test.objectfabric.org/array", function(resource) {
+    var array = resource.get();
     // Add a listener on array, called when an element is
     // set to a new value server side
-    a.onset(function(i) {
+    array.onset(function(i) {
       elem = document.getElementById('td' + i);
-      elem.innerHTML = formatNumber(a.get(i));
+      elem.innerHTML = formatNumber(array.get(i));
     });
   });
 }
@@ -67,31 +68,21 @@ function onof(of) {
 
 <div id="array-2">
 {% highlight java %}
-// Like opening a browser
-Workspace w = new JVMWorkspace();
-
-// Enable network connections
-w.addURIHandler(new NettyURIHandler());
-
 // Get live array of numbers through WebSocket
 String uri = "ws://test.objectfabric.org/array";
-final TArrayLong a = (TArrayLong) w.resolve(uri).get();
-final NumberFormat format = NumberFormat.getIntegerInstance();
+final TArrayLong a = (TArrayLong) workspace.open(uri).get();
 
 // Add a listener on array, called when an element is
 // set to a new value server side
 a.addListener(new IndexListener() {
-
     @Override
     public void onSet(int i) {
-        String n = format.format(a.get(i));
-
         switch (i) {
             case 0:
-                System.out.println("World population: " + n);
+                write("World population: " + a.get(i));
                 break;
             case 1:
-                System.out.println("Internet Users: " + n);
+                write("Internet Users: " + a.get(i));
                 break;
         }
     }
@@ -101,27 +92,21 @@ a.addListener(new IndexListener() {
 
 <div id="array-3">
 {% highlight csharp %}
-// Like opening a browser
-Workspace w = new Workspace();
-
-// Enable network connections
-w.AddURIHandler(new WebSocketURIHandler());
-
 // Get live array of numbers through WebSocket
 string uri = "ws://test.objectfabric.org/array";
-TArray<long> a = (TArray<long>) w.Resolve(uri).Get();
+TArray<long> array = (TArray<long>) workspace.Open(uri).Value;
 
 // Add a listener on array, called when an element is
 // set to a new value server side
-a.Set += i =>
+array.Set += i =>
 {
     switch (i)
     {
         case 0:
-            Console.WriteLine("World population: " + a[i]);
+            Write("World population: " + array[i]);
             break;
         case 1:
-            Console.WriteLine("Internet Users: " + a[i]);
+            Write("Internet Users: " + array[i]);
             break;
     }
 };
@@ -145,7 +130,8 @@ Not packaged yet, but can be run from the source.
 // Called when ObjectFabric is loaded
 function onof(of) {
 // Get a room
-of.resolve("ws://localhost:8888/room1").get(function(messages) {
+of.open("ws://localhost:8888/room1", function(resource) {
+  var messages = resource.get();
   var me = "";
 
   jQuery(document).ready(function($) {
@@ -176,14 +162,8 @@ of.resolve("ws://localhost:8888/room1").get(function(messages) {
 
 <div id="chat-2">
 {% highlight java %}
-// Like opening a browser
-Workspace w = new JVMWorkspace();
-
-// Enables network connections
-w.addURIHandler(new NettyURIHandler());
-
 // Get a room
-Resource resource = w.resolve("ws://localhost:8888/room1");
+Resource resource = workspace.open("ws://localhost:8888/room1");
 final TSet<String> messages = (TSet) resource.get();
 
 // A room is a set of messages. Adding a message to a
@@ -213,18 +193,12 @@ for (;;) {
 
 <div id="chat-3">
 {% highlight csharp %}
-// Like opening a browser
-Workspace w = new Workspace();
-
-// Enables network connections
-w.AddURIHandler(new WebSocketURIHandler());
-
 // Get a room
-Resource resource = w.Resolve("ws://localhost:8888/room1");
-TSet<string> messages = (TSet<string>) resource.Get();
+Resource resource = workspace.Open("ws://localhost:8888/room1");
+TSet<string> messages = (TSet<string>) resource.Value;
 
 // A room is a set of messages. Adding a message to a
-// set raises the 'onPut' callback on all clients who
+// set raises the 'Added' event on all clients who
 // share the the same URI
 
 // Display messages that get added to the set
@@ -249,9 +223,19 @@ for (; ; )
 
 ## Demo - Images
 
-This one lets you drag images on the screen to see their position replicated in real-time between processes and platforms. It also displays the current connection status to let you experiment with turning the server off and back on. Clients can be closed and restarted from offline storage. When the server is back, they reconnect and synchronize with each other.
+<img class="images" src="/images/images.png"/>
 
-## Try
+This demo lets you drag images on the screen to see its position replicated in real-time between platforms. It also displays the connection status to let you experiment with turning the server off and on.
 
-blah
-h
+[images.zip](https://github.com/downloads/objectfabric/objectfabric/images.zip), (sources: [GWT](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/gwt.sample_images/src/main/java/examples/client/Main.java), [Java](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/java/src/main/java/sample_images/Images.java), [C#](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/csharp/Sample%20Images/MainWindow.xaml.cs))
+
+Things to try:
+
+Launch the server and clients, they should connect and display 'Up to Date'.<br>
+Create and drag an image around to see real-time sync.<br>
+Kill the server. Clients should alternate between 'Reconnecting...' and 'Waiting retry'.<br>
+Create and drag images. Client are still functional.<br>
+Kill a client and start it again, it should reload from offline storage.<br>
+Restart the server, clients should reconnect and converge.
+
+There is a known bug where synchronization might fail if you delete server's state ('temp' folder).

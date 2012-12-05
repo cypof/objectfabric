@@ -282,8 +282,14 @@ hr {
   margin-bottom:10px;
 }
 
+.images {
+  width:480px;
+  height:152px;
+}
+
 .demo {
   font-size:13px;
+  font-weight:600;
   padding-left:40px;
   width:120px;
 }
