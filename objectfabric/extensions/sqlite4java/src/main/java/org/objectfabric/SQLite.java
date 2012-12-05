@@ -43,6 +43,7 @@ public class SQLite extends Origin implements URIHandler {
             Log.write("SQLite opened");
 
         _file = file;
+        _file.getParentFile().mkdirs();
         _queue = new SQLiteQueue(this);
         _readers = new SQLiteLoop(this, readers, false);
         _writer = new SQLiteLoop(this, 1, true);

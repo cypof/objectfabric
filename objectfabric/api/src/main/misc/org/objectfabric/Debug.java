@@ -70,7 +70,7 @@ public final class Debug {
     private Debug() {
     }
 
-    public interface Assertion {
+    interface Assertion {
 
         boolean run();
     }

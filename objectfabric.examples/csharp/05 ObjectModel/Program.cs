@@ -10,7 +10,17 @@ namespace Examples
             Workspace workspace = new Workspace();
             workspace.AddURIHandler(new WebSocketURIHandler());
 
-            // TODO
+            TDictionary<object, object> map = (TDictionary<object, object>) workspace.Open("ws://localhost:8888/map").Value;
+
+            map.Added += key =>
+            {
+                Console.WriteLine("Added: " + map[key]);
+            };
+
+            map["blah"] = "new";
+
+            // TODO finish
+
             Console.ReadLine();
         }
     }

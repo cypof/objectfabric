@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.objectfabric</groupId>
     <artifactId>objectfabric.examples</artifactId>
-    <version>0.9.1-SNAPSHOT</version>
+    <version>0.9.1</version>
   </parent>
 
   <artifactId>objectfabric.examples-gwt.sample_images</artifactId>
@@ -19,6 +19,12 @@
     <dependency>
       <groupId>com.google.gwt</groupId>
       <artifactId>gwt-user</artifactId>
+      <version>${gwt.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.google.gwt</groupId>
+      <artifactId>gwt-dev</artifactId>
       <version>${gwt.version}</version>
       <scope>provided</scope>
     </dependency>

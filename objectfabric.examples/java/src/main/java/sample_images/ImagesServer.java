@@ -78,7 +78,7 @@ public class ImagesServer {
         System.out.println("Started Images server.");
 
         /*
-         * When packaged as a demo, also launch Jetty to serve demo static files.
+         * When packaged as a demo, also launch Jetty to serve static files.
          */
         if (args != null && args.length == 1) {
             org.eclipse.jetty.server.Server jetty = new org.eclipse.jetty.server.Server();

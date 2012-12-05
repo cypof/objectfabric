@@ -18,7 +18,7 @@ namespace Sample_Chat
             TSet<string> messages = (TSet<string>) resource.Value;
 
             // A room is a set of messages. Adding a message to a
-            // set raises the 'onPut' callback on all clients who
+            // set raises the 'Added' event on all clients who
             // share the the same URI
 
             // Display messages that get added to the set

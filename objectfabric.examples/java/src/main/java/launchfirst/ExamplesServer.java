@@ -16,6 +16,11 @@ import java.io.File;
 import java.net.InetSocketAddress;
 import java.util.concurrent.Executors;
 
+import org.eclipse.jetty.server.Handler;
+import org.eclipse.jetty.server.handler.DefaultHandler;
+import org.eclipse.jetty.server.handler.HandlerList;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.jboss.netty.bootstrap.ServerBootstrap;
 import org.jboss.netty.channel.ChannelPipeline;
 import org.jboss.netty.channel.ChannelPipelineFactory;
@@ -45,7 +50,7 @@ import part05.generated.User;
  */
 public class ExamplesServer {
 
-    public static void run() {
+    public static void run(String[] args) throws Exception {
         clearFolder("temp/server");
 
         /*
@@ -153,10 +158,28 @@ public class ExamplesServer {
          */
         bootstrap.bind(new InetSocketAddress(8888));
         System.out.println("Started ExamplesServer on port 8888");
+
+        /*
+         * When packaged as a demo, also launch Jetty to serve static files.
+         */
+        if (args != null && args.length == 1) {
+            org.eclipse.jetty.server.Server jetty = new org.eclipse.jetty.server.Server();
+            SelectChannelConnector connector = new SelectChannelConnector();
+            connector.setPort(8080);
+            jetty.addConnector(connector);
+            ResourceHandler resource_handler = new ResourceHandler();
+            resource_handler.setDirectoriesListed(true);
+            resource_handler.setResourceBase(args[0]);
+            HandlerList handlers = new HandlerList();
+            handlers.setHandlers(new Handler[] { resource_handler, new DefaultHandler() });
+            jetty.setHandler(handlers);
+            jetty.start();
+            jetty.join();
+        }
     }
 
-    public static void main(String[] args) {
-        run();
+    public static void main(String[] args) throws Exception {
+        run(args);
 
         try {
             Thread.sleep(Long.MAX_VALUE);

@@ -44,9 +44,9 @@ namespace SampleImages
 
             // Register a handler on the set to be notified when an image
             // is added that needs to be displayed.
-            positions.CollectionChanged += (_, changeEvent) =>
+            positions.Added += (item) =>
             {
-                AddImageToUI((TArray<double>) changeEvent.NewItems[0]);
+                AddImageToUI((TArray<double>) item);
             };
 
             // Some images might already be shared, show them. Use an atomic
@@ -125,7 +125,7 @@ namespace SampleImages
 
             // Listen to image info events and move image accordingly
 
-            position.CollectionChanged += (sender, e) =>
+            position.Set += (_) =>
             {
                 Canvas.SetLeft(image, position[0]);
                 Canvas.SetTop(image, position[1]);
