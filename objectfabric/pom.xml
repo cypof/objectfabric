@@ -9,7 +9,7 @@
 
   <groupId>org.objectfabric</groupId>
   <artifactId>objectfabric</artifactId>
-  <version>0.9.1</version>
+  <version>0.9.2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>objectfabric</name>
@@ -28,7 +28,7 @@
     <connection>scm:git:git@github.com:objectfabric/objectfabric.git</connection>
     <developerConnection>scm:git:git@github.com:objectfabric/objectfabric.git</developerConnection>
     <url>git@github.com:objectfabric/objectfabric.git</url>
-    <tag>v0.9.1</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <developers>
