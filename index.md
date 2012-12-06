@@ -225,7 +225,7 @@ for (; ; )
 
 <img class="images" src="/images/images.png"/>
 
-This demo lets you drag images on the screen to see its position replicated in real-time between platforms. It also displays the connection status to let you experiment with turning the server off and on.
+This demo lets you drag images on the screen to see their position replicated in real-time between platforms. It also displays the connection status to let you experiment with turning the server off and on.
 
 [images.zip](https://github.com/downloads/objectfabric/objectfabric/images.zip), (sources: [GWT](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/gwt.sample_images/src/main/java/examples/client/Main.java), [Java](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/java/src/main/java/sample_images/Images.java), [C#](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/csharp/Sample%20Images/MainWindow.xaml.cs))
 
