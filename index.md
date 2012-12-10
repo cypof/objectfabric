@@ -3,31 +3,40 @@ layout: index
 title: ObjectFabric
 ---
 
-## REST 2.0 = REST + Real Time + Offline
+ObjectFabric is based on a very simple idea. When modifying a Web resource, instead of replacing it, e.g. with a PUT, why not adding a new version? E.g. with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change.
 
-This project is an attempt to combine REST's power and simplicity with recent developments like WebSockets and eventual consistency algorithms. REST architectures gave us scalability over stateless servers, easy resource caching, and the familiar URI + verb API. Today, more and more applications need to go further.
+The whole point is to make Rich Hickey [happy](http://www.infoq.com/presentations/Value-Values). Using immutable representations of data.
 
-## + Real Time
+ObjectFabric is an implementation of this that sends changes in real-time over WebSockets, orders them between users in a scalable way, and can remove old versions if space is an issue, e.g. on clients.
 
-A REST resource fetched from a server is a static document.
+### REST 2.0 = REST + Real Time + Offline
+
+The resulting programming model is a sort of extension to REST. It keeps properties like scalability over stateless servers, easy resource caching, the familiar URI + verb API, and applications can still be written in a HATEOAS style. On the other hand, loading a resource requires listing change files for a URI, which requires some code on the server as it is not built-in to HTTP. It also complicates the client as it needs a library to merge those changes.
+
+### + Real Time
+
+Pushing changes over WebSocket is not required but makes things extra interesting. A regular REST resource is a static document.
 
 <img class="rest" src="/images/rest.png"/>
 
-REST 2.0 resources keep track and synchronize changes to remain up-to date, like Google Docs. Applications otherwise look like regular REST when resources are not changing. The name "REST 2.0" tries to convey this by analogy with "Web 2.0", which are still Web sites, but use Ajax to update parts of pages in real-time.
+A REST 2.0 resource can remain up-to date by merging changes are they are received. The client library can also track updates and send them for two-way synchronization like Google Docs.
 
 <img class="real-time" src="/images/real-time.png"/>
 
-The replication mechanism is modelled after source control systems. It tracks and creates immutable representations of changes that can be transmitted and cached as regular Web documents, or could be replicated using e.g. DropBox. Changes are ordered and merged in the background by other clients, and can be stored to keep a resource history.
+The name "REST 2.0" is an analogy with "Web 2.0", which are still Web sites but use Ajax to update parts of pages in real-time. Other mechanisms could be used to synchronize changes files, even something like DropBox.
 
-## + Offline
+### + Offline
 
 <img class="offline" src='/images/offline.png'/>
 
-Resources can be cached when connectivity is not available, and for better performance. REST 2.0 applications do not have to deal directly with connection state. Resources  can always be read and written to, while re-connections are attempted in the background. The same eventual consistency algorithm reconciles versions between servers, live clients and offline stores.
+When connectivity is down, and for better performance, clients can load changes they have in cache. They can still create new changes and store them for later synchronization.
+
+Our implementation does not require developers to deal with connection state at all. Resources can always be read and written to, while re-connections are attempted in the background.
 
 ## Demo - Streaming
 
-If the demo gods allow, this should show live data pushed by our test server.
+If the demo gods allow, this should show live data pushed by our test server. OF provides several built-in types like sets, maps and arrays that it can synchronize. The demo fetches an array of numbers and adds a callback to it to listen for changes. When the library receives a change from the server, e.g. item i = x, it updates the array and runs the callback.
+
 <table>
   <tr>
     <td class="demo">World Population:</td>
@@ -116,7 +125,7 @@ array.Set += i =>
 
 ## Demo - Chat
 
-Not packaged yet, but can be run from the source.
+Not packaged yet, but can be run from the source. It is basically the same demo, but using a set of strings instead of an array of numbers. It also lets clients modify the set instead of only listening, by adding new messages to the set that will get replicated to other clients.
 
 <div id="chat">
 <ul>
@@ -231,11 +240,14 @@ This demo lets you drag images on the screen to see their position replicated in
 
 Things to try:
 
-Launch the server and clients, they should connect and display 'Up to Date'.<br>
+Launch the server and clients, they connect and display 'Up to Date'.<br>
 Create and drag an image around to see real-time sync.<br>
-Kill the server. Clients should alternate between 'Reconnecting...' and 'Waiting retry'.<br>
+Kill the server. Clients alternate between 'Reconnecting...' and 'Waiting retry'.<br>
 Create and drag images. Client are still functional.<br>
-Kill a client and start it again, it should reload from offline storage.<br>
-Restart the server, clients should reconnect and converge.
+Kill a client and start it again, it reloads its last state from offline storage.<br>
+Restart the server, clients reconnect and converge.
 
-There is a known bug where synchronization might fail if you delete server's state ('temp' folder).
+## More Info
+
+* [Concepts, Internals](https://github.com/objectfabric/objectfabric/wiki)
+* [Implementations](https://github.com/objectfabric/objectfabric/wiki/Implementations)
