@@ -9,11 +9,11 @@ The whole point is to make Rich Hickey [happy](http://www.infoq.com/presentation
 
 ObjectFabric is an implementation of this that sends changes in real-time over WebSockets, orders them between users in a scalable way, and can remove old versions if space is an issue, e.g. on clients.
 
-### REST 2.0 = REST + Real Time + Offline
+## REST 2.0 = REST + Real Time + Offline
 
 The resulting programming model is a sort of extension to REST. It keeps properties like scalability over stateless servers, easy resource caching, the familiar URI + verb API, and applications can still be written in a HATEOAS style. On the other hand, loading a resource requires listing change files for a URI, which requires some code on the server as it is not built-in to HTTP. It also complicates the client as it needs a library to merge those changes.
 
-### + Real Time
+## + Real Time
 
 Pushing changes over WebSocket is not required but makes things extra interesting. A regular REST resource is a static document.
 
@@ -25,7 +25,7 @@ A REST 2.0 resource can remain up-to date by merging changes are they are receiv
 
 The name "REST 2.0" is an analogy with "Web 2.0", which are still Web sites but use Ajax to update parts of pages in real-time. Other mechanisms could be used to synchronize changes files, even something like DropBox.
 
-### + Offline
+## + Offline
 
 <img class="offline" src='/images/offline.png'/>
 
@@ -249,5 +249,5 @@ Restart the server, clients reconnect and converge.
 
 ## More Info
 
-* [Concepts, Internals](https://github.com/objectfabric/objectfabric/wiki)
-* [Implementations](https://github.com/objectfabric/objectfabric/wiki/Implementations)
+[Concepts, Internals](https://github.com/objectfabric/objectfabric/wiki)<br>
+[Implementations](https://github.com/objectfabric/objectfabric/wiki/Implementations)
