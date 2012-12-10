@@ -5,9 +5,9 @@ title: ObjectFabric
 
 ObjectFabric is based on a very simple idea. When modifying a Web resource, instead of replacing it, e.g. with a PUT, why not adding a new version? E.g. with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change.
 
-The whole point is to make Rich Hickey [happy](http://www.infoq.com/presentations/Value-Values).
+The whole point is to make Rich Hickey [happy](http://www.infoq.com/presentations/Value-Values). Immutability everywhere.
 
-ObjectFabric is an implementation of this that sends changes in real-time over WebSockets, orders them between users in a scalable way, and can remove old versions if space is an issue, e.g. on clients.
+More info [here](https://github.com/objectfabric/objectfabric/wiki). ObjectFabric is an implementation of this that sends changes in real-time over WebSockets, orders them between users in a scalable way, and can remove old versions if space is an issue, e.g. on clients.
 
 ## REST 2.0 = REST + Real Time + Offline
 
