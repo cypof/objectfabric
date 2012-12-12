@@ -3,27 +3,27 @@ layout: index
 title: ObjectFabric
 ---
 
-ObjectFabric is based on a very simple idea. When modifying a Web resource, instead of replacing it, e.g. with a PUT, why not adding a new version? E.g. with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change.
+This work is based on a very simple idea. When modifying a Web resource, instead of doing it in-place, e.g. with a PUT, why not add a new version? E.g. with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change relative to the previous version.
 
-The whole point is to make Rich Hickey [happy](http://www.infoq.com/presentations/Value-Values). Immutability everywhere.
+First it makes [Rich Hickey](https://twitter.com/fakerichhickey) happy: [Value of Values](http://www.infoq.com/presentations/Value-Values). Immutable everything.
 
-More info [here](https://github.com/objectfabric/objectfabric/wiki). ObjectFabric is an implementation of this that sends changes in real-time over WebSockets, orders them between users in a scalable way, and can remove old versions if space is an issue, e.g. on clients.
+Other reasons [here](https://github.com/objectfabric/objectfabric/wiki). ObjectFabric is an implementation of this that automates the representation and merge of changes. It can order them between users in a scalable way, and remove old versions if space is an issue, e.g. on clients.
 
 ## REST 2.0 = REST + Real Time + Offline
 
-The resulting programming model is a sort of extension to REST. It keeps properties like scalability over stateless servers, easy resource caching, the familiar URI + verb API, and applications can still be written in a HATEOAS style. On the other hand, loading a resource requires listing change files for a URI, which requires some code on the server as it is not built-in to HTTP. It also complicates the client as it needs a library to merge those changes.
+The resulting programming model is a sort of extension to REST. It keeps properties like scalability over stateless servers, easy resource caching, the familiar URI + verb API, and applications can still be written in a HATEOAS style. On the other hand, loading a resource requires listing changes for a URI, which is not built-in to HTTP, e.g. using a custom REST endpoint, WebDAV, or our server implementation. It also complicates the client as it needs to merge changes to get the actual data.
 
 ## + Real Time
 
-Pushing changes over WebSocket is not required but makes things extra interesting. A regular REST resource is a static document.
+Our implementation can push changes over WebSocket, which makes things extra interesting: A regular REST resource is a static document.
 
 <img class="rest" src="/images/rest.png"/>
 
-A REST 2.0 resource can remain up-to date by merging changes are they are received. The client library can also track updates and send them for two-way synchronization like Google Docs.
+A REST 2.0 resource can remain up-to date by merging changes are they are received. The client library can also track user updates and send them for two-way synchronization like Google Docs.
 
 <img class="real-time" src="/images/real-time.png"/>
 
-The name "REST 2.0" is an analogy with "Web 2.0", which are still Web sites but use Ajax to update parts of pages in real-time. Other mechanisms could be used to synchronize changes files, even something like DropBox.
+The name "REST 2.0" is an analogy with "Web 2.0", which are still Web sites but use Ajax to update parts of pages in real-time. Other mechanisms can be used to synchronize changes, even something like DropBox by storing them as files.
 
 ## + Offline
 
@@ -31,11 +31,13 @@ The name "REST 2.0" is an analogy with "Web 2.0", which are still Web sites but 
 
 When connectivity is down, and for better performance, clients can load changes they have in cache. They can still create new changes and store them for later synchronization.
 
-Our implementation does not require developers to deal with connection state at all. Resources can always be read and written to, while re-connections are attempted in the background.
+Our implementation does not require developers to deal with connection state at all. Resources can always be read and written to, while re-connections are automatically attempted in the background.
 
 ## Demo - Streaming
 
-If the demo gods allow, this should show live data pushed by our test server. OF provides several built-in types like sets, maps and arrays that it can synchronize. The demo fetches an array of numbers and adds a callback to it to listen for changes. When the library receives a change from the server, e.g. item i = x, it updates the array and runs the callback.
+If the demo gods allow, this should show live data pushed by our test server. OF provides several types like sets, maps, and arrays that it completely automates. Just change a resource and its new value will show up on servers and other clients.
+
+This demo fetches an array of numbers and adds a callback to it to listen for changes. When the library receives a change from the server, e.g. item i = x, it updates the array and runs the callback.
 
 <table>
   <tr>
@@ -234,7 +236,7 @@ for (; ; )
 
 <img class="images" src="/images/images.png"/>
 
-This demo lets you drag images on the screen to see their position replicated in real-time between platforms. It also displays the connection status to let you experiment with turning the server off and on.
+This demo lets you drag images on the screen to see their position replicated between platforms. It also displays the connection status to experiment with offline support.
 
 [images.zip](https://github.com/downloads/objectfabric/objectfabric/images.zip), (sources: [GWT](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/gwt.sample_images/src/main/java/examples/client/Main.java), [Java](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/java/src/main/java/sample_images/Images.java), [C#](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/csharp/Sample%20Images/MainWindow.xaml.cs))
 
