@@ -13,17 +13,26 @@
 package org.objectfabric;
 
 import org.objectfabric.JS.Closure;
+import org.objectfabric.JS.External;
 import org.objectfabric.JS.Internal;
+import org.objectfabric.JSResource.ResourceInternal;
 import org.timepedia.exporter.client.Export;
-import org.timepedia.exporter.client.Exportable;
 
-@Export
-public class JSWorkspace implements Exportable {
+@Export("workspace")
+public class JSWorkspace implements External {
 
-    static class WorkspaceInternal extends GWTWorkspace {
+    static final class WorkspaceInternal extends GWTWorkspace implements Internal {
 
-        private WorkspaceInternal() {
-            addURIHandler(new WebSocketURIHandler());
+        JSWorkspace _js;
+
+        @Override
+        public External external() {
+            if (_js == null) {
+                _js = new JSWorkspace();
+                _js._internal = this;
+            }
+
+            return _js;
         }
 
         @Override
@@ -32,25 +41,48 @@ public class JSWorkspace implements Exportable {
         }
     }
 
-    static final WorkspaceInternal Instance = new WorkspaceInternal();
+    private WorkspaceInternal _internal;
 
-    // @ExportStaticMethod
-    public static JSWorkspace create() {
-        return new JSWorkspace();
+    public JSWorkspace() {
+        _internal = new WorkspaceInternal();
+    }
+
+    @Override
+    public Internal internal() {
+        return _internal;
     }
 
     public void open(final String uri, final Closure closure) {
-        Instance.openAsync(uri, new AsyncCallback<Resource>() {
+        _internal.openAsync(uri, new AsyncCallback<Resource>() {
 
             @Override
             public void onSuccess(Resource result) {
-                closure.runExportable(((Internal) result).external());
+                closure.runExportable(null, ((ResourceInternal) result).external());
             }
 
             @Override
             public void onFailure(Exception e) {
-                Log.write("Could not get " + uri, e);
+                closure.runExportable(e.toString(), null);
             }
         });
+    }
+
+    public void close() {
+        _internal.close();
+    }
+
+    // Apparently gwt-exporter needs explicit type here
+    // (maybe because URIHandler is only an interface?)
+
+    public void addURIHandler(JSMemory value) {
+        _internal.addURIHandler(value.internal());
+    }
+
+    public void addURIHandler(JSFileSystem value) {
+        _internal.addURIHandler(value.internal());
+    }
+
+    public void addURIHandler(JSWebSocket value) {
+        _internal.addURIHandler(value.internal());
     }
 }

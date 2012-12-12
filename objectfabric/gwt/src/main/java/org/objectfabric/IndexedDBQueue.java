@@ -67,27 +67,27 @@ final class IndexedDBQueue extends BlockQueue implements Runnable {
 
     final void write(JavaScriptObject transaction, URI uri, long tick, Buff[] buffs, long[] removals, boolean callback) {
         IndexedDBView view = (IndexedDBView) uri.getOrCreate(_location);
-        ArrayBuffer buffer;
+        ArrayBuffer buffer=null;
 
         if (buffs.length == 1) {
             GWTBuff buff = (GWTBuff) buffs[0];
-            buffer = buff.slice();
+  //          buffer = buff.slice();
         } else {
             int capacity = 0;
 
             for (int i = 0; i < buffs.length; i++)
                 capacity += buffs[i].remaining();
 
-            Uint8ArrayNative array = Uint8ArrayNative.create(capacity);
+            Uint8Array array = ((GWTPlatform) Platform.get()).newUint8Array(capacity);
             int position = 0;
 
             for (int i = 0; i < buffs.length; i++) {
                 GWTBuff buff = (GWTBuff) buffs[i];
-                array.set(buff.typed().subarray(buff.position(), buff.limit()), position);
+                array.set(buff.subarray(), position);
                 position += buff.remaining();
             }
 
-            buffer = array.buffer();
+//            buffer = array.buffer();
         }
 
         JavaScriptObject request = write(transaction, IndexedDB.BLOCKS, view.getKey(tick), buffer);

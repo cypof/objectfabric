@@ -13,6 +13,7 @@
 package part03;
 
 import java.io.File;
+import java.util.Map;
 
 import org.junit.Assert;
 import org.objectfabric.ClientURIHandler;
@@ -22,7 +23,6 @@ import org.objectfabric.Remote;
 import org.objectfabric.Remote.Status;
 import org.objectfabric.Resource;
 import org.objectfabric.SQLite;
-import org.objectfabric.TMap;
 import org.objectfabric.Workspace;
 
 /**
@@ -82,9 +82,9 @@ public class Offline {
             /*
              * Load the map from cache. Map can still be updated off-line.
              */
-            TMap<String, Integer> map = (TMap) resource.get();
-            Assert.assertEquals(42, (int) map.get("example key"));
-            map.put("offline update", 43);
+            Map map = (Map) resource.get();
+            Assert.assertEquals("value", map.get("example key"));
+            map.put("offline update", "blah");
             workspace.close();
         }
 
@@ -118,10 +118,12 @@ public class Offline {
 
             Workspace workspace = new JVMWorkspace();
             workspace.addURIHandler(new NettyURIHandler());
-            TMap<String, Integer> map = (TMap) workspace.open("ws://localhost:8888/map").get();
-            Assert.assertEquals(42, (int) map.get("example key"));
-            Assert.assertEquals(43, (int) map.get("offline update"));
+            Map map = (Map) workspace.open("ws://localhost:8888/map").get();
+            Assert.assertEquals("value", map.get("example key"));
+            Assert.assertEquals("blah", map.get("offline update"));
             workspace.close();
         }
+
+        System.out.println("Done!");
     }
 }

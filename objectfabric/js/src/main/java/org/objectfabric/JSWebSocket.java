@@ -16,21 +16,18 @@ import org.objectfabric.JS.External;
 import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
 
-@Export("counter")
-public class JSCounter implements External {
+@SuppressWarnings("unchecked")
+@Export("WebSocket")
+public class JSWebSocket implements External {
 
-    static final class CounterInternal extends Counter implements Internal {
+    static final class WebSocketInternal extends WebSocket implements Internal {
 
-        JSCounter _js;
-
-        CounterInternal(Resource resource) {
-            super(resource);
-        }
+        JSWebSocket _js;
 
         @Override
         public External external() {
             if (_js == null) {
-                _js = new JSCounter();
+                _js = new JSWebSocket();
                 _js._internal = this;
             }
 
@@ -38,29 +35,14 @@ public class JSCounter implements External {
         }
     }
 
-    private CounterInternal _internal;
+    private WebSocketInternal _internal;
 
-    public JSCounter(JSResource resource) {
-        _internal = new CounterInternal(resource._internal);
-    }
-
-    private JSCounter() {
+    public JSWebSocket() {
+        _internal = new WebSocketInternal();
     }
 
     @Override
-    public Internal internal() {
+    public WebSocketInternal internal() {
         return _internal;
-    }
-
-    public void add(long delta) {
-        _internal.add(delta);
-    }
-
-    public long get() {
-        return _internal.get();
-    }
-
-    public void reset() {
-        _internal.reset();
     }
 }

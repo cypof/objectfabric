@@ -43,7 +43,7 @@ final class MemoryView extends View {
         long[] ticks;
 
         synchronized (this) {
-            ticks = _ticks != null ? _ticks.clone() : null;
+            ticks = _ticks != null ? Platform.get().clone(_ticks) : null;
         }
 
         if (ticks == null && !location().isCache())

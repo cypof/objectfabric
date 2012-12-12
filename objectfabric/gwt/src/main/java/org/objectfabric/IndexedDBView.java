@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import org.objectfabric.InFlight.Provider;
 
 import com.google.gwt.core.client.JavaScriptObject;
-import com.google.gwt.typedarrays.client.Uint8ArrayNative;
 import com.google.gwt.typedarrays.shared.ArrayBuffer;
 
 final class IndexedDBView extends ArrayView {
@@ -156,7 +155,7 @@ final class IndexedDBView extends ArrayView {
     }-*/;
 
     private final void onsuccess(URI uri, Long tick, ArrayBuffer buffer) {
-        GWTBuff buff = new GWTBuff(Uint8ArrayNative.create(buffer));
+        GWTBuff buff = new GWTBuff(Uint8Array.create(buffer));
 
         if (Debug.ENABLED)
             buff.lock(buff.limit());
@@ -166,9 +165,6 @@ final class IndexedDBView extends ArrayView {
 
         Buff[] buffs = new Buff[] { buff };
         Exception exception = uri.onBlock(this, tick, buffs, null, true, null, false, null);
-
-        if (Debug.THREADS)
-            ThreadAssert.exchangeTake(buffs);
 
         if (exception != null) {
             // TODO make sure exception is related to parsing

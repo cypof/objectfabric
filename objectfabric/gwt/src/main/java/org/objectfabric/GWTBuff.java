@@ -12,16 +12,13 @@
 
 package org.objectfabric;
 
-import com.google.gwt.typedarrays.client.Uint8ArrayNative;
-import com.google.gwt.typedarrays.shared.ArrayBuffer;
-
 final class GWTBuff extends Buff {
 
-    private static final boolean _useTypedArrays = WebSocketURIHandler.isSupported();
+    private static final boolean _useTypedArrays = WebSocket.isSupported();
 
     private final byte[] _array;
 
-    private final Uint8ArrayNative _typed;
+    private final Uint8Array _typed;
 
     private int _position, _limit, _mark;
 
@@ -30,14 +27,16 @@ final class GWTBuff extends Buff {
 
         if (_useTypedArrays) {
             _array = null;
-            _typed = Uint8ArrayNative.create(capacity);
+            _typed = ((GWTPlatform) Platform.get()).newUint8Array(capacity);
         } else {
             _array = new byte[capacity];
             _typed = null;
         }
+
+        _limit = capacity;
     }
 
-    GWTBuff(Uint8ArrayNative toWrap) {
+    GWTBuff(Uint8Array toWrap) {
         super(false);
 
         _array = null;
@@ -45,7 +44,7 @@ final class GWTBuff extends Buff {
         _limit = toWrap.length();
     }
 
-    private GWTBuff(Buff parent, byte[] array, Uint8ArrayNative typed, int position, int limit, int mark) {
+    private GWTBuff(Buff parent, byte[] array, Uint8Array typed, int position, int limit, int mark) {
         super(parent);
 
         _array = array;
@@ -64,7 +63,7 @@ final class GWTBuff extends Buff {
     final void destroy() {
     }
 
-    public Uint8ArrayNative typed() {
+    public Uint8Array typed() {
         return _typed;
     }
 
@@ -244,25 +243,7 @@ final class GWTBuff extends Buff {
 
     //
 
-    final ArrayBuffer slice() {
-        return slice(typed(), position(), remaining());
+    final Uint8Array subarray() {
+        return typed().subarray(position(), limit());
     }
-
-    private static native ArrayBuffer slice(Uint8ArrayNative typed, int offset, int length) /*-{
-    if (!ArrayBuffer.prototype.slice) { // Apparently no slice on IE10 & Firefox?
-      ArrayBuffer.prototype.slice = function(start, end) {
-        var that = new Uint8Array(this);
-        if (end == undefined)
-          end = that.length;
-        var result = new ArrayBuffer(end - start);
-        var resultArray = new Uint8Array(result);
-        for ( var i = 0; i < resultArray.length; i++)
-          resultArray[i] = that[i + start];
-        return result;
-      }
-    }
-
-    // TODO return view instead of copying?
-    return typed.buffer.slice(offset, offset + length);
-    }-*/;
 }

@@ -10,26 +10,25 @@
         document.getElementById('text').innerHTML += '<br>' + s;
       }
 
-      // OF for JS supports the same built-in types as other platforms, but
-      // currently no custom objects
       function onof(of) {
+        var w = new of.workspace();
+        w.addURIHandler(new of.WebSocket());
         var uri = "ws://localhost:8888";
 
-        // Immutables (C.f. Java class Immutable), not all types are
-        // supported by gwt-exporter
+        // Immutables. JS supports string, boolean, and number
+        // (gwt-exporter maps number to double on other platforms)
 
-        of.open(uri + "/string", function(resource) {
+        w.open(uri + "/string", function(err, resource) {
           write("/string: " + resource.get());
-          write("permission: " + resource.permission());
         });
 
-        of.open(uri + "/int", function(resource) {
-          write("/int: " + resource.get());
+        w.open(uri + "/number", function(err, resource) {
+          write("/number: " + resource.get());
         });
 
         // Sets
 
-        of.open(uri + "/set", function(resource) {
+        w.open(uri + "/set", function(err, resource) {
           var set = resource.get();
 
           set.each(function(e) {
@@ -54,7 +53,7 @@
 
         // Maps
 
-        of.open(uri + "/map", function(resource) {
+        w.open(uri + "/map", function(err, resource) {
           var map = resource.get();
 
           map.each(function(key) {
@@ -79,7 +78,7 @@
 
         // Arrays
 
-        of.open(uri + "/arrayOfInt", function(resource) {
+        w.open(uri + "/arrayOfInt", function(err, resource) {
           var array = resource.get();
 
           write("/array: [0]=" + array.get(0));
@@ -98,7 +97,7 @@
 
         // Counters
 
-        of.open(uri + "/counter", function(resource) {
+        w.open(uri + "/counter", function(err, resource) {
           var counter = resource.get();
 
           write("/counter: " + counter.get());

@@ -21,7 +21,6 @@ import org.objectfabric.Resource;
 import org.objectfabric.TArrayByte;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
-import org.timepedia.exporter.client.NoExport;
 
 //==============================================================================
 //
@@ -29,9 +28,8 @@ import org.timepedia.exporter.client.NoExport;
 //
 //==============================================================================
 
-@SuppressWarnings("unchecked")
-@Export("TArrayByte")
-@ExportPackage("of")
+@Export("arrayByte")
+@ExportPackage("org.objectfabric")
 public class JSArrayByte implements External {
 
     // TODO back with JS typed arrays?
@@ -60,8 +58,7 @@ public class JSArrayByte implements External {
         _internal = new ArrayInternal((Resource) resource.internal(), length);
     }
 
-    @NoExport
-    public JSArrayByte() {
+    private JSArrayByte() {
     }
 
     @Override

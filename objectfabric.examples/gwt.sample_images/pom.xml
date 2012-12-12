@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.objectfabric</groupId>
     <artifactId>objectfabric.examples</artifactId>
-    <version>0.9.1</version>
+    <version>0.9.2-SNAPSHOT</version>
   </parent>
 
   <artifactId>objectfabric.examples-gwt.sample_images</artifactId>

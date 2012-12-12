@@ -27,4 +27,16 @@ final class JSPlatform extends GWTPlatform {
     ObjectModel defaultObjectModel() {
         return JSDefaultObjectModel.Instance;
     }
+
+    @Override
+    native Uint8Array newUint8Array(int capacity) /*-{
+    var buffer;
+
+    if ($wnd.org.objectfabric.node)
+      buffer = new Buffer(capacity);
+    else
+      buffer = new ArrayBuffer(capacity);
+
+    return new Uint8Array(buffer);
+    }-*/;
 }

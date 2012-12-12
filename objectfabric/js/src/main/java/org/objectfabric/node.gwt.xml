@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module rename-to="objectfabric">
+<module rename-to="objectfabric.node">
   <inherits name='com.google.gwt.user.User' />
   <inherits name='objectfabric' />
 
   <inherits name='org.timepedia.exporter.Exporter' />
   <set-property name="export" value="yes" />
 
-<!-- 
-<set-property name="user.agent" value="safari" />
--->
+  <define-linker name="node" class="org.objectfabric.NodeLinker" />
+  <add-linker name="node" />
+
+  <set-property name="user.agent" value="safari" />
 
   <source path="" />
   <entry-point class='org.objectfabric.Main' />

@@ -18,12 +18,13 @@
       // Called when ObjectFabric is loaded
       function onof(of) {
         // Get live array of numbers through WebSocket
-        of.resolve("ws://test.objectfabric.org/array").get(function(a) {
+        of.open("ws://test.objectfabric.org/array", function(err, resource) {
+          var array = resource.get();
           // Add a listener on array, called when an element is
           // set to a new value server side
-          a.onset(function(i) {
+          array.onset(function(i) {
             elem = document.getElementById('td' + i);
-            elem.innerHTML = formatNumber(a.get(i));
+            elem.innerHTML = formatNumber(array.get(i));
           });
         });
       }

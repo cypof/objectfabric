@@ -23,7 +23,7 @@ abstract class Continuation {
 
     private final List<Object> _stack;
 
-    protected Continuation(List<Object> stack) {
+    Continuation(List<Object> stack) {
         if (stack == null)
             throw new IllegalArgumentException();
 
@@ -41,10 +41,6 @@ abstract class Continuation {
     }
 
     public final void interrupt(Object state) {
-        if (Debug.ENABLED)
-            if (state != null && !(state instanceof String))
-                Debug.assertion(!Platform.get().defaultToString(state).startsWith("java.lang"));
-
         interruptImpl(state);
     }
 

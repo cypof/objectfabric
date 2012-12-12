@@ -50,6 +50,7 @@
     <module>clr</module>
     <module>extensions</module>
     <module>gwt</module>
+    <module>gwt-node</module>
     <module>js</module>
     <module>jvm</module>
     <module>tools</module>

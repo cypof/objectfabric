@@ -405,7 +405,8 @@ final class ThreadAssert {
         ThreadAssert context = getOrCreateCurrent();
         Debug.assertion(context._owner.compareAndSet(getOwnerKey(), null));
         RefEqual wrapper = new RefEqual(key);
-        Debug.assertion(_suspendedContexts.put(wrapper, context) == null);
+        ThreadAssert previous = _suspendedContexts.put(wrapper, context);
+        Debug.assertion(previous == null);
         _current.set(null);
     }
 

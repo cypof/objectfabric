@@ -33,6 +33,7 @@ import org.jboss.netty.handler.codec.http.websocketx.CloseWebSocketFrame;
 import org.jboss.netty.handler.codec.http.websocketx.ContinuationWebSocketFrame;
 import org.jboss.netty.handler.codec.http.websocketx.PingWebSocketFrame;
 import org.jboss.netty.handler.codec.http.websocketx.PongWebSocketFrame;
+import org.jboss.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.jboss.netty.handler.codec.http.websocketx.WebSocketFrame;
 import org.jboss.netty.handler.codec.http.websocketx.WebSocketHandshakeException;
 import org.jboss.netty.handler.codec.http.websocketx.WebSocketServerHandshaker;
@@ -124,6 +125,12 @@ public class NettySession extends SimpleChannelUpstreamHandler {
 
         if (frame instanceof BinaryWebSocketFrame) {
             BinaryWebSocketFrame data = (BinaryWebSocketFrame) frame;
+            _connection.read(data.getBinaryData());
+            return;
+        }
+
+        if (frame instanceof TextWebSocketFrame) {
+            TextWebSocketFrame data = (TextWebSocketFrame) frame;
             _connection.read(data.getBinaryData());
             return;
         }

@@ -27,13 +27,17 @@ public class Main implements EntryPoint {
         JSPlatform.loadClass();
     }
 
+    @Override
     public void onModuleLoad() {
         ExporterUtil.exportAll();
-        onLoad();
+        onLoad(new JSWorkspace());
     }
 
-    private native void onLoad() /*-{
-		if ($wnd.onof)
-			$wnd.onof($wnd.org.objectfabric.JSWorkspace.create());
+    private native void onLoad(JSWorkspace refForCompiler) /*-{
+    if ($wnd.offake)
+      $wnd.offake(refForCompiler);
+
+    if ($wnd.onof)
+      $wnd.onof($wnd.org.objectfabric);
     }-*/;
 }

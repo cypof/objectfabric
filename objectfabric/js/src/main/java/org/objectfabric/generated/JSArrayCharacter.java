@@ -21,7 +21,6 @@ import org.objectfabric.Resource;
 import org.objectfabric.TArrayCharacter;
 import org.timepedia.exporter.client.Export;
 import org.timepedia.exporter.client.ExportPackage;
-import org.timepedia.exporter.client.NoExport;
 
 //==============================================================================
 //
@@ -29,9 +28,8 @@ import org.timepedia.exporter.client.NoExport;
 //
 //==============================================================================
 
-@SuppressWarnings("unchecked")
-@Export("TArrayCharacter")
-@ExportPackage("of")
+@Export("arrayCharacter")
+@ExportPackage("org.objectfabric")
 public class JSArrayCharacter implements External {
 
     // TODO back with JS typed arrays?
@@ -60,8 +58,7 @@ public class JSArrayCharacter implements External {
         _internal = new ArrayInternal((Resource) resource.internal(), length);
     }
 
-    @NoExport
-    public JSArrayCharacter() {
+    private JSArrayCharacter() {
     }
 
     @Override

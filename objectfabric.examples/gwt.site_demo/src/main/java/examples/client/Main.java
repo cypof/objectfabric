@@ -17,7 +17,7 @@ import org.objectfabric.GWTWorkspace;
 import org.objectfabric.IndexListener;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayLong;
-import org.objectfabric.WebSocketURIHandler;
+import org.objectfabric.WebSocket;
 import org.objectfabric.Workspace;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -36,7 +36,7 @@ public class Main implements EntryPoint {
         Workspace w = new GWTWorkspace();
 
         // Enables WebSocket connections
-        w.addURIHandler(new WebSocketURIHandler());
+        w.addURIHandler(new WebSocket());
 
         // Get array of long and stay connected through WebSocket
         String uri = "ws://test.objectfabric.org/array";

@@ -12,14 +12,14 @@
 
 package org.objectfabric;
 
-public class WebSocketURIHandler extends ClientURIHandler {
+public class WebSocket extends ClientURIHandler {
 
     public static native boolean isSupported() /*-{
-		if ($wnd.WebSocket) {
-			return true;
-		} else {
-			return false;
-		}
+    if (WebSocket) {
+      return true;
+    } else {
+      return false;
+    }
     }-*/;
 
     @Override
@@ -48,7 +48,7 @@ public class WebSocketURIHandler extends ClientURIHandler {
 
                     @Override
                     public void start() {
-                        connection.start();
+                        connection.connect();
                     }
 
                     @Override

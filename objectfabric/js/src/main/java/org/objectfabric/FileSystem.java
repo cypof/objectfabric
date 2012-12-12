@@ -12,8 +12,6 @@
 
 package org.objectfabric;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.objectfabric.CloseCounter.Callback;
@@ -26,36 +24,34 @@ public class FileSystem extends Origin implements URIHandler {
     // TODO inject exceptions for testing
 
     static {
-        JVMPlatform.loadClass();
+        GWTPlatform.loadClass();
     }
 
-    private final String _rootPath;
+    private final String _givenRoot;
 
-    private final File _root;
+    private final String _root;
 
     private final FileSystemQueue _queue = new FileSystemQueue(this);
 
     public FileSystem(String root) {
         super(false);
 
-        _rootPath = root;
+        _givenRoot = root;
+        _root = init(root);
 
         if (Debug.PERSISTENCE_LOG)
-            Log.write("Folder open " + _rootPath);
+            Log.write("Folder open " + root);
+    }
 
-        try {
-            _root = new File(_rootPath).getCanonicalFile();
+    private final native String init(String path) /*-{
+    if (!fs.existsSync(path))
+      fs.mkdirSync(path);
 
-            if (_root.exists()) {
-                if (!_root.canWrite())
-                    throw new IOException(Strings.CANNOT_OPEN + _root);
-            } else {
-                if (!_root.mkdirs())
-                    throw new IOException(Strings.CANNOT_CREATE + _root);
-            }
-        } catch (Exception ex) {
-            throw new RuntimeException(ex);
-        }
+    return fs.realpathSync(path);
+    }-*/;
+
+    final String root() {
+        return _root;
     }
 
     @Override
@@ -65,23 +61,12 @@ public class FileSystem extends Origin implements URIHandler {
 
     @Override
     final View newView(URI uri) {
-        try {
-            File file = new File(_root, uri.path()).getCanonicalFile();
-
-            if (file.getPath().startsWith(_root.getPath()))
-                return new FileSystemView(this, file, _queue);
-
-            Log.write(file + " is outside " + _root);
-        } catch (IOException ex) {
-            Log.write(ex);
-        }
-
-        return null;
+        return new FileSystemView(this, _root + "/" + uri.path(), _queue);
     }
 
     @Override
     public String toString() {
-        return "file://" + _rootPath;
+        return "file://" + _givenRoot;
     }
 
     // Debug

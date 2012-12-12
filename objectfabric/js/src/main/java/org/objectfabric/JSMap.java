@@ -16,11 +16,9 @@ import org.objectfabric.JS.Closure;
 import org.objectfabric.JS.External;
 import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
-import org.timepedia.exporter.client.ExportPackage;
 
 @SuppressWarnings("unchecked")
 @Export("map")
-@ExportPackage("of")
 public class JSMap implements External {
 
     static final class MapInternal extends TMap implements Internal {
@@ -56,8 +54,12 @@ public class JSMap implements External {
         return _internal;
     }
 
+    public boolean contains(Object key) {
+        return _internal.containsKey(JS.in(key));
+    }
+
     public Object get(Object key) {
-        return JS.out(_internal.get(key));
+        return JS.out(_internal.get(JS.in(key)));
     }
 
     public void clear() {
@@ -78,6 +80,10 @@ public class JSMap implements External {
     }
 
     public void remove(Object key) {
+        _internal.remove(key);
+    }
+
+    public void remove(External key) {
         _internal.remove(JS.in(key));
     }
 

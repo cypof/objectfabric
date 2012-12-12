@@ -36,16 +36,16 @@ public class RealTime {
         /*
          * Get map from server.
          */
-        final TMap<String, Integer> map = (TMap) workspace.open("ws://localhost:8888/map").get();
+        final TMap map = (TMap) workspace.open("ws://localhost:8888/map").get();
 
         /*
-         * Add a listener to get notified of updates.
+         * Add a listener to display updates, from us and other users.
          */
         map.addListener(new AbstractKeyListener<String>() {
 
             @Override
             public void onPut(String key) {
-                System.out.println("/map: " + key + " = " + map.get(key));
+                System.out.println("/map: " + key + ": " + map.get(key));
             }
         });
 
@@ -53,10 +53,10 @@ public class RealTime {
          * Pick a random user name and send updates.
          */
         Random rand = new Random();
-        String name = "user " + rand.nextInt(1000);
+        String name = "user" + rand.nextInt(1000);
 
         for (;;) {
-            map.put(name, rand.nextInt(1000));
+            map.put(name, "" + rand.nextInt(1000));
             Thread.sleep(1000);
         }
     }

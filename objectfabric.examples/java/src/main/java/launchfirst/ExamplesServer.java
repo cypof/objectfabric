@@ -48,6 +48,7 @@ import part05.generated.User;
 /**
  * Simple stand-alone server.
  */
+@SuppressWarnings("unchecked")
 public class ExamplesServer {
 
     public static void run(String[] args) throws Exception {
@@ -74,15 +75,16 @@ public class ExamplesServer {
          * the resource they will be stored at. Resolve the resource first and pass it.
          */
         Resource resource = workspace.open("/map");
-        TMap<String, Integer> map = new TMap<String, Integer>(resource);
-        map.put("example key", 42);
+        TMap map = new TMap(resource);
+        map.put("example key", "value");
+        map.put(42.0, true);
         resource.set(map);
 
         /*
          * Add various types for the ObjectModel example.
          */
         workspace.open("/string").set("{\"key\": \"value\"}");
-        workspace.open("/int").set(1);
+        workspace.open("/number").set(1.0);
         workspace.open("/bin").set(new byte[] { 0, 1, 2, 3, 4, 5, 6, 7 });
 
         resource = workspace.open("/set");
@@ -124,8 +126,8 @@ public class ExamplesServer {
         resource.set(new TSet<Car>(resource, Car.TYPE));
 
         /*
-         * Close workspace to avoids wasting resources maintaining objects up to date as
-         * they are not used anymore in this process.
+         * Close workspace to avoid wasting resources maintaining objects up to date, they
+         * are not used anymore in this process.
          */
         workspace.close();
 

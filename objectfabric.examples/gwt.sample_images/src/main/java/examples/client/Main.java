@@ -21,7 +21,7 @@ import org.objectfabric.Remote;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayDouble;
 import org.objectfabric.TSet;
-import org.objectfabric.WebSocketURIHandler;
+import org.objectfabric.WebSocket;
 import org.objectfabric.Workspace;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -60,8 +60,8 @@ public class Main implements EntryPoint {
     public void onModuleLoad() {
         Workspace workspace = new GWTWorkspace();
 
-        if (WebSocketURIHandler.isSupported())
-            workspace.addURIHandler(new WebSocketURIHandler());
+        if (WebSocket.isSupported())
+            workspace.addURIHandler(new WebSocket());
         // else // TODO
         // workspace.addURIHandler(new CometURIHandler());
 

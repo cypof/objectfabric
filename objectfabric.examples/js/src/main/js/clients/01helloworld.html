@@ -8,7 +8,10 @@
   <script>
       // Called when ObjectFabric is loaded
       function onof(of) {
-        of.open("ws://localhost:8888/helloworld", function(resource) {
+        var w = new of.workspace();
+        w.addURIHandler(new of.WebSocket());
+
+        w.open("ws://localhost:8888/helloworld", function(err, resource) {
           document.getElementById('text').innerHTML += '<br>' + resource.get();
         });
       }

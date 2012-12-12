@@ -12,8 +12,6 @@
 
 package org.objectfabric;
 
-import java.util.Iterator;
-
 import org.objectfabric.Actor.Message;
 
 @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -194,14 +192,16 @@ class ServerView extends ArrayView {
     final void onKnown(URI uri, long[] ticks) {
         long[] updated = merge(ticks);
 
-        for (Iterator<Connection> i = _pending.iterator(); i.hasNext();) {
-            Connection connection = i.next();
+        for (;;) {
+            Connection connection = _pending.poll();
+
+            if (connection == null)
+                break;
+
             connection.postPermission(uri, (Permission) _map.get(connection), false);
 
             if (updated == null)
                 connection.postKnown(uri, ticks);
-
-            i.remove();
         }
 
         // TODO increase buffs counters by connection count in one step

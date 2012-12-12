@@ -15,10 +15,9 @@ package org.objectfabric;
 import org.objectfabric.JS.External;
 import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
-import org.timepedia.exporter.client.Exportable;
 import org.timepedia.exporter.client.NoExport;
 
-@Export
+@Export("resource")
 public class JSResource implements External {
 
     static final class ResourceInternal extends Resource implements Internal {
@@ -30,7 +29,7 @@ public class JSResource implements External {
         }
 
         @Override
-        public External external() {
+        public JSResource external() {
             if (_js == null) {
                 _js = new JSResource();
                 _js._internal = this;
@@ -62,15 +61,6 @@ public class JSResource implements External {
             default:
                 throw new IllegalStateException();
         }
-    }
-
-    public Exportable getObject() {
-        Object value = _internal.get();
-        return ((Internal) value).external();
-    }
-
-    public Object getImmutable() {
-        return _internal.get();
     }
 
     public Object get() {

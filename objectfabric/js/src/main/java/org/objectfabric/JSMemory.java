@@ -16,21 +16,21 @@ import org.objectfabric.JS.External;
 import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
 
-@Export("counter")
-public class JSCounter implements External {
+@Export("memory")
+public class JSMemory implements External {
 
-    static final class CounterInternal extends Counter implements Internal {
+    static final class MemoryInternal extends Memory implements Internal {
 
-        JSCounter _js;
+        JSMemory _js;
 
-        CounterInternal(Resource resource) {
-            super(resource);
+        MemoryInternal(boolean cache) {
+            super(cache);
         }
 
         @Override
         public External external() {
             if (_js == null) {
-                _js = new JSCounter();
+                _js = new JSMemory();
                 _js._internal = this;
             }
 
@@ -38,29 +38,18 @@ public class JSCounter implements External {
         }
     }
 
-    private CounterInternal _internal;
+    private MemoryInternal _internal;
 
-    public JSCounter(JSResource resource) {
-        _internal = new CounterInternal(resource._internal);
+    public JSMemory() {
+        this(false);
     }
 
-    private JSCounter() {
+    public JSMemory(boolean cache) {
+        _internal = new MemoryInternal(cache);
     }
 
     @Override
-    public Internal internal() {
+    public MemoryInternal internal() {
         return _internal;
-    }
-
-    public void add(long delta) {
-        _internal.add(delta);
-    }
-
-    public long get() {
-        return _internal.get();
-    }
-
-    public void reset() {
-        _internal.reset();
     }
 }

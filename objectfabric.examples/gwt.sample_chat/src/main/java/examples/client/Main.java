@@ -18,7 +18,7 @@ import org.objectfabric.GWTWorkspace;
 import org.objectfabric.Log;
 import org.objectfabric.Resource;
 import org.objectfabric.TSet;
-import org.objectfabric.WebSocketURIHandler;
+import org.objectfabric.WebSocket;
 import org.objectfabric.Workspace;
 
 import com.google.gwt.core.client.EntryPoint;
@@ -40,7 +40,7 @@ public class Main implements EntryPoint {
         Log.set(Terminal.getInstance());
 
         Workspace workspace = new GWTWorkspace();
-        workspace.addURIHandler(new WebSocketURIHandler());
+        workspace.addURIHandler(new WebSocket());
 
         workspace.openAsync("ws://localhost:8888/room1", new AsyncCallback<Resource>() {
 

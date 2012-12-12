@@ -107,6 +107,10 @@ class GWTPlatform extends Platform {
         return new GWTBuff(capacity, recycle);
     }
 
+    Uint8Array newUint8Array(int capacity) {
+        return Uint8Array.create(capacity);
+    }
+
     @Override
     Object getReferenceQueue() {
         return null;

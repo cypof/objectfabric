@@ -60,12 +60,15 @@ public class ObjectModel {
         String string = (String) workspace.open(uri + "/string").get();
         Assert.assertEquals("{\"key\": \"value\"}", string);
 
-        int i = (Integer) workspace.open(uri + "/int").get();
-        Assert.assertEquals(1, i);
+        double d = (Double) workspace.open(uri + "/number").get();
+        Assert.assertEquals("1.0", "" + d);
 
         byte[] binary = (byte[]) workspace.open(uri + "/bin").get();
-        Assert.assertEquals(0, binary[0]);
-        Assert.assertEquals(1, binary[1]);
+
+        if (binary != null) { // Null if served by node
+            Assert.assertEquals(0, binary[0]);
+            Assert.assertEquals(1, binary[1]);
+        }
 
         /*
          * Collections & arrays.
@@ -74,8 +77,9 @@ public class ObjectModel {
         Set<String> set = (TSet) workspace.open(uri + "/set").get();
         Assert.assertTrue(set.contains("blah"));
 
-        Map<String, Integer> map = (TMap) workspace.open(uri + "/map").get();
-        Assert.assertEquals(42, (int) map.get("example key"));
+        Map<String, String> map = (TMap) workspace.open(uri + "/map").get();
+        Assert.assertEquals("value", map.get("example key"));
+        Assert.assertEquals(true, map.get(42.0));
 
         TArrayInteger ints = (TArrayInteger) workspace.open(uri + "/arrayOfInt").get();
         Assert.assertEquals(10, ints.length());
@@ -99,14 +103,16 @@ public class ObjectModel {
 
         Car car = (Car) workspace.open(uri + "/car").get();
 
-        // Object fields can be of any of the supported types
-        Assert.assertEquals("DeLorean", car.brand());
-        Assert.assertEquals("Joe", car.driver().name());
-        Assert.assertEquals(1, car.settings().size());
+        if (binary != null) { // Null if served by node
+            // Object fields can be of any of the supported types
+            Assert.assertEquals("DeLorean", car.brand());
+            Assert.assertEquals("Joe", car.driver().name());
+            Assert.assertEquals(1, car.settings().size());
 
-        // Generator supports inheritance
-        ElectricCar child = car.child();
-        Assert.assertEquals("Tesla", child.brand());
+            // Generator supports inheritance
+            ElectricCar child = car.child();
+            Assert.assertEquals("Tesla", child.brand());
+        }
 
         /*
          * Custom objects versioning. For versioning purposes an application can load

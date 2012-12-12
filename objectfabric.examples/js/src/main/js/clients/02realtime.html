@@ -1,0 +1,32 @@
+<html>
+<head>
+<script src="objectfabric/objectfabric.nocache.js"></script>
+</head>
+<body>
+  <h1>JavaScript - HelloWord</h1>
+  <div id="text">Loading...</div>
+  <script>
+      // Called when ObjectFabric is loaded
+      function onof(of) {
+        var w = new of.workspace();
+        w.addURIHandler(new of.WebSocket());
+
+        w.open("ws://localhost:8888/map", function(err, resource) {
+          var map = resource.get();
+          var user = "user" + Math.floor(Math.random() * 1000);
+
+          // Add callback to display updates, from us and other users
+          map.onput(function(key) {
+            var line = "/map: " + key + ": " + map.get(key);
+            document.getElementById('text').innerHTML += '<br>' + line;
+          });
+
+          // Updates map randomly
+          setInterval(function() {
+            map.put(user, "" + Math.floor(Math.random() * 1000));
+          }, 1000);
+        });
+      }
+    </script>
+</body>
+</html>

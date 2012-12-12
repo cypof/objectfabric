@@ -18,11 +18,13 @@ import org.timepedia.exporter.client.Exportable;
 import org.timepedia.exporter.client.NoExport;
 
 @Export
-public final class JS implements Exportable {
+public class JS implements Exportable {
 
     @Export
     @ExportClosure
     public interface Closure extends Exportable {
+
+        void runExportable(String err, JSResource resource);
 
         void runExportable(Exportable value);
 
@@ -59,9 +61,28 @@ public final class JS implements Exportable {
     @NoExport
     @SuppressWarnings("unchecked")
     public static <T> T in(T value) {
-        if (value instanceof Exportable)
-            return (T) ((Internal) value).external();
+        return (T) callUnwrap(value);
+    }
 
+    private static native Object callUnwrap(Object value) /*-{
+    return $wnd.org.objectfabric.JS.unwrap(value);
+    }-*/;
+
+    public static Object unwrap(Exportable value) {
+        return ((External) value).internal();
+    }
+
+    // Map to this only for now
+
+    public static Object unwrap(Boolean value) {
+        return value;
+    }
+
+    public static Object unwrap(Double value) {
+        return value;
+    }
+
+    public static Object unwrap(String value) {
         return value;
     }
 }

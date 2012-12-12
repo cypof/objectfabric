@@ -16,11 +16,9 @@ import org.objectfabric.JS.Closure;
 import org.objectfabric.JS.External;
 import org.objectfabric.JS.Internal;
 import org.timepedia.exporter.client.Export;
-import org.timepedia.exporter.client.ExportPackage;
 
 @SuppressWarnings("unchecked")
 @Export("set")
-@ExportPackage("of")
 public class JSSet implements External {
 
     static final class SetInternal extends TSet implements Internal {

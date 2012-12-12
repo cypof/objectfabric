@@ -219,8 +219,14 @@ public abstract class Workspace implements URIHandlersSet, Closeable {
     }
 
     public Future<Resource> openAsync(String uri, AsyncCallback<Resource> callback) {
-        if (uri.length() == 0)
-            return new CompletedFuture<Resource>(_emptyResource);
+        if (uri.length() == 0) {
+            if (callback == null)
+                return new CompletedFuture<Resource>(_emptyResource);
+
+            FutureWithCallbacks<Resource> future = new FutureWithCallbacks<Resource>(callback, _callbackExecutor);
+            future.set(_emptyResource);
+            return future;
+        }
 
         URI resolved = Platform.get().resolve(uri, _resolver);
 
