@@ -5,7 +5,7 @@ title: ObjectFabric
 
 This work is based on a very simple idea. When modifying a Web resource, instead of doing it in-place, e.g. with a PUT, why not add a new version? E.g. with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change relative to the previous version.
 
-First it makes [Rich Hickey](https://twitter.com/fakerichhickey) happy: [Value of Values](http://www.infoq.com/presentations/Value-Values). Immutable everything.
+First it makes [Rich Hickey](https://twitter.com/fakerichhickey) happy. [Immutability](http://www.infoq.com/presentations/Value-Values), for Web resources.
 
 Other reasons [here](https://github.com/objectfabric/objectfabric/wiki). ObjectFabric is an implementation of this that automates the representation and merge of changes. It can order them between users in a scalable way, and remove old versions if space is an issue, e.g. on clients.
 
