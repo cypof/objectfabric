@@ -3,41 +3,23 @@ layout: index
 title: ObjectFabric
 ---
 
-This work is based on a very simple idea. When modifying a Web resource, instead of doing it in-place, e.g. with a PUT, why not add a new version? E.g. with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change relative to the previous version.
+## Versioning for Web Resources
 
-First it makes [Rich Hickey](https://twitter.com/fakerichhickey) happy. [Immutability](http://www.infoq.com/presentations/Value-Values), for Web resources.
+This work is based on a very simple idea. Instead of changing a resource in-place, e.g. with an HTTP PUT, a client adds a new version, e.g., with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change. It offers a surprising set of benefits. ObjectFabric is a library that makes writing this type of architecture simple.
 
-Other reasons [here](https://github.com/objectfabric/objectfabric/wiki). ObjectFabric is an implementation of this that automates the representation and merge of changes. It can order them between users in a scalable way, and remove old versions if space is an issue, e.g. on clients.
+## Real-Time Sync
 
-## REST 2.0 = REST + Real Time + Offline
-
-The resulting programming model is a sort of extension to REST. It keeps properties like scalability over stateless servers, easy resource caching, the familiar URI + verb API, and applications can still be written in a HATEOAS style. On the other hand, loading a resource requires listing changes for a URI, which is not built-in to HTTP, e.g. using a custom REST endpoint, WebDAV, or our server implementation. It also complicates the client as it needs to merge changes to get the actual data.
-
-## + Real Time
-
-Our implementation can push changes over WebSocket, which makes things extra interesting: A regular REST resource is a static document.
+By sending changes which are deltas relative to previous versions, the system can efficiently keep a resource in sync with the server. Instead of a static document,
 
 <img class="rest" src="/images/rest.png"/>
 
-A REST 2.0 resource can remain up-to date by merging changes are they are received. The client library can also track user updates and send them for two-way synchronization like Google Docs.
+a resource becomes dynamic, like Google Docs:
 
 <img class="real-time" src="/images/real-time.png"/>
 
-The name "REST 2.0" is an analogy with "Web 2.0", which are still Web sites but use Ajax to update parts of pages in real-time. Other mechanisms can be used to synchronize changes, even something like DropBox by storing them as files.
+OF provides types, like a map, array, or counter, for which it can represent and send changes automatically when updated by user code.
 
-## + Offline
-
-<img class="offline" src='/images/offline.png'/>
-
-When connectivity is down, and for better performance, clients can load changes they have in cache. They can still create new changes and store them for later synchronization.
-
-Our implementation does not require developers to deal with connection state at all. Resources can always be read and written to, while re-connections are automatically attempted in the background.
-
-## Demo - Streaming
-
-If the demo gods allow, this should show live data pushed by our test server. OF provides several types like sets, maps, and arrays that it completely automates. Just change a resource and its new value will show up on servers and other clients.
-
-This demo fetches an array of numbers and adds a callback to it to listen for changes. When the library receives a change from the server, e.g. item i = x, it updates the array and runs the callback.
+If the demo gods allow, this should show live data. It fetches an array of numbers and adds a callback to listen for changes. Server code is a simple loop that updates array items. Changed items are represented, e.g. "index i = x", applied on the client, and trigger the callback.
 
 <table>
   <tr>
@@ -125,9 +107,29 @@ array.Set += i =>
 </div>
 </div>
 
-## Demo - Chat
+## Offline Sync
 
-Not packaged yet, but can be run from the source. It is basically the same demo, but using a set of strings instead of an array of numbers. It also lets clients modify the set instead of only listening, by adding new messages to the set that will get replicated to other clients.
+<img class="offline" src='/images/offline.png'/>
+
+When connectivity is down, and for better performance, clients can load resources by merging changes they have in cache. They can still store new changes for later synchronization.
+
+Our implementation does not require developers to deal with connection state at all. Resources can always be read and written to, while re-connections are attempted in the background.
+
+This demo lets you drag images on the screen to see their position replicated between platforms. If you kill the server, clients go in offline mode, and try to reconnect while still letting you modify images positions.
+
+If you restart a client while offline, it loads its last state from offline storage. When server is restarted, clients reconnect and converge.
+
+<img class="images" src="/images/images.png"/>
+
+[images.zip](https://github.com/downloads/objectfabric/objectfabric/images.zip), (sources: [GWT](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/gwt.sample_images/src/main/java/examples/client/Main.java), [Java](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/java/src/main/java/sample_images/Images.java), [C#](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/csharp/Sample%20Images/MainWindow.xaml.cs))
+
+## Users Coordination
+
+Concurrent updates of a Web resource require coordination, e.g. ETags with some woodoo on the client in case of conflict, to get the resource again, re-apply changes and retry. Otherwise an HTTP PUT from a user could override updates from another.
+
+Sending changes avoids this complexity. Two apps can get the same resource, e.g. /user123, the first sets "name", and the second "karma". Only one property gets written in each change representation, and no data can be lost.
+
+This demo is a Chat application. It allows multiple users to modify a shared set of strings. When a client adds a message to the set, the change gets replicated without overriding others, and triggers a change notification on other clients that displays it.
 
 <div id="chat">
 <ul>
@@ -143,22 +145,11 @@ function onof(of) {
 // Get a room
 of.open("ws://localhost:8888/room1", function(resource) {
   var messages = resource.get();
-  var me = "";
 
   jQuery(document).ready(function($) {
     $('body').terminal(function(line, term) {
-      // This callback is invoked when user enters text, first
-      // the name 'me', then messages
-      if (me == "") {
-        me = line;
-        // A room is a set of messages. Adding a message to a
-        // set raises the 'onadd' callback on all clients who
-        // share the the same URI
-        messages.add("New user: " + me);
-      } else
-        messages.add(me + ": " + line);
-    }, {
-      greetings : "JavaScript Chat\nmy name? "
+      // jQuery invokes this callback when user enters text
+      messages.add(time() + " - " + name + ": " + line);
     });
   });
 
@@ -177,10 +168,6 @@ of.open("ws://localhost:8888/room1", function(resource) {
 Resource resource = workspace.open("ws://localhost:8888/room1");
 final TSet<String> messages = (TSet) resource.get();
 
-// A room is a set of messages. Adding a message to a
-// set raises the 'onPut' callback on all clients who
-// share the the same URI
-
 // Display messages that get added to the set
 messages.addListener(new AbstractKeyListener<String>() {
 
@@ -191,13 +178,9 @@ messages.addListener(new AbstractKeyListener<String>() {
 });
 
 // Listen for typed messages and add them to the set
-System.out.print("my name? ");
-String me = console.readLine();
-messages.add("New user: " + me);
-
 for (;;) {
-    String s = console.readLine();
-    messages.add(me + ": " + s);
+    String line = console.readLine();
+    messages.add(time() + " - " + name + ": " + line);
 }
 {% endhighlight %}
 </div>
@@ -208,10 +191,6 @@ for (;;) {
 Resource resource = workspace.Open("ws://localhost:8888/room1");
 TSet<string> messages = (TSet<string>) resource.Value;
 
-// A room is a set of messages. Adding a message to a
-// set raises the 'Added' event on all clients who
-// share the the same URI
-
 // Display messages that get added to the set
 messages.Added += s =>
 {
@@ -219,37 +198,34 @@ messages.Added += s =>
 };
 
 // Listen for typed messages and add them to the set
-Console.Write("my name? ");
-string me = Console.ReadLine();
-messages.Add("New user: " + me);
-
 for (; ; )
 {
-    string s = Console.ReadLine();
-    messages.Add(me + ": " + s);
+    string line = Console.ReadLine();
+    messages.Add(Time + " - " + name + ": " + line);
 }
 {% endhighlight %}
 </div>
 </div>
 
-## Demo - Images
+## The Store is the Log
 
-<img class="images" src="/images/images.png"/>
+By default OF deletes changes when overridden by new ones, to save space. For some applications it might make more sense to configure it to keep everything. It builds a history in the data store itself, instead of the usual log files. Source control systems get it right.
 
-This demo lets you drag images on the screen to see their position replicated between platforms. It also displays the connection status to experiment with offline support.
+## Optimal Caching & Bandwidth Use
 
-[images.zip](https://github.com/downloads/objectfabric/objectfabric/images.zip), (sources: [GWT](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/gwt.sample_images/src/main/java/examples/client/Main.java), [Java](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/java/src/main/java/sample_images/Images.java), [C#](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/csharp/Sample%20Images/MainWindow.xaml.cs))
+Changes are stored in an append-only way, so their representations are immutable. That makes [Rich Hickey](https://twitter.com/fakerichhickey) happy: [immutability](http://www.infoq.com/presentations/Value-Values), for Web resources. There is no need to tune cache expiration, data can be kept as long as there is space.
 
-Things to try:
+Data is never sent twice, only deltas compared to previous versions.
 
-Launch the server and clients, they connect and display 'Up to Date'.<br>
-Create and drag an image around to see real-time sync.<br>
-Kill the server. Clients alternate between 'Reconnecting...' and 'Waiting retry'.<br>
-Create and drag images. Client are still functional.<br>
-Kill a client and start it again, it reloads its last state from offline storage.<br>
-Restart the server, clients reconnect and converge.
+## Here be Jargon
+
+* RESTish. This programming model exhibits many REST properties: scalability over stateless servers, resource cacheability, the familiar URI + verb API, and applications can still be written in a HATEOAS style.
+* Eventually consistent. OF adds a header to change representations with vector clock information similar to NoSQL stores, to makes sure all clients merge changes in the same order.
+* Avoids the Slow Consumer problem, by coalescing changes clients cannot pick up fast enough. Each client get updates at an optimal latency for their bandwidth.
+* Compatible with existing infrastructure, unlike versioning methods like [HTTP PATCH](http://tools.ietf.org/html/rfc5789) which requires special server support.
+* Idempotent. Instead of making a request/response to a server, e.g. to create an item, creating it locally and letting the change replicate guaranties it will only be created once. The local action always succeeds, and the system can determine if a change has already been replicated.
 
 ## More Info
 
-[Concepts, Internals](https://github.com/objectfabric/objectfabric/wiki)<br>
-[Implementations](https://github.com/objectfabric/objectfabric/wiki/Implementations)
+[Getting Started](https://github.com/objectfabric/objectfabric/wiki/Implementations)<br>
+[Internals](https://github.com/objectfabric/objectfabric/wiki)
