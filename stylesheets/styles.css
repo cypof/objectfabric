@@ -294,6 +294,10 @@ hr {
   width:120px;
 }
 
+.jargon {
+  padding-left:20px;
+}
+
 /* Blog */
 
 #blog { text-align: left; width: 500px; margin: 0 auto 0em auto; }

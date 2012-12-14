@@ -5,7 +5,7 @@ title: ObjectFabric
 
 ## Versioning for Web Resources
 
-This work is based on a very simple idea. Instead of changing a resource in-place, e.g. with an HTTP PUT, a client adds a new version, e.g., with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change. It offers a surprising set of benefits. ObjectFabric is a library that makes writing this type of architecture simple.
+This work is an exploration of a very simple idea. Instead of changing a resource in-place, e.g. with an HTTP PUT, a client adds a new version, e.g., with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change. It offers a surprising set of benefits. ObjectFabric is a library that makes writing this type of architecture simple.
 
 ## Real-Time Sync
 
@@ -17,7 +17,7 @@ a resource becomes dynamic, like Google Docs:
 
 <img class="real-time" src="/images/real-time.png"/>
 
-OF provides types, like a map, array, or counter, for which it can represent and send changes automatically when updated by user code.
+OF provides types, like map, array, or counter, for which it can represent and send changes automatically, when instances are updated by user code.
 
 If the demo gods allow, this should show live data. It fetches an array of numbers and adds a callback to listen for changes. Server code is a simple loop that updates array items. Changed items are represented, e.g. "index i = x", applied on the client, and trigger the callback.
 
@@ -111,13 +111,13 @@ array.Set += i =>
 
 <img class="offline" src='/images/offline.png'/>
 
-When connectivity is down, and for better performance, clients can load resources by merging changes they have in cache. They can still store new changes for later synchronization.
+When connectivity is down, and for better performance, clients can load resources by using changes they have in cache. They can still store new ones for later synchronization.
 
 Our implementation does not require developers to deal with connection state at all. Resources can always be read and written to, while re-connections are attempted in the background.
 
 This demo lets you drag images on the screen to see their position replicated between platforms. If you kill the server, clients go in offline mode, and try to reconnect while still letting you modify images positions.
 
-If you restart a client while offline, it loads its last state from offline storage. When server is restarted, clients reconnect and converge.
+If you restart a client while offline, it loads its last state from offline storage. When the server is restarted, clients reconnect and converge.
 
 <img class="images" src="/images/images.png"/>
 
@@ -125,11 +125,11 @@ If you restart a client while offline, it loads its last state from offline stor
 
 ## Users Coordination
 
-Concurrent updates of a Web resource require coordination, e.g. ETags with some woodoo on the client in case of conflict, to get the resource again, re-apply changes and retry. Otherwise an HTTP PUT from a user could override updates from another.
+Concurrent updates of a Web resource require coordination, e.g. ETags with some woodoo on the client in case of conflict, to get the resource again, re-apply changes and retry. Otherwise an HTTP PUT from a user can override updates from another.
 
 Sending changes avoids this complexity. Two apps can get the same resource, e.g. /user123, the first sets "name", and the second "karma". Only one property gets written in each change representation, and no data can be lost.
 
-This demo is a Chat application. It allows multiple users to modify a shared set of strings. When a client adds a message to the set, the change gets replicated without overriding others, and triggers a change notification on other clients that displays it.
+This demo is a Chat application. It allows multiple users to modify a shared set of messages. When a client adds a message to the set, the change gets replicated without overriding others, and triggers a notification on other clients that displays it.
 
 <div id="chat">
 <ul>
@@ -211,19 +211,29 @@ for (; ; )
 
 By default OF deletes changes when overridden by new ones, to save space. For some applications it might make more sense to configure it to keep everything. It builds a history in the data store itself, instead of the usual log files. Source control systems get it right.
 
+By picking a given change representation instead of the latest known, OF can load a resource at a given point in time. Reading following changes makes it possible to replay events from there, e.g. in a UI, as if it was receiving changes live from the network.
+
 ## Optimal Caching & Bandwidth Use
 
-Changes are stored in an append-only way, so their representations are immutable. That makes [Rich Hickey](https://twitter.com/fakerichhickey) happy: [immutability](http://www.infoq.com/presentations/Value-Values), for Web resources. There is no need to tune cache expiration, data can be kept as long as there is space.
+Changes are stored in an append-only way, so their representation is immutable, which is great by itself because it makes [Rich Hickey](https://twitter.com/fakerichhickey) happy. [Immutability](http://www.infoq.com/presentations/Value-Values), for Web resources.
 
-Data is never sent twice, only deltas compared to previous versions.
+There is no need to tune cache expiration, data can be kept as long as there is space. Bandwith usage is also optimized because data is never sent twice, only deltas compared to previous versions.
 
 ## Here be Jargon
 
-* RESTish. This programming model exhibits many REST properties: scalability over stateless servers, resource cacheability, the familiar URI + verb API, and applications can still be written in a HATEOAS style.
-* Eventually consistent. OF adds a header to change representations with vector clock information similar to NoSQL stores, to makes sure all clients merge changes in the same order.
-* Avoids the Slow Consumer problem, by coalescing changes clients cannot pick up fast enough. Each client get updates at an optimal latency for their bandwidth.
-* Compatible with existing infrastructure, unlike versioning methods like [HTTP PATCH](http://tools.ietf.org/html/rfc5789) which requires special server support.
-* Idempotent. Instead of making a request/response to a server, e.g. to create an item, creating it locally and letting the change replicate guaranties it will only be created once. The local action always succeeds, and the system can determine if a change has already been replicated.
+<div class="jargon">
+<ul>
+    <li>RESTish. This programming model exhibits the familiar URI + verb API, and some of REST properties like scalability over stateless servers, resource cacheability, and applications can be written in a HATEOAS style.</li>
+
+    <li>Scales through eventual consistency. OF adds a header to change representations with vector clock information similar to NoSQL stores. It makes sure clients converge even if changes get re-ordered during propagation through multiple servers in the cloud.</li>
+
+    <li>Avoids the Slow Consumer problem, by coalescing changes clients cannot pick up fast enough. Each client get updates at an optimal latency for their bandwidth.</li>
+
+	<li>Idempotent. Instead of making a request/response to a server, e.g. to create an item, creating it locally and letting the change replicate guaranties it will only be created once. The local action always succeeds, and the system can determine if a change has already been replicated.</li>
+
+	<li>Compatible with existing infrastructure, unlike versioning methods like [HTTP PATCH](http://tools.ietf.org/html/rfc5789) which requires special server support.</li>
+</ul>
+</div>
 
 ## More Info
 
