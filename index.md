@@ -5,11 +5,15 @@ title: ObjectFabric
 
 ## Versioning for Web Resources
 
-This work is an exploration of a very simple idea. Instead of changing a resource in-place, e.g. with an HTTP PUT, a client adds a new version, e.g., with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change. It offers a surprising set of benefits. ObjectFabric is a library that makes this type of architecture simple.
+This work explores a very simple idea. Instead of changing a resource in-place, e.g. with an HTTP PUT, a client adds a new version, e.g., with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change.
+
+This way to represent resources allows permanent caching, as it is immutable, and low bandwith use, as only deltas are sent when updating a resource. Logging comes for free, as changes form a history, like source control or Big Data systems.
+
+ObjectFabric is a library for change representations. It offers types like map, array, or counter, for which it can create and apply changes, and remove old ones where space matters. It works on most platforms thanks to the [GWT](https://developers.google.com/web-toolkit) and [IKVM](http://www.ikvm.net) recompilers.
 
 ## Real-Time Sync
 
-By sending changes which are deltas relative to previous versions, an application can efficiently keep a resource in sync with a server. Instead of a static document,
+Change representations can be sent over WebSocket to keep a resource in sync between a server and a client. Instead of a static document,
 
 <img class="rest" src="/images/rest.png"/>
 
@@ -17,9 +21,7 @@ a resource becomes dynamic, like Google Docs:
 
 <img class="real-time" src="/images/real-time.png"/>
 
-OF provides types, like map, array, or counter, for which it can represent and send changes automatically, when instances are updated by application code.
-
-If the demo gods allow, this should show live data. It fetches an array of numbers and adds a callback to listen for changes. Server code is a simple loop that updates array items. Changed items are represented, e.g. "index i = x", applied on the client, and trigger the callback.
+If the demo gods allow this should show a live example. It fetches an array of numbers and adds a callback to listen for changes. When server code updates a number, OF represents the change, e.g. "index i = x", and send it. On the client, the array is updated and the callback triggers.
 
 <table>
   <tr>
@@ -39,15 +41,22 @@ If the demo gods allow, this should show live data. It fetches an array of numbe
     <li><a href="#array-1">JavaScript</a></li>
     <li><a href="#array-2">Java</a></li>
     <li><a href="#array-3">C#</a></li>
+    <li><a href="#array-4">Server (Node)</a></li>
+    <li><a href="#array-5">Server (Java)</a></li>
 </ul>
 
 <div id="array-1">
 {% highlight javascript %}
 // Called when ObjectFabric is loaded
 function onof(of) {
-  // Get live array of numbers through WebSocket
-  of.open("ws://test.objectfabric.org/array", function(resource) {
+  // A workspace loads resources
+  var w = new of.workspace();
+  w.addURIHandler(new of.WebSocket());
+
+  // Get array of numbers
+  of.open("ws://server/array", function(err, resource) {
     var array = resource.get();
+
     // Add a listener on array, called when an element is
     // set to a new value server side
     array.onset(function(i) {
@@ -61,9 +70,13 @@ function onof(of) {
 
 <div id="array-2">
 {% highlight java %}
-// Get live array of numbers through WebSocket
-String uri = "ws://test.objectfabric.org/array";
-final TArrayLong a = (TArrayLong) workspace.open(uri).get();
+// A workspace loads resources
+Workspace w = new JVMWorkspace();
+w.addURIHandler(new Netty());
+
+// Get array of numbers
+Resource resource = w.open("ws://server/array");
+final TArrayLong a = (TArrayLong) resource.get();
 
 // Add a listener on array, called when an element is
 // set to a new value server side
@@ -85,12 +98,16 @@ a.addListener(new IndexListener() {
 
 <div id="array-3">
 {% highlight csharp %}
-// Get live array of numbers through WebSocket
-string uri = "ws://test.objectfabric.org/array";
-TArray<long> array = (TArray<long>) workspace.Open(uri).Value;
+// A workspace loads resources
+Workspace w = new Workspace();
+w.AddURIHandler(new WebSocket());
 
-// Add a listener on array, called when an element is
-// set to a new value server side
+// Get array of numbers
+Resource resource = w.Open("ws://server/array");
+TArray<long> array = (TArray<long>) .Value;
+
+// Add an event handler on array, called when an
+// element is set to a new value server side
 array.Set += i =>
 {
     switch (i)
@@ -103,6 +120,70 @@ array.Set += i =>
             break;
     }
 };
+{% endhighlight %}
+</div>
+
+<div id="array-4">
+{% highlight javascript %}
+// Store changes in memory
+var location = new of.memory();
+
+// A workspace loads resources
+var w = new of.workspace();
+w.addURIHandler(location);
+
+// Create an array of numbers at /array
+w.open("/array", function(err, resource) {
+  var array = new of.array(resource, 2);
+  resource.set(array);
+
+  // Interpolate number of people every 200ms
+  setInterval(function() {
+    array.set(0, people());
+    array.set(1, internet());
+  }, 200);
+});
+
+// Create 'ws' WebSocket server
+var wss = new WebSocketServer({
+  port : 8888
+});
+
+// Serve resources in 'location'
+var ofs = new of.server();
+ofs.addURIHandler(location);
+wss.on('connection', function(ws) {
+  new of.connection(ofs, ws);
+});
+{% endhighlight %}
+</div>
+
+<div id="array-5">
+{% highlight java %}
+// Store changes in memory
+Memory location = new Memory();
+
+// A workspace loads resources
+Workspace w = new JVMWorkspace();
+w.addURIHandler(location);
+
+// Create an array of numbers at /array
+Resource path = w.open("/array");
+TArrayLong array = new TArrayLong(path, 2);
+path.set(array);
+
+// Serve resources in 'location'
+final Server server = new JVMServer();
+server.addURIHandler(location);
+
+// ... Start Netty WebSocket server
+
+for (;;) {
+    // Interpolate number of people
+    array.set(0, people());
+    array.set(1, internet());
+    Thread.sleep(200);
+}
 {% endhighlight %}
 </div>
 </div>
@@ -123,13 +204,13 @@ If you restart a client while offline, it loads its last state from offline stor
 
 [images.zip](https://github.com/downloads/objectfabric/objectfabric/images.zip), (sources: [GWT](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/gwt.sample_images/src/main/java/examples/client/Main.java), [Java](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/java/src/main/java/sample_images/Images.java), [C#](https://github.com/objectfabric/objectfabric/blob/master/objectfabric.examples/csharp/Sample%20Images/MainWindow.xaml.cs))
 
-## Users Coordination
+## User Coordination
 
 Concurrent updates of a Web resource require coordination, e.g. ETags with some woodoo on the client in case of conflict, to get the resource again, re-apply changes and retry. Otherwise an HTTP PUT from a user can override updates from another.
 
 Sending changes avoids this complexity. Two apps can get the same resource, e.g. /user123, the first sets "name", and the second "karma". Only one property gets written in each change representation, and no data can be lost.
 
-This demo is a Chat application. It allows multiple users to modify a shared set of messages. When a client adds a message to the set, the change gets replicated without overriding others, and triggers a notification on other clients that displays it.
+This code is a Chat application. It allows multiple users to modify a shared set of messages. When a client adds a message to the set, the change gets replicated without overriding others, and triggers a notification on other clients that displays it.
 
 <div id="chat">
 <ul>
@@ -140,10 +221,8 @@ This demo is a Chat application. It allows multiple users to modify a shared set
 
 <div id="chat-1">
 {% highlight javascript %}
-// Called when ObjectFabric is loaded
-function onof(of) {
 // Get a room
-of.open("ws://localhost:8888/room1", function(resource) {
+workspace.open("ws://localhost:8888/room1", function(resource) {
   var messages = resource.get();
 
   jQuery(document).ready(function($) {
@@ -158,7 +237,6 @@ of.open("ws://localhost:8888/room1", function(resource) {
     $('body').terminal().echo(item);
   });
 });
-}
 {% endhighlight %}
 </div>
 
@@ -209,31 +287,7 @@ for (; ; )
 
 ## The Store is the Log
 
-By default OF deletes changes when overridden by new ones, to save space. For some applications it might make more sense to configure it to keep everything. It builds a history in the data store itself, instead of the usual log files. Source control systems get it right.
-
-By picking a given change representation instead of the latest known, OF can load a resource at a given point in time. Reading following changes makes it possible to replay events from there, e.g. in a UI, as if it was receiving them live from the network.
-
-## Optimal Caching & Bandwidth Use
-
-Changes are stored in an append-only way, so their representation is immutable, which is great by itself because it makes [Rich Hickey](https://twitter.com/fakerichhickey) happy. [Immutability](http://www.infoq.com/presentations/Value-Values), for Web resources.
-
-There is no need for cache expiration, data can be kept as long as there is space. Bandwith usage is also optimized because data is never sent twice, only deltas compared to previous versions.
-
-## Here be Jargon
-
-<div class="jargon">
-<ul>
-    <li>RESTish. This programming model exhibits the familiar URI + verb API, properties like scalability over stateless servers, resource cacheability, and lets applications be written in a HATEOAS style.</li>
-
-    <li>Scales through eventual consistency. OF orders changes by adding a header to their representations with vector clock information similar to NoSQL stores. One of the benefits is that clients still converge if changes get re-ordered during propagation through multiple servers in the cloud.</li>
-
-    <li>Avoids the Slow Consumer problem, as changes to the same data coalesce when clients cannot follow. Each client get updates at an optimal latency for its bandwidth.</li>
-
-	<li>Idempotent. Instead of making a request/response to a server, e.g. to create an item, creating it locally and letting the change replicate guaranties it will only be created once. Local actions always succeed, and the system can determine if a change has already been replicated.</li>
-
-	<li>Compatible with existing infrastructure, unlike versioning methods such as <a href="http://tools.ietf.org/html/rfc5789">HTTP PATCH</a>, which requires special server support.</li>
-</ul>
-</div>
+When a change is overridden by a new one, it can be deleted, or archived to keep a history. OF simplifies handling of history data by allowing a resource to load as it was at a given point in time. Reading following changes replays events in the application itself, instead of a separate log reader with its own UI and file format.
 
 ## More Info
 
