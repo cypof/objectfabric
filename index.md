@@ -7,7 +7,7 @@ title: ObjectFabric
 
 This work explores a very simple idea. Instead of changing a resource in-place, e.g. with an HTTP PUT, a client adds a new version, e.g., with a POST of a [JSON Patch](http://tools.ietf.org/html/draft-ietf-appsawg-json-patch-03) description of the change.
 
-This way to represent resources allows permanent caching, as it is immutable, and low bandwith use, as only deltas are sent when updating a resource. Logging comes for free, as changes form a history, like source control or Big Data systems.
+This way to represent resources allows permanent caching, as it is immutable, and low bandwith use, as only deltas are sent when updating a resource. Logging comes for free, as changes build a history, like source control or Big Data systems.
 
 ObjectFabric is a library for change representations. It offers types like map, array, or counter, for which it can create and apply changes, and remove old ones where space matters. It works on most platforms thanks to the [GWT](https://developers.google.com/web-toolkit) and [IKVM](http://www.ikvm.net) recompilers.
 
