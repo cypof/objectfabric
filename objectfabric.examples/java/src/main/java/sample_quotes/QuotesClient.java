@@ -17,7 +17,7 @@ import java.util.Set;
 
 import org.objectfabric.AbstractResourceListener;
 import org.objectfabric.JVMWorkspace;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.Resource;
 import org.objectfabric.Workspace;
 
@@ -33,7 +33,7 @@ public class QuotesClient {
     public static void main(String[] args) {
         ObjectModel.register();
         Workspace workspace = new JVMWorkspace();
-        workspace.addURIHandler(new NettyURIHandler());
+        workspace.addURIHandler(new Netty());
 
         /*
          * Write current prices and listens for future ones.

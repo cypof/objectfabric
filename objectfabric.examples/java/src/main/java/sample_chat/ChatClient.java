@@ -17,7 +17,7 @@ import java.io.InputStreamReader;
 
 import org.objectfabric.AbstractKeyListener;
 import org.objectfabric.JVMWorkspace;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.Resource;
 import org.objectfabric.TSet;
 import org.objectfabric.Workspace;
@@ -36,7 +36,7 @@ public class ChatClient {
         Workspace w = new JVMWorkspace();
 
         // Enables network connections
-        w.addURIHandler(new NettyURIHandler());
+        w.addURIHandler(new Netty());
 
         // Get a room
         Resource resource = w.open("ws://localhost:8888/room1");

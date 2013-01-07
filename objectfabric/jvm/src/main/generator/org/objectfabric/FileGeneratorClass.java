@@ -223,8 +223,14 @@ class FileGeneratorClass extends FileGenerator {
             for (int i = 0; i < allValues.size(); i++) {
                 ValueDef value = allValues.get(i);
 
-                if (!value.isReadOnly())
-                    wl("        " + value.Name + "(toCopy." + value.Name + "());");
+                if (!value.isReadOnly()) {
+                    String name = Utils.getWithFirstLetterUp(value.Name);
+
+                    if (g().addGetAndSet())
+                        wl("        set" + name + "(toCopy.get" + name + "());");
+                    else
+                        wl("        " + value.Name + "(toCopy." + value.Name + "());");
+                }
             }
 
             wl("    }");

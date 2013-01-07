@@ -287,18 +287,16 @@ public class Concurrent extends TestsHelper {
 
     public void finish(Workspace workspace, ArrayList<Thread> threads, int writeCount, IndexListener listener, SimpleClass object, int flags) {
         long start = System.nanoTime();
-        joinThreads(threads);
-        long time = System.nanoTime() - start;
-        finish(workspace, threads, time, writeCount, listener, object, _changeCallbackLast, flags);
-    }
 
-    public static void joinThreads(ArrayList<Thread> threads) {
         for (Thread thread : threads) {
             try {
                 thread.join();
             } catch (java.lang.InterruptedException e) {
             }
         }
+
+        long time = System.nanoTime() - start;
+        finish(workspace, threads, time, writeCount, listener, object, _changeCallbackLast, flags);
     }
 
     public static void finish(Workspace workspace, ArrayList<Thread> threads, long time, int writeCount, IndexListener listener, SimpleClass object, AtomicInteger changeCallbackLast, int clientFlags) {

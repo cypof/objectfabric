@@ -20,7 +20,7 @@ import org.objectfabric.Counter;
 import org.objectfabric.Generator;
 import org.objectfabric.Immutable;
 import org.objectfabric.JVMWorkspace;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.Resource;
 import org.objectfabric.TArrayInteger;
 import org.objectfabric.TMap;
@@ -50,7 +50,7 @@ public class ObjectModel {
 
     public static void main(String[] args) throws Exception {
         Workspace workspace = new JVMWorkspace();
-        workspace.addURIHandler(new NettyURIHandler());
+        workspace.addURIHandler(new Netty());
         String uri = "ws://localhost:8888";
 
         /*

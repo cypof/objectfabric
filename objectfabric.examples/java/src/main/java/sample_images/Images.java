@@ -34,7 +34,7 @@ import javax.swing.WindowConstants;
 import org.objectfabric.AsyncCallback;
 import org.objectfabric.IndexListener;
 import org.objectfabric.KeyListener;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.Remote;
 import org.objectfabric.Resource;
 import org.objectfabric.SQLite;
@@ -73,7 +73,7 @@ public class Images {
             workspace.addCache(new SQLite("temp/" + args[0], true));
         }
 
-        workspace.addURIHandler(new NettyURIHandler());
+        workspace.addURIHandler(new Netty());
 
         workspace.openAsync("ws://localhost:8888/images", new AsyncCallback<Resource>() {
 

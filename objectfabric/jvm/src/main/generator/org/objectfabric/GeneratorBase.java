@@ -30,6 +30,8 @@ public abstract class GeneratorBase {
 
     private String _copyright;
 
+    private boolean _addGetAndSet;
+
     private char[] _cache = new char[1024];
 
     private int _cacheLength;
@@ -70,12 +72,26 @@ public abstract class GeneratorBase {
         _target = value;
     }
 
+    /**
+     * ObjectModels are identified using a UID. It can be useful to generate several
+     * models with the same UID, e.g. to replicate a model between Java and .NET
+     * processes. Models generated using the same UID must be strictly identical, or
+     * replication will fail, possibly without any descriptive error message.
+     */
     public byte[] objectModelUID() {
         return _uid;
     }
 
     public void objectModelUID(byte[] value) {
         _uid = value;
+    }
+
+    public boolean addGetAndSet() {
+        return _addGetAndSet;
+    }
+
+    public void addGetAndSet(boolean value) {
+        _addGetAndSet = value;
     }
 
     String copyright() {
@@ -147,13 +163,6 @@ public abstract class GeneratorBase {
         run(folder, target, null);
     }
 
-    /**
-     * ObjectModels are identified using a UID. This method can be used to generate object
-     * models that will be considered identical by ObjectFabric. E.g. to replicate a model
-     * between Java, GWT or .NET processes. Make sure that all models generated using the
-     * same UID are strictly identical, or replication will fail, possibly without any
-     * descriptive error message.
-     */
     public void run(String folder, byte[] uid) {
         run(folder, null, uid);
     }
@@ -224,7 +233,7 @@ public abstract class GeneratorBase {
     int parseArgs(String[] args) {
         final String XML = "-xml:";
         final String OUT = "-out:";
-        final String TARGET = "-target:";
+        final String LANG = "-lang:";
         final String JAVA = "java";
         final String CS = "cs";
 
@@ -239,8 +248,8 @@ public abstract class GeneratorBase {
             } else if (arg.startsWith(OUT)) {
                 folder(arg.substring(OUT.length()));
                 PlatformGenerator.mkdir(folder());
-            } else if (arg.startsWith(TARGET)) {
-                String t = arg.substring(TARGET.length());
+            } else if (arg.startsWith(LANG)) {
+                String t = arg.substring(LANG.length());
 
                 if (JAVA.equals(t))
                     target(Target.JAVA);
@@ -261,7 +270,6 @@ public abstract class GeneratorBase {
 
             System.out.println("");// ////////////////////////////////////////////////////////////////////////////////////////|Cut
             System.out.println("ObjectFabric Generator " + TObject.OBJECT_FABRIC_VERSION + " (http://objectfabric.org)");
-            System.out.println("Copyright (c) ObjectFabric Inc.");
             System.out.println("");
             boolean java = Platform.get().value() == Platform.JVM;
             String exe = java ? "java -jar objectfabric.jar" : "Generator.exe";
@@ -274,14 +282,9 @@ public abstract class GeneratorBase {
             System.out.println(Utils.padRight("    " + OUT + ":<path>", pad));
             System.out.println(Utils.padRight("", pad) + "Target directory for generated source tree. Default is");
             System.out.println(Utils.padRight("", pad) + "current directory.");
-            System.out.println(Utils.padRight("    " + TARGET + ":[" + JAVA + "|" + CS + "]", pad));
+            System.out.println(Utils.padRight("    " + LANG + ":[" + JAVA + "|" + CS + "]", pad));
             System.out.println(Utils.padRight("", pad) + "Source language to generate. Default is Java when run on a JVM,");
             System.out.println(Utils.padRight("", pad) + "and C# on .NET.");
-            System.out.println(Utils.padRight("", pad) + "Do not generate synchronous methods on generated classes, only the");
-            System.out.println(Utils.padRight("", pad) + "asynchronous versions. This is handy to make sure no thread will");
-            System.out.println(Utils.padRight("", pad) + "ever block on a method in an application, either for best");
-            System.out.println(Utils.padRight("", pad) + "performance, or in environments like GWT where blocking a thread");
-            System.out.println(Utils.padRight("", pad) + "is not allowed.");
         }
 
         return 0;

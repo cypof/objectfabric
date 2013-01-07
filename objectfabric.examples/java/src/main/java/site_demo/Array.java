@@ -16,7 +16,7 @@ import java.text.NumberFormat;
 
 import org.objectfabric.IndexListener;
 import org.objectfabric.JVMWorkspace;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.TArrayLong;
 import org.objectfabric.Workspace;
 
@@ -30,7 +30,7 @@ public class Array {
         Workspace w = new JVMWorkspace();
 
         // Enable network connections
-        w.addURIHandler(new NettyURIHandler());
+        w.addURIHandler(new Netty());
 
         // Get live array of numbers through WebSocket
         String uri = "ws://test.objectfabric.org/array";

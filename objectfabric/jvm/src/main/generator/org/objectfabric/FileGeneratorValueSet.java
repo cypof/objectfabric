@@ -85,6 +85,7 @@ class FileGeneratorValueSet {
         String readVisibility = (value.publicVisibility().equals(FieldDef.TRUE) || value.publicVisibility().equals(FieldDef.READ)) ? "public" : "protected";
         String writeVisibility = value.publicVisibility().equals(FieldDef.TRUE) ? "public" : "protected";
         String type = value.type().fullName(_gen.target(), true);
+        String name = Utils.getWithFirstLetterUp(value.Name);
 
         if (_gen.isCSharp()) {
             if (value.Comment != null && value.Comment.length() > 0) {
@@ -93,7 +94,7 @@ class FileGeneratorValueSet {
                 wl("    /// </summary>");
             }
 
-            wl("    public " + type + " " + Utils.getWithFirstLetterUp(value.Name));
+            wl("    public " + type + " " + name);
             wl("    {");
             wl("        get");
             wl("        {");
@@ -125,7 +126,10 @@ class FileGeneratorValueSet {
                 if (value.Comment != null && value.Comment.length() > 0)
                     wl("    /** " + value.Comment + " */");
 
-                wl("    " + readVisibility + " final " + type + " " + value.Name + "() {");
+                if (_gen.addGetAndSet())
+                    wl("    " + readVisibility + " final " + type + " get" + name + "() {");
+                else
+                    wl("    " + readVisibility + " final " + type + " " + value.Name + "() {");
 
                 if (value.isReadOnly())
                     writeFieldGetReadOnly(value);
@@ -143,7 +147,10 @@ class FileGeneratorValueSet {
                 if (value.Comment != null && value.Comment.length() > 0)
                     wl("    /** " + value.Comment + " */");
 
-                wl("    " + writeVisibility + " final void " + value.Name + "(" + type + " value) {");
+                if (_gen.addGetAndSet())
+                    wl("    " + writeVisibility + " final void set" + name + "(" + type + " value) {");
+                else
+                    wl("    " + writeVisibility + " final void " + value.Name + "(" + type + " value) {");
 
                 writeFieldSet(value);
 

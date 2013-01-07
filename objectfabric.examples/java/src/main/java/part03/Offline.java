@@ -18,7 +18,7 @@ import java.util.Map;
 import org.junit.Assert;
 import org.objectfabric.ClientURIHandler;
 import org.objectfabric.JVMWorkspace;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.Remote;
 import org.objectfabric.Remote.Status;
 import org.objectfabric.Resource;
@@ -45,7 +45,7 @@ public class Offline {
          */
         {
             Workspace workspace = new JVMWorkspace();
-            workspace.addURIHandler(new NettyURIHandler());
+            workspace.addURIHandler(new Netty());
 
             /*
              * Register the cache and get the resource.
@@ -64,7 +64,7 @@ public class Offline {
          */
         {
             Workspace workspace = new JVMWorkspace();
-            workspace.addURIHandler(new NettyURIHandler());
+            workspace.addURIHandler(new Netty());
             workspace.addCache(cache);
 
             /*
@@ -94,7 +94,7 @@ public class Offline {
          */
         {
             Workspace workspace = new JVMWorkspace();
-            workspace.addURIHandler(new NettyURIHandler());
+            workspace.addURIHandler(new Netty());
             workspace.addCache(cache);
 
             ClientURIHandler.enableNetwork();
@@ -117,7 +117,7 @@ public class Offline {
             cache = new SQLite(file, true);
 
             Workspace workspace = new JVMWorkspace();
-            workspace.addURIHandler(new NettyURIHandler());
+            workspace.addURIHandler(new Netty());
             Map map = (Map) workspace.open("ws://localhost:8888/map").get();
             Assert.assertEquals("value", map.get("example key"));
             Assert.assertEquals("blah", map.get("offline update"));

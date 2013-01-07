@@ -18,7 +18,7 @@ import launchfirst.ExamplesServer;
 
 import org.objectfabric.AbstractKeyListener;
 import org.objectfabric.JVMWorkspace;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.TMap;
 import org.objectfabric.Workspace;
 
@@ -31,7 +31,7 @@ public class RealTime {
 
     public static void main(String[] args) throws Exception {
         Workspace workspace = new JVMWorkspace();
-        workspace.addURIHandler(new NettyURIHandler());
+        workspace.addURIHandler(new Netty());
 
         /*
          * Get map from server.

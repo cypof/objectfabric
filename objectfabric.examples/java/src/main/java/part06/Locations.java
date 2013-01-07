@@ -28,7 +28,7 @@ import org.objectfabric.JVMWorkspace;
 import org.objectfabric.Location;
 import org.objectfabric.Memory;
 import org.objectfabric.NettySession;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.Origin;
 import org.objectfabric.Remote;
 import org.objectfabric.Resource;
@@ -142,7 +142,7 @@ public class Locations {
          * Connect a client.
          */
         workspace = new JVMWorkspace();
-        workspace.addURIHandler(new NettyURIHandler());
+        workspace.addURIHandler(new Netty());
 
         /*
          * Client side, resolving a URI returns a resource whose location is the network.

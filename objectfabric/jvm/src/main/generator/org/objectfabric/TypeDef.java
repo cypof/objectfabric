@@ -392,7 +392,7 @@ public class TypeDef {
     //
 
     boolean fixedLength() {
-        if (immutable() != null && immutable().fixedLength())
+        if (immutable() != null && immutable().fixedLength() || isJavaEnum())
             return true;
 
         return false;

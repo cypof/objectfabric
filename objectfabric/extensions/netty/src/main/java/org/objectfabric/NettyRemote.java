@@ -40,9 +40,9 @@ import org.jboss.netty.util.CharsetUtil;
 
 class NettyRemote extends Remote {
 
-    private final NettyURIHandler _handler;
+    private final Netty _handler;
 
-    protected NettyRemote(Address address, NettyURIHandler handler) {
+    protected NettyRemote(Address address, Netty handler) {
         super(false, address);
 
         _handler = handler;

@@ -14,7 +14,7 @@ package part01;
 
 import org.junit.Assert;
 import org.objectfabric.JVMWorkspace;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.Workspace;
 
 /**
@@ -33,7 +33,7 @@ public class HelloWord {
         /*
          * Add a network transport to access remote resources.
          */
-        workspace.addURIHandler(new NettyURIHandler());
+        workspace.addURIHandler(new Netty());
 
         /*
          * Get resource from server. (Server 'launchfirst.ExamplesServer' must be running)

@@ -10,8 +10,11 @@
 <body>
   <script>
       function onof(of) {
+        var w = new of.workspace();
+        w.addURIHandler(new of.WebSocket());
+
         // Get a room
-        of.open("ws://localhost:8888/room1", function(err, resource) {
+        w.open("ws://localhost:8888/room1", function(err, resource) {
           var messages = resource.get();
           var me = "";
 

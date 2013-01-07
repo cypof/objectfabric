@@ -36,7 +36,7 @@ public final class Debug {
 
     public static final boolean COMMUNICATIONS = ENABLED && true;
 
-    public static final boolean COMMUNICATIONS_LOG = ENABLED && true;
+    public static final boolean COMMUNICATIONS_LOG = ENABLED && false;
 
     public static final boolean COMMUNICATIONS_LOG_ALL = ENABLED && false;
 

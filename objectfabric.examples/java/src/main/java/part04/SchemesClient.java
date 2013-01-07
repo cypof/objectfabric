@@ -21,11 +21,11 @@ import javax.net.ssl.X509TrustManager;
 
 import org.junit.Assert;
 import org.objectfabric.JVMWorkspace;
-import org.objectfabric.NettyURIHandler;
+import org.objectfabric.Netty;
 import org.objectfabric.Workspace;
 
 /**
- * URI schemes supported by {@link NettyURIHandler}, the default transport on the JVM.
+ * URI schemes supported by {@link Netty}, the default transport on the JVM.
  */
 public class SchemesClient {
 
@@ -66,7 +66,7 @@ public class SchemesClient {
      * Self-signed certificate used by this test for SSL connections would not be accepted
      * by Java's default trusted CA, so use a SSLContext that accepts any certificate.
      */
-    public static class TestURIHandler extends NettyURIHandler {
+    public static class TestURIHandler extends Netty {
 
         @Override
         protected SSLContext createSSLContext() throws Exception {

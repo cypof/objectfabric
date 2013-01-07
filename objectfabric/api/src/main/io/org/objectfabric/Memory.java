@@ -30,6 +30,10 @@ public class Memory extends Origin implements URIHandler {
 
     private final Backend _backend;
 
+    public Memory() {
+        this(false);
+    }
+
     /**
      * @param cache
      *            Must be true if this location is to be used as a cache (

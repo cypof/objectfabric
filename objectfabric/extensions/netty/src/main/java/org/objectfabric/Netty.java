@@ -27,17 +27,17 @@ import org.jboss.netty.handler.ssl.SslHandler;
 /**
  * Netty (http://netty.io) transport. Supports "tcp", "ssl", "ws" and "wss" schemes.
  */
-public class NettyURIHandler extends ClientURIHandler {
+public class Netty extends ClientURIHandler {
 
     private final ChannelFactory _factory;
 
     private SSLContext _clientContext;
 
-    public NettyURIHandler() {
+    public Netty() {
         this(new NioClientSocketChannelFactory(ThreadPool.getInstance(), ThreadPool.getInstance()));
     }
 
-    public NettyURIHandler(ClientSocketChannelFactory factory) {
+    public Netty(ClientSocketChannelFactory factory) {
         _factory = factory;
     }
 
