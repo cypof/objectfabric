@@ -16,7 +16,7 @@ a resource becomes dynamic, like Google Docs:
 
 <img class="real-time" src="/images/real-time.png"/>
 
-This example between Java and JavaScript fetches an array of numbers and adds a callback to listen for changes. When server code updates a number, OF represents the change, e.g. "index i = x", and send it. On the client, the array is updated and the callback triggers.
+This example between a Java server and a JavaScript client fetches an array of numbers and adds a callback to listen for changes. When server code updates a number, OF represents the change, e.g. "index i = x", and send it. On the client, the array is updated and the callback triggers.
 
 ```
 // JavaScript - Called when ObjectFabric is loaded
@@ -105,6 +105,12 @@ workspace.open("ws://localhost:8888/room1", function(resource) {
   });
 });
 ```
+
+## Users
+
+This project has been deployed at the NASA Ames Research Center. [Read more...](https://github.com/objectfabric/objectfabric/wiki/Users)
+
+<img class="images" src="/images/nasa.png"/>
 
 ## License
 
