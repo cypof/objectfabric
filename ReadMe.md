@@ -18,8 +18,8 @@ a resource becomes dynamic, like Google Docs:
 
 This example between Java and JavaScript fetches an array of numbers and adds a callback to listen for changes. When server code updates a number, OF represents the change, e.g. "index i = x", and send it. On the client, the array is updated and the callback triggers.
 
-{% highlight javascript %}
-// Called when ObjectFabric is loaded
+```
+// JavaScript - Called when ObjectFabric is loaded
 function onof(of) {
   // A workspace loads resources
   var w = new of.workspace();
@@ -37,10 +37,10 @@ function onof(of) {
     });
   });
 }
-{% endhighlight %}
+```
 
-{% highlight java %}
-// A workspace loads resources
+```
+// Java - A workspace loads resources
 Workspace w = new JVMWorkspace();
 w.addURIHandler(new Netty());
 
@@ -63,7 +63,7 @@ a.addListener(new IndexListener() {
         }
     }
 });
-{% endhighlight %}
+```
 
 ## Offline Sync
 
@@ -87,7 +87,7 @@ Sending changes avoids this complexity. Two apps can get the same resource, e.g.
 
 This code is a Chat application. It allows multiple users to modify a shared set of messages. When a client adds a message to the set, the change gets replicated without overriding others, and triggers a notification on other clients that displays it.
 
-{% highlight javascript %}
+```
 // Get a room
 workspace.open("ws://localhost:8888/room1", function(resource) {
   var messages = resource.get();
@@ -104,7 +104,7 @@ workspace.open("ws://localhost:8888/room1", function(resource) {
     $('body').terminal().echo(item);
   });
 });
-{% endhighlight %}
+```
 
 ## License
 
