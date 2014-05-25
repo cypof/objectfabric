@@ -53,7 +53,7 @@ class FileGeneratorValueSet {
 
     private void writeFieldSet(ValueDef value) {
         if (value.type().isTObject()) {
-            wl("        if (value.resource() != resource())");
+            wl("        if (value != null && value.resource() != resource())");
             wl("            wrongResource_();");
             wl();
         } else if (value.type().canBeTObject()) {
