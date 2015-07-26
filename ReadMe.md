@@ -4,7 +4,7 @@ This work explores a simple idea. Instead of changing a resource in-place, e.g. 
 
 This way to represent resources allows permanent caching, as it is immutable, and low bandwith use, as only deltas are sent when updating a resource. Logging comes for free, as changes form a history, like source control systems.
 
-ObjectFabric is a library for change representations. It offers types like map, array, or counter, for which it can create and apply changes, and remove old ones where space matters. It is internally based on a STM, which provides a precise and efficient way to define changes using transactions.
+ObjectFabric is a library for handling changes on data-structures. It offers types like map, array, or counter, for which it can record, transfer, and apply changes. It is internally based on a [transactional memory](https://github.com/cypof/objectfabric/wiki/Paper), which provides a precise, safe, and efficient way to capture sets of changes as transactions.
 
 ## Real-Time Sync
 
